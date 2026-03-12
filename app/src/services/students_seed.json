@@ -1,0 +1,887 @@
+[
+  {
+    "curso": "1° Básico",
+    "rut": "27222955-4",
+    "nombreCompleto": "CANIUPÁN CIFUENTES MADELEINE ABIGAIL"
+  },
+  {
+    "curso": "1° Básico",
+    "rut": "27011334-6",
+    "nombreCompleto": "CÁRCAMO SÁEZ HANS GAEL"
+  },
+  {
+    "curso": "1° Básico",
+    "rut": "26975996-8",
+    "nombreCompleto": "CATRILEO HUAIQUINAO TRINIDAD EMILIA"
+  },
+  {
+    "curso": "1° Básico",
+    "rut": "27101142-3",
+    "nombreCompleto": "CAYUMÁN HUEHUENTRO BASTIÁN MOISÉS"
+  },
+  {
+    "curso": "1° Básico",
+    "rut": "27013325-8",
+    "nombreCompleto": "COLIPÍ JINEO DOMINIK EFRAÍN"
+  },
+  {
+    "curso": "1° Básico",
+    "rut": "26898160-8",
+    "nombreCompleto": "CUEVAS QUIÑEHUAL JAIME AGUSTÍN GREGORIO"
+  },
+  {
+    "curso": "1° Básico",
+    "rut": "26774101-8",
+    "nombreCompleto": "FILUMIL MELIMÁN BENJAMÍN ALBERTO ISAAC"
+  },
+  {
+    "curso": "1° Básico",
+    "rut": "26851102-4",
+    "nombreCompleto": "GARRIDO HUIRIQUEO EMILIA ANDREA"
+  },
+  {
+    "curso": "1° Básico",
+    "rut": "27027854-K",
+    "nombreCompleto": "HERNÁNDEZ LINCOÑIR FERNANDA ISABELLA"
+  },
+  {
+    "curso": "1° Básico",
+    "rut": "27230690-7",
+    "nombreCompleto": "HUEHUENTRO LLANCANAO DANIELA JAZMÍN"
+  },
+  {
+    "curso": "1° Básico",
+    "rut": "27009663-8",
+    "nombreCompleto": "HUENTEMIL JINEO MILLA RAYEN ELISA"
+  },
+  {
+    "curso": "1° Básico",
+    "rut": "26796262-6",
+    "nombreCompleto": "NECULQUEO FUENTEALBA JUAN PABLO"
+  },
+  {
+    "curso": "1° Básico",
+    "rut": "26779028-0",
+    "nombreCompleto": "ÑEICULEO BENÍTEZ FRANCISCO AGUSTÍN"
+  },
+  {
+    "curso": "1° Básico",
+    "rut": "27121078-7",
+    "nombreCompleto": "ÑIRIPIL MATAMALA FLORENCIA BELÉN"
+  },
+  {
+    "curso": "1° Básico",
+    "rut": "27243951-6",
+    "nombreCompleto": "OLIVERA HUENCHUÑIR FRANCISCO MATEO"
+  },
+  {
+    "curso": "1° Básico",
+    "rut": "27123151-2",
+    "nombreCompleto": "RAIN CONTRERAS EMILIA BELÉN"
+  },
+  {
+    "curso": "1° Básico",
+    "rut": "27046956-6",
+    "nombreCompleto": "SALAZAR VERDUGO TRINIDAD AMANDA"
+  },
+  {
+    "curso": "1° Básico",
+    "rut": "27144651-9",
+    "nombreCompleto": "TORRES HUECHE MONTSERRAT SCARLETH"
+  },
+  {
+    "curso": "1° Básico",
+    "rut": "26896107-0",
+    "nombreCompleto": "TOSO LLANQUÍN THOMAS EDUARDO"
+  },
+  {
+    "curso": "1° Básico",
+    "rut": "27057120-4",
+    "nombreCompleto": "TRECAMÁN COLLÍO YARELI HASLY"
+  },
+  {
+    "curso": "2° Básico",
+    "rut": "26247095-4",
+    "nombreCompleto": "AHUMADA MARTÍNEZ MARÍA PAZ"
+  },
+  {
+    "curso": "2° Básico",
+    "rut": "26459456-1",
+    "nombreCompleto": "ANTINAO MOLINA JAVIER ALEJANDRO"
+  },
+  {
+    "curso": "2° Básico",
+    "rut": "26437945-8",
+    "nombreCompleto": "BEÑA LLANCANAO DAVID ESTEBAN"
+  },
+  {
+    "curso": "2° Básico",
+    "rut": "26476161-1",
+    "nombreCompleto": "CARINAO BURGOS CRISTOFER GIOVANNI"
+  },
+  {
+    "curso": "2° Básico",
+    "rut": "26260384-9",
+    "nombreCompleto": "ESCOBAR CANIUPÁN ISRAEL ESTEBAN"
+  },
+  {
+    "curso": "2° Básico",
+    "rut": "26448104-K",
+    "nombreCompleto": "GODOY SEPÚLVEDA ANTONIA IGNACIA"
+  },
+  {
+    "curso": "2° Básico",
+    "rut": "26392138-0",
+    "nombreCompleto": "HUENTEMIL QUIÑEHUAL CRISTÓBAL FABIÁN"
+  },
+  {
+    "curso": "2° Básico",
+    "rut": "26371447-4",
+    "nombreCompleto": "LINCOÑIR FIGUEROA ARIEL VICENTE"
+  },
+  {
+    "curso": "2° Básico",
+    "rut": "26211612-3",
+    "nombreCompleto": "LINCOÑIR MILLANAO LUIS SANTIAGO"
+  },
+  {
+    "curso": "2° Básico",
+    "rut": "26273660-1",
+    "nombreCompleto": "MANQUILEF HUENTEMIL WINGKUL PIUKE"
+  },
+  {
+    "curso": "2° Básico",
+    "rut": "26223219-0",
+    "nombreCompleto": "MARIVIL MANQUEO ALISON MAYLEN"
+  },
+  {
+    "curso": "2° Básico",
+    "rut": "26301158-9",
+    "nombreCompleto": "MELIVILU LINCOÑIR JOSÉ ALONSO"
+  },
+  {
+    "curso": "2° Básico",
+    "rut": "26520212-8",
+    "nombreCompleto": "MORALES EPUL DAMIÁN ELIAN"
+  },
+  {
+    "curso": "2° Básico",
+    "rut": "26224981-6",
+    "nombreCompleto": "PEÑAS SALDIVIA IVÁN IGNACIO"
+  },
+  {
+    "curso": "2° Básico",
+    "rut": "26351569-2",
+    "nombreCompleto": "QUEUPUCURA LLANCANAO SANTIAGO JAVIER"
+  },
+  {
+    "curso": "2° Básico",
+    "rut": "26601579-8",
+    "nombreCompleto": "RAIN TORRES JENNIFER CONSTANZA"
+  },
+  {
+    "curso": "2° Básico",
+    "rut": "26374411-K",
+    "nombreCompleto": "SÁEZ HUENUPÁN ARTURO MODRIC JESÚS"
+  },
+  {
+    "curso": "3° Básico",
+    "rut": "25740712-8",
+    "nombreCompleto": "ÁLVAREZ RIQUELME ELISA AURORA"
+  },
+  {
+    "curso": "3° Básico",
+    "rut": "26105304-7",
+    "nombreCompleto": "ANCAMIL HUENTEMIL FELIPE JAVIER"
+  },
+  {
+    "curso": "3° Básico",
+    "rut": "25846656-K",
+    "nombreCompleto": "CANIO SALAZAR ALONSO AURELIO"
+  },
+  {
+    "curso": "3° Básico",
+    "rut": "26112450-5",
+    "nombreCompleto": "CANIUPÁN HUENCHUNAO EMILIA ANAIZ"
+  },
+  {
+    "curso": "3° Básico",
+    "rut": "25961404-K",
+    "nombreCompleto": "CARRASCO ARANEDA CRISTÓBAL IGNACIO"
+  },
+  {
+    "curso": "3° Básico",
+    "rut": "25943105-0",
+    "nombreCompleto": "CATRILEO ORELLANA CHRISTOPHER MAXIMILIANO"
+  },
+  {
+    "curso": "3° Básico",
+    "rut": "25821840-K",
+    "nombreCompleto": "COÑA AGUILERA CONALEF"
+  },
+  {
+    "curso": "3° Básico",
+    "rut": "25989520-0",
+    "nombreCompleto": "CONSTANZO QUIÑEHUAL LUCIANO ALONSO"
+  },
+  {
+    "curso": "3° Básico",
+    "rut": "25908054-1",
+    "nombreCompleto": "FONSECA FRUGONE DIANNA MADELYNNE"
+  },
+  {
+    "curso": "3° Básico",
+    "rut": "25951889-K",
+    "nombreCompleto": "GARCIAS LONCOMIL RICARDO ORLANDO"
+  },
+  {
+    "curso": "3° Básico",
+    "rut": "25745453-3",
+    "nombreCompleto": "LLANQUIHUEN LINCONAO ANTONELLA BELÉN"
+  },
+  {
+    "curso": "3° Básico",
+    "rut": "26099212-0",
+    "nombreCompleto": "LLANQUINAO CARINAO VICENTE JONÁS"
+  },
+  {
+    "curso": "3° Básico",
+    "rut": "26057131-1",
+    "nombreCompleto": "MARILEO QUEZADA ROCÍO AYELÉN"
+  },
+  {
+    "curso": "3° Básico",
+    "rut": "26001048-4",
+    "nombreCompleto": "MELILLÁN MORALES MONTSERRAT ANAÍS"
+  },
+  {
+    "curso": "3° Básico",
+    "rut": "26202764-3",
+    "nombreCompleto": "ÑANCUÁN MOLINA JEREMÍAS GABRIEL"
+  },
+  {
+    "curso": "3° Básico",
+    "rut": "25746129-7",
+    "nombreCompleto": "NECULMÁN CATRIN SAYÉN ANASTASIA"
+  },
+  {
+    "curso": "3° Básico",
+    "rut": "25859938-1",
+    "nombreCompleto": "NECULMÁN LEFIMAN AGUSTINA ISIDORA"
+  },
+  {
+    "curso": "3° Básico",
+    "rut": "25917503-8",
+    "nombreCompleto": "QUINTRIQUEO HUIRCÁN ESTEBAN IGNACIO"
+  },
+  {
+    "curso": "3° Básico",
+    "rut": "25782960-K",
+    "nombreCompleto": "RODRÍGUEZ BOLOMEY SIMÓN VICENTE"
+  },
+  {
+    "curso": "3° Básico",
+    "rut": "26052125-K",
+    "nombreCompleto": "TRECAMÁN COLLÍO AYELEN SOFÍA"
+  },
+  {
+    "curso": "4° Básico",
+    "rut": "25477017-5",
+    "nombreCompleto": "AHUMADA MARTÍNEZ MARÍA MAGDALENA"
+  },
+  {
+    "curso": "4° Básico",
+    "rut": "25529392-3",
+    "nombreCompleto": "BURGOS MELILLÁN SOFÍA TRINIDAD"
+  },
+  {
+    "curso": "4° Básico",
+    "rut": "25466042-6",
+    "nombreCompleto": "CALFULEO PAINEVILU ÁNGEL IGNACIO"
+  },
+  {
+    "curso": "4° Básico",
+    "rut": "25722268-3",
+    "nombreCompleto": "CASTRO BOLOMEY MAXIMILIANO OMAR"
+  },
+  {
+    "curso": "4° Básico",
+    "rut": "25691671-1",
+    "nombreCompleto": "COLICHEO LONCÓN BELÉN IGNACIA"
+  },
+  {
+    "curso": "4° Básico",
+    "rut": "25514781-1",
+    "nombreCompleto": "DURÁN NECULMÁN TRINIDAD IGNACIA"
+  },
+  {
+    "curso": "4° Básico",
+    "rut": "25673655-1",
+    "nombreCompleto": "ELGUETA EPULEF ANGEL CRISTÓBAL"
+  },
+  {
+    "curso": "4° Básico",
+    "rut": "25416542-5",
+    "nombreCompleto": "HUAIQUIL VARGAS AYLIN AGUSTINA"
+  },
+  {
+    "curso": "4° Básico",
+    "rut": "25564637-0",
+    "nombreCompleto": "HUENCHUÑIR HUAIQUIMIL CHRISTOPHER DAMIÁN"
+  },
+  {
+    "curso": "4° Básico",
+    "rut": "25680728-9",
+    "nombreCompleto": "HUILCÁN HUIRCÁN FERNANDA ARACELY"
+  },
+  {
+    "curso": "4° Básico",
+    "rut": "25596627-8",
+    "nombreCompleto": "OSSES BASTIDAS RENATA MATILDE"
+  },
+  {
+    "curso": "4° Básico",
+    "rut": "25534569-9",
+    "nombreCompleto": "QUIÑEHUAL MANQUEO LEANDRO ELÍAS"
+  },
+  {
+    "curso": "4° Básico",
+    "rut": "25529663-9",
+    "nombreCompleto": "QUINTREQUEO MORALES CRISTOFER JEREMÍAS"
+  },
+  {
+    "curso": "4° Básico",
+    "rut": "25564724-5",
+    "nombreCompleto": "RAIN NAHUEL VALENTINA ANDREA"
+  },
+  {
+    "curso": "4° Básico",
+    "rut": "25382967-2",
+    "nombreCompleto": "RAIN TORRES CARLOS HUMBERTO"
+  },
+  {
+    "curso": "4° Básico",
+    "rut": "25503116-3",
+    "nombreCompleto": "TORO ÁLVAREZ AGUSTÍN DANIEL"
+  },
+  {
+    "curso": "4° Básico",
+    "rut": "25701624-2",
+    "nombreCompleto": "URBINA ANCAVIL JHOAN ALEXANDER"
+  },
+  {
+    "curso": "4° Básico",
+    "rut": "25434791-4",
+    "nombreCompleto": "VERA HUENTEÑANCO NOELIA ANTONELLA BELÉN"
+  },
+  {
+    "curso": "4° Básico",
+    "rut": "25557797-2",
+    "nombreCompleto": "VILLANUEVA OTÁROLA CLEMENTE ANDRÉS"
+  },
+  {
+    "curso": "5° Básico",
+    "rut": "25105810-5",
+    "nombreCompleto": "ÁLVAREZ GUERRA EMILIA ESTER"
+  },
+  {
+    "curso": "5° Básico",
+    "rut": "25042770-0",
+    "nombreCompleto": "ANCAMIL COLIPÍ CRISTIAN LEÓN ANDRÉS"
+  },
+  {
+    "curso": "5° Básico",
+    "rut": "25228476-1",
+    "nombreCompleto": "ANCAVIL LEAL NICOLÁS IGNACIO"
+  },
+  {
+    "curso": "5° Básico",
+    "rut": "25070193-4",
+    "nombreCompleto": "ANTINAO MOLINA FLORENCIA RAYEN"
+  },
+  {
+    "curso": "5° Básico",
+    "rut": "25022033-2",
+    "nombreCompleto": "ARIAS SALAZAR ANGÉL IGNACIO"
+  },
+  {
+    "curso": "5° Básico",
+    "rut": "25038192-1",
+    "nombreCompleto": "CANIO CANIO EDWARD BASTIÁN"
+  },
+  {
+    "curso": "5° Básico",
+    "rut": "25250917-8",
+    "nombreCompleto": "CASTILLO PAINE VICENTE ANDRÉS"
+  },
+  {
+    "curso": "5° Básico",
+    "rut": "24958229-8",
+    "nombreCompleto": "DEL PINO LONCOMIL AYELÉN MAWÜ N"
+  },
+  {
+    "curso": "5° Básico",
+    "rut": "25063574-5",
+    "nombreCompleto": "DÍAZ PALACIOS DANIEL IGNACIO"
+  },
+  {
+    "curso": "5° Básico",
+    "rut": "25126430-9",
+    "nombreCompleto": "GARCIAS LONCOMIL MAYRA JUDITH"
+  },
+  {
+    "curso": "5° Básico",
+    "rut": "25105697-8",
+    "nombreCompleto": "HUECHE ÑEICULEO BENJAMÍN JAVIER"
+  },
+  {
+    "curso": "5° Básico",
+    "rut": "24983884-5",
+    "nombreCompleto": "HUENCHUÑIR AGUAYO CRISTOPHER EDUARDO"
+  },
+  {
+    "curso": "5° Básico",
+    "rut": "25113810-9",
+    "nombreCompleto": "HUENCHUÑIR LONCÓN FRANCO BASTIÁN"
+  },
+  {
+    "curso": "5° Básico",
+    "rut": "25125539-3",
+    "nombreCompleto": "MANQUEO QUIÑEHUAL EMILIA FLORENCIA"
+  },
+  {
+    "curso": "5° Básico",
+    "rut": "24992001-0",
+    "nombreCompleto": "MORAGA QUIÑEHUAL VALENTINA ALEJANDRA"
+  },
+  {
+    "curso": "5° Básico",
+    "rut": "25174593-5",
+    "nombreCompleto": "ÑEICULEO RAIN CATALINA TRINIDAD"
+  },
+  {
+    "curso": "5° Básico",
+    "rut": "25036910-7",
+    "nombreCompleto": "OBREQUE HUENCHUNAO GABRIEL GIOVANNI"
+  },
+  {
+    "curso": "5° Básico",
+    "rut": "25001057-5",
+    "nombreCompleto": "QUEZADA MARTÍNEZ AGUSTINA ANTONIA"
+  },
+  {
+    "curso": "5° Básico",
+    "rut": "24804541-8",
+    "nombreCompleto": "QUILAMÁN CARINAO DAYANA ESTEFANÍA"
+  },
+  {
+    "curso": "5° Básico",
+    "rut": "24995508-6",
+    "nombreCompleto": "QUIÑEHUAL MANQUEO ANDREA LUCIANA"
+  },
+  {
+    "curso": "5° Básico",
+    "rut": "25205346-8",
+    "nombreCompleto": "RAIN LEVIPIL VALESKA PAZ"
+  },
+  {
+    "curso": "5° Básico",
+    "rut": "25236518-4",
+    "nombreCompleto": "RETAMAL ROZAS MARTÍN ALONSO"
+  },
+  {
+    "curso": "5° Básico",
+    "rut": "24822556-4",
+    "nombreCompleto": "SANDOVAL BURGOS VÍCTOR ALONSO"
+  },
+  {
+    "curso": "5° Básico",
+    "rut": "25286359-1",
+    "nombreCompleto": "URBINA ANCAVIL AZENETH DATZARY"
+  },
+  {
+    "curso": "5° Básico",
+    "rut": "25208113-5",
+    "nombreCompleto": "VALDEBENITO NAHUELPI MARÍA JESÚS"
+  },
+  {
+    "curso": "5° Básico",
+    "rut": "25046259-K",
+    "nombreCompleto": "VILLEGAS CIFUENTES ALIZ SOFÍA"
+  },
+  {
+    "curso": "6° Básico",
+    "rut": "24835610-3",
+    "nombreCompleto": "AGUILERA AGUILERA MARTINA ISIDORA"
+  },
+  {
+    "curso": "6° Básico",
+    "rut": "24695269-8",
+    "nombreCompleto": "ALCAMÁN HUENCHUÑIR YULIAN MAURICIO"
+  },
+  {
+    "curso": "6° Básico",
+    "rut": "24679726-9",
+    "nombreCompleto": "CANIO CANIO EMILIA SCARLETH"
+  },
+  {
+    "curso": "6° Básico",
+    "rut": "24762240-3",
+    "nombreCompleto": "COLICHEO MORALES DÁMARIS BELÉN"
+  },
+  {
+    "curso": "6° Básico",
+    "rut": "24647060-K",
+    "nombreCompleto": "COLLÍO NAHUELPI KAREN DANAY"
+  },
+  {
+    "curso": "6° Básico",
+    "rut": "24865871-1",
+    "nombreCompleto": "COÑA AGUILERA LEMUNANTÜ EPULEF"
+  },
+  {
+    "curso": "6° Básico",
+    "rut": "24827385-2",
+    "nombreCompleto": "ELGUETA EPULEF FERNANDA PAOLA"
+  },
+  {
+    "curso": "6° Básico",
+    "rut": "24587642-4",
+    "nombreCompleto": "GARCIAS LONCOMIL NOELIA NOEMÍ AMALIA"
+  },
+  {
+    "curso": "6° Básico",
+    "rut": "24788278-2",
+    "nombreCompleto": "INOSTROZA LLANQUINAO EMILIO ANTONIO"
+  },
+  {
+    "curso": "6° Básico",
+    "rut": "24720541-1",
+    "nombreCompleto": "JARA LONCOMIL ABIGAIL SOLANGE"
+  },
+  {
+    "curso": "6° Básico",
+    "rut": "24809216-5",
+    "nombreCompleto": "LLANCANAO CARO JOSEFA ANTONELLA"
+  },
+  {
+    "curso": "6° Básico",
+    "rut": "24744531-5",
+    "nombreCompleto": "LLANQUIHUEN LINCONAO JOAQUÍN ALEXIS"
+  },
+  {
+    "curso": "6° Básico",
+    "rut": "24550245-1",
+    "nombreCompleto": "LLANQUILEO ALCAMÁN NAYARETH DANAE"
+  },
+  {
+    "curso": "6° Básico",
+    "rut": "24620329-6",
+    "nombreCompleto": "LLANQUITRÚ LINCOÑIR BENJAMÍN JOSUE"
+  },
+  {
+    "curso": "6° Básico",
+    "rut": "24607180-2",
+    "nombreCompleto": "LLANTÉN CANIUPÁN FRANCISCA SARAY"
+  },
+  {
+    "curso": "6° Básico",
+    "rut": "24690856-7",
+    "nombreCompleto": "LONCÓN COLICHEO CRISTOFER RUBÉN"
+  },
+  {
+    "curso": "6° Básico",
+    "rut": "24604413-9",
+    "nombreCompleto": "MOLINA MOLINA JULIA TERESA"
+  },
+  {
+    "curso": "6° Básico",
+    "rut": "24705354-9",
+    "nombreCompleto": "OLIVA SOTO RENATA IGNACIA"
+  },
+  {
+    "curso": "6° Básico",
+    "rut": "24841949-0",
+    "nombreCompleto": "PAILLACHEO ÑANCO JUAN DAVID"
+  },
+  {
+    "curso": "6° Básico",
+    "rut": "24610841-2",
+    "nombreCompleto": "PUNOÑANCO LLANQUÍN CONSTANZA MARGARITA"
+  },
+  {
+    "curso": "6° Básico",
+    "rut": "24771427-8",
+    "nombreCompleto": "QUILAMÁN CANIO MAIDA LISBETH"
+  },
+  {
+    "curso": "6° Básico",
+    "rut": "24883212-6",
+    "nombreCompleto": "QUIÑEHUAL HUECHE MARCELO ALFONSO"
+  },
+  {
+    "curso": "6° Básico",
+    "rut": "24795648-4",
+    "nombreCompleto": "RAIN JINEO JEREMÍAS IGNACIO"
+  },
+  {
+    "curso": "6° Básico",
+    "rut": "24908490-5",
+    "nombreCompleto": "SANDOVAL MANQUEO FRANCISCO EVER DAVID"
+  },
+  {
+    "curso": "6° Básico",
+    "rut": "24778446-2",
+    "nombreCompleto": "VALERO CERDA EMILIA ISIDORA"
+  },
+  {
+    "curso": "7° Básico",
+    "rut": "24374704-K",
+    "nombreCompleto": "ALFARO LLANCANAO MARÍA PAZ"
+  },
+  {
+    "curso": "7° Básico",
+    "rut": "24522031-6",
+    "nombreCompleto": "AQUEVEDO SALINAS JUAN MANUEL"
+  },
+  {
+    "curso": "7° Básico",
+    "rut": "24478761-4",
+    "nombreCompleto": "BLANCO CATRIN HANS DAVID"
+  },
+  {
+    "curso": "7° Básico",
+    "rut": "24495608-4",
+    "nombreCompleto": "CANIUPÁN HUENCHUNAO NICOLÁS AGUSTÍN"
+  },
+  {
+    "curso": "7° Básico",
+    "rut": "24303688-7",
+    "nombreCompleto": "CAYUMÁN HUEHUENTRO IGNACIO BENJAMÍN"
+  },
+  {
+    "curso": "7° Básico",
+    "rut": "24365221-9",
+    "nombreCompleto": "CUMILAF NÚÑEZ ANELEY MAGUN"
+  },
+  {
+    "curso": "7° Básico",
+    "rut": "24312475-1",
+    "nombreCompleto": "DURÁN NECULMÁN ESTEBAN IGNACIO"
+  },
+  {
+    "curso": "7° Básico",
+    "rut": "24476502-5",
+    "nombreCompleto": "ESCOBAR CANIUPÁN JHONATAN ROMÁN ISAII"
+  },
+  {
+    "curso": "7° Básico",
+    "rut": "24243346-7",
+    "nombreCompleto": "FELIPE CANIO DYLAN JESÚS"
+  },
+  {
+    "curso": "7° Básico",
+    "rut": "24316868-6",
+    "nombreCompleto": "FIGUEROA TORRES GUSTAVO ALONSO"
+  },
+  {
+    "curso": "7° Básico",
+    "rut": "24428083-8",
+    "nombreCompleto": "FILUMIL MELIVILU ELISA MARIA"
+  },
+  {
+    "curso": "7° Básico",
+    "rut": "24377054-8",
+    "nombreCompleto": "GUERRA SALINAS MARITZA LEONOR"
+  },
+  {
+    "curso": "7° Básico",
+    "rut": "24495389-1",
+    "nombreCompleto": "HUECHE HUENUPÁN GUILLERMO AGUSTÍN"
+  },
+  {
+    "curso": "7° Básico",
+    "rut": "24250195-0",
+    "nombreCompleto": "ÑANCUCHE MATAMALA STEFFANY ESTRELLA"
+  },
+  {
+    "curso": "7° Básico",
+    "rut": "24368619-9",
+    "nombreCompleto": "ÑEICULEO REUQUE FERNANDA ANDREA"
+  },
+  {
+    "curso": "7° Básico",
+    "rut": "24534479-1",
+    "nombreCompleto": "PALMA NECULMÁN GENESIS VALENTINA"
+  },
+  {
+    "curso": "7° Básico",
+    "rut": "24341616-7",
+    "nombreCompleto": "PEÑA ANCAMIL FERNANDA ARLETT"
+  },
+  {
+    "curso": "7° Básico",
+    "rut": "24205353-2",
+    "nombreCompleto": "QUIÑEHUAL MILLAQUEO NICOLÁS ALONSO"
+  },
+  {
+    "curso": "7° Básico",
+    "rut": "24355659-7",
+    "nombreCompleto": "QUIÑEHUAL TAPIA NICOLÁS ALONSO"
+  },
+  {
+    "curso": "7° Básico",
+    "rut": "24420274-8",
+    "nombreCompleto": "RÍOS GUTIÉRREZ LUIS EMANUEL"
+  },
+  {
+    "curso": "7° Básico",
+    "rut": "24494048-K",
+    "nombreCompleto": "SÁEZ HUENUPÁN AYELEN PASCALE ANTHONELLA"
+  },
+  {
+    "curso": "7° Básico",
+    "rut": "24433229-3",
+    "nombreCompleto": "SALAMANCA GAJARDO EMA ANTONELLA"
+  },
+  {
+    "curso": "7° Básico",
+    "rut": "24368819-1",
+    "nombreCompleto": "SALAMANCA JARAMILLO MISAEL BASTIÁN"
+  },
+  {
+    "curso": "7° Básico",
+    "rut": "24419733-7",
+    "nombreCompleto": "SALAMANCA ÑANCUCHE ROCÍO JAVIERA"
+  },
+  {
+    "curso": "8° Básico",
+    "rut": "23934941-2",
+    "nombreCompleto": "ALFARO LLANCANAO CRISTÓBAL ANTONIO"
+  },
+  {
+    "curso": "8° Básico",
+    "rut": "24029207-6",
+    "nombreCompleto": "ÁLVAREZ RIQUELME SARA ISABEL"
+  },
+  {
+    "curso": "8° Básico",
+    "rut": "24108637-2",
+    "nombreCompleto": "ANCAVIL ANINAO LETICIA ROCÍO"
+  },
+  {
+    "curso": "8° Básico",
+    "rut": "24133888-6",
+    "nombreCompleto": "BURGOS MELILLÁN MARCOS AGUSTÍN"
+  },
+  {
+    "curso": "8° Básico",
+    "rut": "23646166-1",
+    "nombreCompleto": "CANIO CERDA CARLO ALBERTO"
+  },
+  {
+    "curso": "8° Básico",
+    "rut": "24139637-1",
+    "nombreCompleto": "CANIUMIL DUMUNAO ANDRÉS JOSUE"
+  },
+  {
+    "curso": "8° Básico",
+    "rut": "24209859-5",
+    "nombreCompleto": "CAYUMÁN FELIPE JAVIERA BELÉN"
+  },
+  {
+    "curso": "8° Básico",
+    "rut": "24039653-K",
+    "nombreCompleto": "CHACANO DALIDEK POLETTE IGNACIA"
+  },
+  {
+    "curso": "8° Básico",
+    "rut": "24189624-2",
+    "nombreCompleto": "COLICHEO RAÑILEO RODRIGO ALEJANDRO"
+  },
+  {
+    "curso": "8° Básico",
+    "rut": "24287019-0",
+    "nombreCompleto": "COLLIN AGUILERA DANIA YASMIN"
+  },
+  {
+    "curso": "8° Básico",
+    "rut": "23999551-9",
+    "nombreCompleto": "CUEVAS QUIÑEHUAL KHIMBERLY MARISOL"
+  },
+  {
+    "curso": "8° Básico",
+    "rut": "24188892-4",
+    "nombreCompleto": "EPUL GUERRA CONSTANZA VALESKA"
+  },
+  {
+    "curso": "8° Básico",
+    "rut": "23980548-5",
+    "nombreCompleto": "FERRADA ÁLVAREZ NATANAEL ELIEZER"
+  },
+  {
+    "curso": "8° Básico",
+    "rut": "24141024-2",
+    "nombreCompleto": "FONSECA FRUGONE HEMILYE DANNAE"
+  },
+  {
+    "curso": "8° Básico",
+    "rut": "24099455-0",
+    "nombreCompleto": "HUILCÁN HUIRCÁN MATÍAS FELIPE"
+  },
+  {
+    "curso": "8° Básico",
+    "rut": "23960617-2",
+    "nombreCompleto": "JINEO HUIRIQUEO ANTONIA ESTER"
+  },
+  {
+    "curso": "8° Básico",
+    "rut": "24036016-0",
+    "nombreCompleto": "LINCOÑIR HUENTEMIL NICOLÁS SANTIAGO"
+  },
+  {
+    "curso": "8° Básico",
+    "rut": "24011031-8",
+    "nombreCompleto": "LLANQUITRÚ LINCOÑIR JOAQUÍN AURELIO"
+  },
+  {
+    "curso": "8° Básico",
+    "rut": "24227820-8",
+    "nombreCompleto": "MANQUILEF HUENTEMIL TRALKAN WENU"
+  },
+  {
+    "curso": "8° Básico",
+    "rut": "24024372-5",
+    "nombreCompleto": "MILLAR BAEZ PABLO ANDRÉS"
+  },
+  {
+    "curso": "8° Básico",
+    "rut": "24263185-4",
+    "nombreCompleto": "MIRANDA LONCÓN ANTONIA MILLARAY SAYEN"
+  },
+  {
+    "curso": "8° Básico",
+    "rut": "24143949-6",
+    "nombreCompleto": "MUÑOZ MOLINA SEBASTIÁN ANDRÉS"
+  },
+  {
+    "curso": "8° Básico",
+    "rut": "24277936-3",
+    "nombreCompleto": "NAHUELHUAL RAÑILEO JUAN FRANCISCO"
+  },
+  {
+    "curso": "8° Básico",
+    "rut": "24214804-5",
+    "nombreCompleto": "QUEUPUCURA LLANCANAO GENESIS FRANCISCA"
+  },
+  {
+    "curso": "8° Básico",
+    "rut": "24073755-8",
+    "nombreCompleto": "RAÑILEO CUEVAS ALONSO OMAR"
+  },
+  {
+    "curso": "8° Básico",
+    "rut": "24032097-5",
+    "nombreCompleto": "URRA CIFUENTES FRANCO ALFONSO"
+  }
+]

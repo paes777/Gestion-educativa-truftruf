@@ -1,0 +1,427 @@
+@import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap');
+
+:root {
+  /* Institutional Metrenco Palette (Blues & Gold) */
+  --primary: #1A237E; /* Institutional Blue */
+  --primary-hover: #121858;
+  --primary-light: #E8EAF6; /* Light Blue for active backgrounds */
+  
+  --secondary: #FBC02D; /* Institutional Gold/Yellow */
+  --secondary-hover: #F9A825;
+  
+  --danger: #37474F; /* Deep Slate (Replacing red for "danger/delete" actions) */
+  --danger-hover: #263238;
+  
+  --bg-color: #F0F7FF; /* Light Celestial Blue */
+  --surface-solid: #FFFFFF;
+  
+  --text-main: #111827; /* Near black for better contrast on light backgrounds */
+  --text-muted: #4B5563;
+  
+  --border: #CBD5E1;
+  --border-focus: #FBC02D; /* Golden focus border */
+  --table-head-bg: #D1E9FF; /* More defined celestial blue for headers */
+  
+  --failing-red: #D32F2F; /* Restored for insufficient grades */
+  
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+h1 { font-size: 1.5rem; }
+h2 { font-size: 1.25rem; }
+h3 { font-size: 1.125rem; }
+
+/* Forms */
+input, select, textarea {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--text-main);
+  background: white;
+  transition: all 0.2s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 1px var(--border-focus);
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 13px;
+  gap: 0.5rem;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+}
+
+.btn-secondary {
+  background-color: white;
+  color: var(--text-main);
+  border: 1px solid #ccc;
+}
+
+.btn-secondary:hover {
+  background-color: #f5f5f5;
+}
+
+.btn-danger {
+  background-color: var(--danger);
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: var(--danger-hover);
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* Glassmorphism Classes (Kept minimally for Auth mostly) */
+.glass-panel {
+  background: var(--surface-solid);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-md);
+  padding: 2rem;
+}
+
+/* Loading state */
+.loading-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: 1rem;
+  color: var(--text-muted);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Layout Utilities */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.flex {
+  display: flex;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.gap-4 { gap: 1rem; }
+.gap-6 { gap: 1.5rem; }
+
+/* Dashboard layout matching mockups */
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: 100vh;
+  background-color: var(--bg-color);
+}
+
+.sidebar {
+  background: var(--surface-solid);
+  border-right: 1px solid var(--border);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-logo {
+  text-align: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-logo img {
+  max-width: 120px;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding-top: 1rem;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.5rem;
+  color: var(--text-main);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.2s;
+  cursor: pointer;
+  border-left: 4px solid transparent;
+}
+
+.nav-item:hover {
+  background: var(--bg-color);
+}
+
+.nav-item.active {
+  background: var(--primary-light);
+  color: var(--primary);
+  border-left-color: var(--primary);
+  font-weight: 600;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* Top Nav Bar replacement for "header-top" */
+.top-navbar {
+  height: 60px;
+  background-color: #EBF5FF; /* Soft Celestial Blue */
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+}
+
+.top-navbar-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.top-navbar-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.content-scrollable {
+  padding: 1.5rem 2rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Filter Bar (Like the mockups) */
+.filter-bar {
+  background: var(--surface-solid);
+  padding: 1rem 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 1.5rem;
+  margin-bottom: -1px; /* overlap border */
+}
+
+/* Cards & Tables */
+.card {
+  background: var(--surface-solid);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.table-container {
+  overflow-x: auto;
+  background: var(--surface-solid);
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+}
+
+th, td {
+  padding: 8px 10px;
+  border: 1px solid var(--border); /* Full grid lines */
+}
+
+th {
+  background-color: var(--table-head-bg);
+  font-weight: 700;
+  color: var(--text-main);
+  text-align: center;
+}
+
+th.text-left {
+  text-align: left;
+}
+
+/* Keep rows white, no striping as requested */
+tr {
+  background-color: var(--surface-solid);
+}
+
+tr:hover td {
+  background-color: #F9F9F9;
+}
+
+/* Grades Matrix specific */
+.grade-input {
+  width: 45px;
+  padding: 0.25rem;
+  text-align: center;
+  font-weight: 600;
+  color: var(--text-main); /* Default black instead of gold */
+  border: 1px solid transparent; 
+}
+
+.grade-input:focus {
+  border-color: var(--border-focus);
+  box-shadow: var(--shadow-md);
+  background: white;
+}
+
+.grade-input.failing {
+  color: var(--failing-red);
+}
+
+.average-cell {
+  font-weight: 700;
+  background-color: #F8F9FA;
+  text-align: center;
+}
+
+/* Status Selectors */
+.status-select {
+  padding: 0.25rem;
+  font-size: 12px;
+  border-radius: 4px;
+}
+
+/* Authentication Layout specifically */
+.auth-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1rem;
+}
+
+.auth-box {
+  width: 100%;
+  max-width: 400px;
+}
+
+.brand-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.brand-header h1 {
+  font-size: 1.25rem;
+  color: var(--text-main);
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Toggle Tabs for Login */
+.auth-tabs {
+  display: flex;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.auth-tab {
+  flex: 1;
+  text-align: center;
+  padding: 0.75rem;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-muted);
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.auth-tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
