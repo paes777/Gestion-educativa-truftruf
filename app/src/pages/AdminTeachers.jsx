@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { db } from '../services/firebase';
-import { collection, addDoc, getDocs, doc, setDoc, updateDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, doc, setDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import studentSeed from '../services/students_seed.json';
 
 const COURSES = [
@@ -10,7 +10,7 @@ const COURSES = [
 
 const SUBJECTS = [
   "Lenguaje y Comunicación", "Matemática", "Historia, Geografía y Cs. Sociales",
-  "Ciencias Naturales", "Inglés", "Artes Visuales", "Música", "Educación Física y Salud", "Orientación", "Lengua Indígena"
+  "Ciencias Naturales", "Inglés", "Artes Visuales", "Música", "Educación Física y Salud", "Orientación", "Lengua Indígena", "Religión", "Tecnología"
 ];
 
 export default function AdminTeachers() {
@@ -22,8 +22,8 @@ export default function AdminTeachers() {
   const [seeding, setSeeding] = useState(false);
   
   const [editingId, setEditingId] = useState(null);
-  const [editCourses, setEditCourses] = useState([]); // array
-  const [editSubjects, setEditSubjects] = useState([]); // array
+  const [editAssignments, setEditAssignments] = useState([]); // Array of {curso, asignatura}
+  const [editJefatura, setEditJefatura] = useState('');
 
   useEffect(() => {
     loadTeachers();
@@ -45,7 +45,7 @@ export default function AdminTeachers() {
       const email = `${safeUser}@docente.metrenco.cl`;
       
       // REST API call to create user without signing out the current admin session
-      const res = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyBN17i1sN4hSOllyla4ASbzPWIgip552Jw`, {
+      const res = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyB2cdrnvX-VjbNV77kiZw5iNAFyw1I9vB8`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, returnSecureToken: true })
@@ -77,18 +77,34 @@ export default function AdminTeachers() {
   };
 
     const saveAssignment = async (id) => {
+      try {
+        await updateDoc(doc(db, 'docentes', id), {
+           asignaciones: editAssignments,
+           jefatura: editJefatura,
+           // Keep legacy fields empty to avoid confusion or just stop using them
+           cursosAsignados: [], 
+           asignaturasAsignadas: []
+        });
+        setEditingId(null);
+        loadTeachers();
+      } catch (err) {
+        console.error(err);
+        alert("Error al guardar la asignación.");
+      }
+   };
+
+   const handleDeleteTeacher = async (id, name) => {
+     if (!confirm(`¿Estás seguro de que deseas eliminar permanentemente al docente "${name}"? Esta acción no se puede deshacer.`)) return;
+     
      try {
-       await updateDoc(doc(db, 'docentes', id), {
-          cursosAsignados: editCourses,
-          asignaturasAsignadas: editSubjects
-       });
-       setEditingId(null);
+       await deleteDoc(doc(db, 'docentes', id));
+       alert('Docente eliminado exitosamente.');
        loadTeachers();
      } catch (err) {
        console.error(err);
-       alert("Error al guardar la asignación.");
+       alert('Error al eliminar docente: ' + err.message);
      }
-  };
+   };
 
   const handleSeedStudents = async () => {
     if (!confirm('¿Estás seguro de cargar los 177 estudiantes de los PDFs al sistema? Esto solo debe hacerse UNA vez.')) return;
@@ -168,41 +184,68 @@ export default function AdminTeachers() {
                     <td>
                        <strong>{t.nombre}</strong><br/>
                        <span style={{fontSize: '11px', color: 'var(--text-muted)'}}>{t.usuario}</span>
+                       {t.jefatura && (
+                         <div style={{fontSize: '11px', color: 'var(--primary)', marginTop: '4px', fontWeight: 'bold'}}>
+                           🏅 Prof. Jefe: {t.jefatura}
+                         </div>
+                       )}
                     </td>
                     {editingId === t.id ? (
                       <>
-                        <td style={{padding: '0.3rem'}}>
-                           <div style={{display:'flex', flexDirection:'column', gap:'4px', maxHeight:'150px', overflowY:'auto', border:'1px solid #ccc', padding:'5px', borderRadius:'4px', background:'#fff'}}>
-                             {COURSES.map(c => (
-                               <label key={c} style={{display:'flex', alignItems:'center', gap:'5px', fontSize:'11px', margin:0}}>
-                                 <input 
-                                   type="checkbox" 
-                                   checked={editCourses.includes(c)} 
-                                   onChange={(e) => {
-                                      if(e.target.checked) setEditCourses([...editCourses, c]);
-                                      else setEditCourses(editCourses.filter(course => course !== c));
-                                   }} 
-                                 />
-                                 {c}
-                               </label>
-                             ))}
+                        <td colSpan="2" style={{padding: '0.5rem'}}>
+                           <div style={{display:'flex', gap:'10px', alignItems:'center', marginBottom:'10px', paddingBottom: '10px', borderBottom: '1px solid #eee'}}>
+                              <label style={{fontSize: '11px', margin: 0, fontWeight: 'bold'}}>Jefatura:</label>
+                              <select 
+                                 value={editJefatura} 
+                                 onChange={(e) => setEditJefatura(e.target.value)}
+                                 style={{fontSize:'12px', padding:'4px', minWidth: '120px'}}
+                              >
+                                 <option value="">Ninguno</option>
+                                 {COURSES.map(c => <option key={c} value={c}>{c}</option>)}
+                              </select>
                            </div>
-                        </td>
-                        <td style={{padding: '0.3rem'}}>
-                           <div style={{display:'flex', flexDirection:'column', gap:'4px', maxHeight:'150px', overflowY:'auto', border:'1px solid #ccc', padding:'5px', borderRadius:'4px', background:'#fff'}}>
-                             {SUBJECTS.map(s => (
-                               <label key={s} style={{display:'flex', alignItems:'center', gap:'5px', fontSize:'11px', margin:0}}>
-                                 <input 
-                                   type="checkbox" 
-                                   checked={editSubjects.includes(s)} 
-                                   onChange={(e) => {
-                                      if(e.target.checked) setEditSubjects([...editSubjects, s]);
-                                      else setEditSubjects(editSubjects.filter(sub => sub !== s));
-                                   }} 
-                                 />
-                                 {s}
-                               </label>
-                             ))}
+                           <div style={{display:'flex', gap:'10px', alignItems:'center', marginBottom:'10px'}}>
+                              <select 
+                                id="new-assignment-course"
+                                style={{fontSize:'12px', padding:'4px'}}
+                              >
+                                {COURSES.map(c => <option key={c} value={c}>{c}</option>)}
+                              </select>
+                              <select 
+                                id="new-assignment-subject"
+                                style={{fontSize:'12px', padding:'4px'}}
+                              >
+                                {SUBJECTS.map(s => <option key={s} value={s}>{s}</option>)}
+                              </select>
+                              <button 
+                                type="button"
+                                className="btn btn-primary" 
+                                style={{padding:'2px 8px', fontSize:'11px'}}
+                                onClick={() => {
+                                  const c = document.getElementById('new-assignment-course').value;
+                                  const s = document.getElementById('new-assignment-subject').value;
+                                  if (!editAssignments.some(a => a.curso === c && a.asignatura === s)) {
+                                    setEditAssignments([...editAssignments, { curso: c, asignatura: s }]);
+                                  }
+                                }}
+                              >
+                                + Agregar
+                              </button>
+                           </div>
+                           <div style={{maxHeight:'100px', overflowY:'auto', background:'white', border:'1px solid #ddd', padding:'5px', borderRadius:'4px'}}>
+                              {editAssignments.length === 0 && <span className="text-muted" style={{fontSize:'11px'}}>Sin asignaciones</span>}
+                              {editAssignments.map((a, idx) => (
+                                <div key={idx} style={{display:'flex', justifyContent:'space-between', alignItems:'center', fontSize:'11px', padding:'2px 0'}}>
+                                  <span>{a.curso} - {a.asignatura}</span>
+                                  <button 
+                                    type="button"
+                                    onClick={() => setEditAssignments(editAssignments.filter((_, i) => i !== idx))}
+                                    style={{background:'none', border:'none', color:'red', cursor:'pointer', fontSize:'14px'}}
+                                  >
+                                    &times;
+                                  </button>
+                                </div>
+                              ))}
                            </div>
                         </td>
                         <td style={{textAlign: 'center'}}>
@@ -212,37 +255,50 @@ export default function AdminTeachers() {
                       </>
                     ) : (
                       <>
-                        <td>
-                          {t.cursosAsignados && t.cursosAsignados.length > 0 
-                             ? <div style={{fontSize:'12px'}}>{t.cursosAsignados.join(', ')}</div> 
-                             : (t.cursoAsignado ? t.cursoAsignado : <span className="text-muted">No Asignado</span>)}
-                        </td>
-                        <td>
-                          {t.asignaturasAsignadas && t.asignaturasAsignadas.length > 0 
-                             ? <div style={{fontSize:'12px'}}>{t.asignaturasAsignadas.join(', ')}</div> 
-                             : (t.asignaturaAsignada ? t.asignaturaAsignada : <span className="text-muted">No Asignado</span>)}
+                        <td colSpan="2">
+                          {t.asignaciones && t.asignaciones.length > 0 ? (
+                            <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'4px'}}>
+                              {t.asignaciones.map((a, idx) => (
+                                <div key={idx} style={{fontSize:'11px', padding:'2px 4px', background:'var(--primary-light)', borderRadius:'4px', color:'var(--primary)'}}>
+                                  <strong>{a.curso}</strong>: {a.asignatura}
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <span className="text-muted" style={{fontSize:'12px'}}>No Asignado</span>
+                          )}
                         </td>
                         <td style={{textAlign: 'center'}}>
-                          <button 
-                            className="btn btn-secondary" 
-                            style={{padding: '0.3rem 0.6rem', fontSize: '0.75rem'}}
-                            onClick={() => {
-                               // Fallback for legacy string format
-                               let initialCourses = [];
-                               if (t.cursosAsignados) initialCourses = t.cursosAsignados;
-                               else if (t.cursoAsignado) initialCourses = [t.cursoAsignado];
-                               
-                               let initialSubjects = [];
-                               if (t.asignaturasAsignadas) initialSubjects = t.asignaturasAsignadas;
-                               else if (t.asignaturaAsignada) initialSubjects = [t.asignaturaAsignada];
-
-                               setEditCourses(initialCourses);
-                               setEditSubjects(initialSubjects);
-                               setEditingId(t.id);
-                            }}
-                          >
-                            Editar Asignación
-                          </button>
+                          <div style={{display:'flex', gap:'8px', justifyContent:'center'}}>
+                            <button 
+                              className="btn btn-secondary" 
+                              style={{padding: '0.3rem 0.6rem', fontSize: '0.75rem'}}
+                              onClick={() => {
+                                 let initial = [];
+                                 if (t.asignaciones) {
+                                   initial = [...t.asignaciones];
+                                 } else if (t.cursosAsignados && t.asignaturasAsignadas) {
+                                    t.cursosAsignados.forEach(c => {
+                                      t.asignaturasAsignadas.forEach(s => {
+                                        initial.push({ curso: c, asignatura: s });
+                                      });
+                                    });
+                                 }
+                                 setEditAssignments(initial);
+                                 setEditJefatura(t.jefatura || '');
+                                 setEditingId(t.id);
+                              }}
+                            >
+                              Editar
+                            </button>
+                            <button 
+                              className="btn btn-danger" 
+                              style={{padding: '0.3rem 0.6rem', fontSize: '0.75rem', backgroundColor: '#dc3545', color: 'white'}}
+                              onClick={() => handleDeleteTeacher(t.id, t.nombre)}
+                            >
+                              Eliminar
+                            </button>
+                          </div>
                         </td>
                       </>
                     )}

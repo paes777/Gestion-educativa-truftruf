@@ -12,7 +12,7 @@ const COURSES = [
 
 const SUBJECTS = [
   "Lenguaje y Comunicación", "Matemática", "Historia, Geografía y Cs. Sociales",
-  "Ciencias Naturales", "Inglés", "Artes Visuales", "Música", "Educación Física y Salud", "Orientación", "Lengua Indígena"
+  "Ciencias Naturales", "Inglés", "Artes Visuales", "Música", "Educación Física y Salud", "Orientación", "Lengua Indígena", "Religión", "Tecnología"
 ];
 
 export default function AdminReports({ allowedCourses }) {
@@ -222,21 +222,43 @@ export default function AdminReports({ allowedCourses }) {
       const counts = { countS1: 0, countS2: 0, countFinal: 0 };
 
       Object.keys(subjectsMap).forEach(sub => {
-          let s1 = subjectsMap[sub].s1;
-          let s2 = subjectsMap[sub].s2;
+          let s1 = subjectsMap[sub].s1; // Ya viene con .toFixed(1) de Firestore o '-'
+          let s2 = subjectsMap[sub].s2; // Ya viene con .toFixed(1) de Firestore o '-'
           let final = '-';
           
-          if(s1 !== '-') { totals.totalS1 += Number(s1); counts.countS1++; }
-          if(s2 !== '-') { totals.totalS2 += Number(s2); counts.countS2++; }
-          
           if(s1 !== '-' && s2 !== '-') {
+              // Promedio de promedios redondeados, redondeado a 1 decimal
               final = ((Number(s1) + Number(s2)) / 2).toFixed(1);
-          } else if (s1 !== '-') final = s1;
-          else if (s2 !== '-') final = s2;
+          } else if (s1 !== '-') {
+              final = Number(s1).toFixed(1);
+          } else if (s2 !== '-') {
+              final = Number(s2).toFixed(1);
+          }
 
-          if (final !== '-') { totals.totalFinal += Number(final); counts.countFinal++; }
+          const isConcept = sub.includes('Religi') || sub.includes('Orientaci');
+          
+          if (!isConcept) {
+              if (final !== '-') { 
+                  totals.totalFinal += Number(final); 
+                  counts.countFinal++; 
+              }
+              // Semestral Totals for general averages
+              if(s1 !== '-') { totals.totalS1 += Number(s1); counts.countS1++; }
+              if(s2 !== '-') { totals.totalS2 += Number(s2); counts.countS2++; }
+          }
+          
           subjectsMap[sub].final = final;
       });
+
+      const toConcept = (val) => {
+          if (!val || val === '-') return val;
+          const n = Number(val);
+          if (isNaN(n)) return val;
+          if (n >= 6.0) return 'MB';
+          if (n >= 5.0) return 'B';
+          if (n >= 4.0) return 'S';
+          return 'I';
+      };
 
       const renderSemesterTable = (title, gradesKey, promKey, totalKey, countKey) => {
           const headParams = ["Asignatura"];
@@ -248,8 +270,11 @@ export default function AdminReports({ allowedCourses }) {
               let avg = subjectsMap[sub][promKey];
               let grades = subjectsMap[sub][gradesKey];
               let row = [sub];
-              grades.forEach(g => row.push(g || ''));
-              row.push(avg);
+              
+              const isConcept = sub.includes('Religi') || sub.includes('Orientaci');
+              
+              grades.forEach(g => row.push(isConcept ? toConcept(g) : (g || '')));
+              row.push(isConcept ? toConcept(avg) : avg);
               tableRows.push(row);
           });
 

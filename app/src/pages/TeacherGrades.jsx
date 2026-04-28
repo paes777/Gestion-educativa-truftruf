@@ -5,7 +5,7 @@ import { Save } from 'lucide-react';
 
 const SUBJECTS = [
   "Lenguaje y Comunicación", "Matemática", "Historia, Geografía y Cs. Sociales",
-  "Ciencias Naturales", "Inglés", "Artes Visuales", "Música", "Educación Física y Salud", "Orientación"
+  "Ciencias Naturales", "Inglés", "Artes Visuales", "Música", "Educación Física y Salud", "Orientación", "Lengua Indígena", "Religión", "Tecnología"
 ];
 
 const COURSES = [
@@ -13,20 +13,25 @@ const COURSES = [
   "5° Básico", "6° Básico", "7° Básico", "8° Básico"
 ];
 
-export default function TeacherGrades({ user, assignedCourses, isAdmin, assignedSubjects }) {
+export default function TeacherGrades({ user, assignedCourses, isAdmin, assignments, jefatura }) {
   const defaultCourse = (assignedCourses && assignedCourses.length > 0) ? assignedCourses[0] : COURSES[0];
   const [selectedCourseForAdmin, setSelectedCourseForAdmin] = useState(COURSES[0]);
   const [selectedCourseForTeacher, setSelectedCourseForTeacher] = useState(defaultCourse);
   const activeCourse = isAdmin ? selectedCourseForAdmin : selectedCourseForTeacher;
 
-  const defaultSubject = (assignedSubjects && assignedSubjects.length > 0) ? assignedSubjects[0] : SUBJECTS[0];
+  // Compute subjects for the selected course
+  const currentAvailableSubjects = (isAdmin || activeCourse === jefatura)
+    ? SUBJECTS 
+    : (assignments || []).filter(a => a.curso === activeCourse).map(a => a.asignatura);
+
+  const defaultSubject = (currentAvailableSubjects.length > 0) ? currentAvailableSubjects[0] : SUBJECTS[0];
   const [subject, setSubject] = useState(defaultSubject);
 
   useEffect(() => {
-     if (assignedSubjects && assignedSubjects.length > 0 && !assignedSubjects.includes(subject)) {
-        setSubject(assignedSubjects[0]);
+     if (!isAdmin && currentAvailableSubjects.length > 0 && !currentAvailableSubjects.includes(subject)) {
+        setSubject(currentAvailableSubjects[0]);
      }
-  }, [assignedSubjects]);
+  }, [currentAvailableSubjects, isAdmin, subject]);
 
   useEffect(() => {
     if (!isAdmin && assignedCourses && assignedCourses.length > 0) {
@@ -39,6 +44,7 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assigned
   const [semester, setSemester] = useState(1);
   const [students, setStudents] = useState([]);
   const [gradesData, setGradesData] = useState({}); // { stId: ['', '', ...] } (array of 10)
+  const [crossSemesterAverages, setCrossSemesterAverages] = useState({}); // { stId: { s1: '-', s2: '-' } }
   const [observations, setObservations] = useState({}); // { stId: { sem1: '', sem2: '' } }
   
   const [loading, setLoading] = useState(false);
@@ -62,32 +68,48 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assigned
       setStudents(list);
 
       // 2. Fetch Grades for this subject/semester
-      const gradesMap = {};
-      const obsMap = {};
+       const gradesMap = {};
+       const crossAvgMap = {};
+       const obsMap = {};
+ 
+       const currentPromises = list.map(st => getDoc(doc(db, 'notas', `${st.id}_${subject.replace(/\s+/g,'')}_s${semester}`)));
+       const s1Promises = list.map(st => getDoc(doc(db, 'notas', `${st.id}_${subject.replace(/\s+/g,'')}_s1`)));
+       const s2Promises = list.map(st => getDoc(doc(db, 'notas', `${st.id}_${subject.replace(/\s+/g,'')}_s2`)));
+       const obsPromises = list.map(st => getDoc(doc(db, 'observaciones', st.id)));
 
-      for (const st of list) {
-         // Grades doc ID: stId_subject_semester
-         const gRef = doc(db, 'notas', `${st.id}_${subject.replace(/\s+/g,'')}_s${semester}`);
-         const gSnap = await getDoc(gRef);
-         
-         if (gSnap.exists() && gSnap.data().grades) {
-             gradesMap[st.id] = gSnap.data().grades;
-         } else {
-             gradesMap[st.id] = Array(10).fill('');
-         }
+       const [currentSnaps, s1Snaps, s2Snaps, obsSnaps] = await Promise.all([
+           Promise.all(currentPromises),
+           Promise.all(s1Promises),
+           Promise.all(s2Promises),
+           Promise.all(obsPromises)
+       ]);
 
-         // Observations doc ID: stId
-         const oRef = doc(db, 'observaciones', st.id);
-         const oSnap = await getDoc(oRef);
-         if (oSnap.exists()) {
-             obsMap[st.id] = oSnap.data();
-         } else {
-             obsMap[st.id] = { sem1: '', sem2: '' };
-         }
-      }
+       list.forEach((st, idx) => {
+           const currentSnap = currentSnaps[idx];
+           if (currentSnap.exists() && currentSnap.data().grades) {
+               gradesMap[st.id] = currentSnap.data().grades;
+           } else {
+               gradesMap[st.id] = Array(10).fill('');
+           }
 
-      setGradesData(gradesMap);
-      setObservations(obsMap);
+           const s1Snap = s1Snaps[idx];
+           const s2Snap = s2Snaps[idx];
+           crossAvgMap[st.id] = {
+             s1: s1Snap.exists() ? s1Snap.data().average : '-',
+             s2: s2Snap.exists() ? s2Snap.data().average : '-'
+           };
+ 
+           const oSnap = obsSnaps[idx];
+           if (oSnap.exists()) {
+               obsMap[st.id] = oSnap.data();
+           } else {
+               obsMap[st.id] = { sem1: '', sem2: '' };
+           }
+       });
+ 
+       setGradesData(gradesMap);
+       setCrossSemesterAverages(crossAvgMap);
+       setObservations(obsMap);
     } catch(err) {
       console.error(err);
     }
@@ -199,15 +221,12 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assigned
            </div>
            
            <div className="flex gap-4">
-              <select value={subject} onChange={e => setSubject(e.target.value)}>
-                 {isAdmin 
-                   ? SUBJECTS.map(s => <option key={s} value={s}>{s}</option>)
-                   : (assignedSubjects && assignedSubjects.length > 0 
-                        ? assignedSubjects.map(s => <option key={s} value={s}>{s}</option>)
-                        : SUBJECTS.map(s => <option key={s} value={s}>{s}</option>) // fallback
-                     )
-                 }
-              </select>
+               <select value={subject} onChange={e => setSubject(e.target.value)}>
+                  {currentAvailableSubjects.length > 0 
+                    ? currentAvailableSubjects.map(s => <option key={s} value={s}>{s}</option>)
+                    : SUBJECTS.map(s => <option key={s} value={s}>{s}</option>) // fallback if nothing assigned
+                  }
+               </select>
 
               <select value={semester} onChange={e => setSemester(Number(e.target.value))}>
                  <option value={1}>Primer Semestre</option>
@@ -229,7 +248,9 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assigned
                   <tr>
                     <th className="text-left" style={{position: 'sticky', left: 0, backgroundColor: 'var(--surface-solid)', zIndex: 10, width: '250px'}}>Alumnos del Curso</th>
                     {[...Array(10)].map((_, i) => <th key={i} style={{textAlign:'center', width: '50px'}}>N{i+1}</th>)}
-                    <th style={{textAlign:'center', width: '70px', backgroundColor: 'var(--primary-light)'}}>Prom.</th>
+                    <th style={{textAlign:'center', width: '50px', backgroundColor: 'var(--primary-light)'}}>S1</th>
+                    <th style={{textAlign:'center', width: '50px', backgroundColor: 'var(--primary-light)'}}>S2</th>
+                    <th style={{textAlign:'center', width: '50px', backgroundColor: 'var(--primary)' , color: 'white'}}>Anual</th>
                     <th className="text-left" style={{width: '300px'}}>Observaciones (Semestre {semester})</th>
                   </tr>
                 </thead>
@@ -259,8 +280,21 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assigned
                               </td>
                            ))}
 
-                           <td className="average-cell" style={{textAlign: 'center', color: isDanger ? 'var(--failing-red)' : 'var(--text-main)'}}>
-                              {avg || '-'}
+                           <td style={{textAlign: 'center', fontSize: '12px', fontWeight: semester === 1 ? 'bold' : 'normal', backgroundColor: semester === 1 ? '#f0f4ff' : 'transparent'}}>
+                              {semester === 1 ? (avg || '-') : (crossSemesterAverages[st.id]?.s1 || '-')}
+                           </td>
+                           <td style={{textAlign: 'center', fontSize: '12px', fontWeight: semester === 2 ? 'bold' : 'normal', backgroundColor: semester === 2 ? '#f0f4ff' : 'transparent'}}>
+                              {semester === 2 ? (avg || '-') : (crossSemesterAverages[st.id]?.s2 || '-')}
+                           </td>
+                           <td style={{textAlign: 'center', fontSize: '12px', fontWeight: 'bold', backgroundColor: '#e8eaf6'}}>
+                              {(() => {
+                                 const s1 = semester === 1 ? (avg || '-') : (crossSemesterAverages[st.id]?.s1 || '-');
+                                 const s2 = semester === 2 ? (avg || '-') : (crossSemesterAverages[st.id]?.s2 || '-');
+                                 if (s1 !== '-' && s2 !== '-') {
+                                    return ((Number(s1) + Number(s2)) / 2).toFixed(1);
+                                 }
+                                 return '-';
+                              })()}
                            </td>
 
                            <td style={{padding: '4px'}}>

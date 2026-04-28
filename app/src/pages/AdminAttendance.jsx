@@ -47,10 +47,11 @@ export default function AdminAttendance() {
 
       // Load attendance records
       const updatedAtt = {};
-      for (const st of studentList) {
-         // Formato esperado de DB: asistencias / {studentId} -> { mar: {present, absent}, abr: ... }
-         const attRef = doc(db, 'asistencias', st.id);
-         const attSnap = await getDoc(attRef);
+      const attPromises = studentList.map(st => getDoc(doc(db, 'asistencias', st.id)));
+      const attSnaps = await Promise.all(attPromises);
+
+      attSnaps.forEach((attSnap, index) => {
+         const st = studentList[index];
          if (attSnap.exists()) {
              updatedAtt[st.id] = attSnap.data();
          } else {
@@ -61,7 +62,7 @@ export default function AdminAttendance() {
              });
              updatedAtt[st.id] = defaultObj;
          }
-      }
+      });
       setAttendanceData(updatedAtt);
     } catch(err) {
       console.error(err);

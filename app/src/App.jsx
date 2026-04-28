@@ -16,16 +16,22 @@ function App() {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
-        // Verificar si es admin por un claim custom o por un documento en users/admins
-        // Para simplificar, asumiremos que si existe un documento con su UID en 'docentes', es docente.
-        // Sino, es admin.
-        const docRef = doc(db, "docentes", currentUser.uid);
-        const docSnap = await getDoc(docRef);
-        
-        if (docSnap.exists()) {
-          setRole('docente');
-        } else {
+        // Explicitly check for admin email
+        if (currentUser.email === 'admin@metrenco.cl') {
           setRole('admin');
+        } else {
+          const docRef = doc(db, "docentes", currentUser.uid);
+          try {
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+              setRole('docente');
+            } else {
+              setRole('docente'); // Default for unrecognized auth users
+            }
+          } catch (err) {
+            console.error("Error fetching user role:", err);
+            setRole('docente');
+          }
         }
       } else {
         setUser(null);

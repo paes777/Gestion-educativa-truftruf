@@ -57,7 +57,7 @@ export default function Login() {
     <div className="auth-container">
       <div className="auth-box card">
         <div className="brand-header">
-          <img src="/logo.png" alt="Escuela Metrenco" style={{maxWidth: '120px', margin: '0 auto'}} />
+          <img src="/logo.png" alt="Escuela Metrenco" style={{maxWidth: '100px', margin: '0 auto'}} />
           <h1>Escuela Metrenco</h1>
           <p className="text-muted text-sm">Sistema de Administración Académica</p>
         </div>
@@ -130,11 +130,11 @@ export default function Login() {
 
         {tab === 'docente' && (
           <div style={{marginTop: '1.5rem', textAlign: 'center'}}>
-                <a href="#!" onClick={(e) => {e.preventDefault(); setIsRegistering(!isRegistering);}} style={{color: 'var(--primary)', textDecoration: 'none', fontSize: '0.9rem'}}>
-                  {isRegistering ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate'}
-                </a>
-             </div>
-          )}
+            <a href="#!" onClick={(e) => {e.preventDefault(); setIsRegistering(!isRegistering);}} style={{color: 'var(--primary)', textDecoration: 'none', fontSize: '0.9rem'}}>
+              {isRegistering ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate'}
+            </a>
+          </div>
+        )}
       </div>
     </div>
   );

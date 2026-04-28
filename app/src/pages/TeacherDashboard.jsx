@@ -9,26 +9,44 @@ import AdminReports from './AdminReports';
 export default function TeacherDashboard({ user }) {
   const [activeTab, setActiveTab] = useState('notas');
   const [courses, setCourses] = useState([]);
-  const [subjects, setSubjects] = useState([]);
+  const [assignments, setAssignments] = useState([]); // Array of {curso, asignatura}
+  const [jefatura, setJefatura] = useState('');
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+   useEffect(() => {
     const loadCourse = async () => {
       try {
         const snap = await getDoc(doc(db, 'docentes', user.uid));
         if (snap.exists()) {
           const data = snap.data();
-          if (data.cursosAsignados && data.cursosAsignados.length > 0) {
-             setCourses(data.cursosAsignados);
-          } else if (data.cursoAsignado) {
-             setCourses([data.cursoAsignado]);
-          }
+          
+          if (data.jefatura) setJefatura(data.jefatura);
 
-          if (data.asignaturasAsignadas && data.asignaturasAsignadas.length > 0) {
-             setSubjects(data.asignaturasAsignadas);
-          } else if (data.asignaturaAsignada) {
-             setSubjects([data.asignaturaAsignada]);
+          let loadedAssignments = [];
+          if (data.asignaciones && data.asignaciones.length > 0) {
+             loadedAssignments = data.asignaciones;
+          } else {
+             // Fallback for legacy data
+             let legacyCourses = [];
+             if (data.cursosAsignados && data.cursosAsignados.length > 0) legacyCourses = data.cursosAsignados;
+             else if (data.cursoAsignado) legacyCourses = [data.cursoAsignado];
+
+             let legacySubjects = [];
+             if (data.asignaturasAsignadas && data.asignaturasAsignadas.length > 0) legacySubjects = data.asignaturasAsignadas;
+             else if (data.asignaturaAsignada) legacySubjects = [data.asignaturaAsignada];
+             
+             // Convert legacy to tuple format for internal consistency
+             loadedAssignments = legacyCourses.flatMap(c => legacySubjects.map(s => ({ curso: c, asignatura: s })));
           }
+          
+          let uniqueCourses = [...new Set(loadedAssignments.map(a => a.curso))];
+          if (data.jefatura && !uniqueCourses.includes(data.jefatura)) {
+              uniqueCourses.push(data.jefatura);
+          }
+          uniqueCourses.sort(); // Sorting to keep them ordered
+          
+          setCourses(uniqueCourses);
+          setAssignments(loadedAssignments);
         }
       } catch (err) {
         console.error(err);
@@ -90,7 +108,7 @@ export default function TeacherDashboard({ user }) {
              </div>
         ) : (
              <>
-               {activeTab === 'notas' && <TeacherGrades user={user} assignedCourses={courses} assignedSubjects={subjects} />}
+               {activeTab === 'notas' && <TeacherGrades user={user} assignedCourses={courses} assignments={assignments} jefatura={jefatura} />}
                {activeTab === 'informes' && <AdminReports allowedCourses={courses} />}
              </>
         )}

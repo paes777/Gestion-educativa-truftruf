@@ -3,12 +3,12 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  projectId: "metrenco-reservas-app",
-  appId: "1:1080678458222:web:41c9785c702add6815577f",
-  storageBucket: "metrenco-reservas-app.firebasestorage.app",
-  apiKey: "AIzaSyBN17i1sN4hSOllyla4ASbzPWIgip552Jw",
-  authDomain: "metrenco-reservas-app.firebaseapp.com",
-  messagingSenderId: "1080678458222"
+  projectId: "gestion-educativa-metrenco",
+  appId: "1:547543511036:web:cdd3222f523f8558700c79",
+  storageBucket: "gestion-educativa-metrenco.firebasestorage.app",
+  apiKey: "AIzaSyB2cdrnvX-VjbNV77kiZw5iNAFyw1I9vB8",
+  authDomain: "gestion-educativa-metrenco.firebaseapp.com",
+  messagingSenderId: "547543511036"
 };
 
 const app = initializeApp(firebaseConfig);
