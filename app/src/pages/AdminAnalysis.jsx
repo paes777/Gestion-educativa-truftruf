@@ -120,9 +120,10 @@ export default function AdminAnalysis() {
     studentsInCourse.forEach(st => {
       const stGrades = courseGrades.filter(g => g.studentId === st.id);
       
-      // Calculate Semester Averages (simple avg for now, refined per iteration 22)
-      const s1Avgs = stGrades.filter(g => g.semester === 1).map(g => parseFloat(g.average)).filter(v => v > 0);
-      const s2Avgs = stGrades.filter(g => g.semester === 2).map(g => parseFloat(g.average)).filter(v => v > 0);
+      // Calculate Semester Averages (excluding concept subjects)
+      const validGrades = stGrades.filter(g => !g.subject.includes('Religi') && !g.subject.includes('Orientaci'));
+      const s1Avgs = validGrades.filter(g => g.semester === 1).map(g => parseFloat(g.average)).filter(v => v > 0);
+      const s2Avgs = validGrades.filter(g => g.semester === 2).map(g => parseFloat(g.average)).filter(v => v > 0);
 
       const avg1 = s1Avgs.length > 0 ? (s1Avgs.reduce((a,b) => a+b, 0) / s1Avgs.length).toFixed(1) : 0;
       const avg2 = s2Avgs.length > 0 ? (s2Avgs.reduce((a,b) => a+b, 0) / s2Avgs.length).toFixed(1) : 0;
