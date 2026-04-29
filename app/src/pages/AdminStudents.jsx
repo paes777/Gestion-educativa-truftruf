@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { db } from '../services/firebase';
-import { collection, query, orderBy, getDocs, doc, deleteDoc, updateDoc, addDoc } from 'firebase/firestore';
+import { collection, query, orderBy, getDocs, doc, deleteDoc, updateDoc, addDoc, writeBatch } from 'firebase/firestore';
 import { Search, Edit2, Trash2, Check, X, Plus, UserPlus } from 'lucide-react';
 
 const COURSES = [
@@ -22,6 +22,8 @@ export default function AdminStudents() {
     rut: '',
     curso: COURSES[0]
   });
+  const [listNumbers, setListNumbers] = useState({});
+  const [savingList, setSavingList] = useState(false);
 
   useEffect(() => {
     loadStudents();
@@ -33,17 +35,33 @@ export default function AdminStudents() {
       const snap = await getDocs(q);
       const data = [];
       snap.forEach(d => data.push({id: d.id, ...d.data()}));
-      // Sorting by course in memory to avoid needing composite indexes if not set up
-      data.sort((a, b) => (a.curso || "").localeCompare(b.curso || "") || a.nombreCompleto.localeCompare(b.nombreCompleto));
+      // Sorting by numeroLista then course then name
+      data.sort((a, b) => {
+        const numA = typeof a.numeroLista === 'number' ? a.numeroLista : 999;
+        const numB = typeof b.numeroLista === 'number' ? b.numeroLista : 999;
+        if (numA !== numB) return numA - numB;
+        return (a.curso || "").localeCompare(b.curso || "") || a.nombreCompleto.localeCompare(b.nombreCompleto);
+      });
       setStudents(data);
+      const nums = {};
+      data.forEach(s => nums[s.id] = s.numeroLista || '');
+      setListNumbers(nums);
     } catch (err) {
       console.error("Error loading students:", err);
       // Fallback: try without orderBy if it fails due to missing index
       const snap = await getDocs(collection(db, 'estudiantes'));
       const data = [];
       snap.forEach(d => data.push({id: d.id, ...d.data()}));
-      data.sort((a, b) => (a.curso || "").localeCompare(b.curso || "") || a.nombreCompleto.localeCompare(b.nombreCompleto));
+      data.sort((a, b) => {
+        const numA = typeof a.numeroLista === 'number' ? a.numeroLista : 999;
+        const numB = typeof b.numeroLista === 'number' ? b.numeroLista : 999;
+        if (numA !== numB) return numA - numB;
+        return (a.curso || "").localeCompare(b.curso || "") || a.nombreCompleto.localeCompare(b.nombreCompleto);
+      });
       setStudents(data);
+      const nums = {};
+      data.forEach(s => nums[s.id] = s.numeroLista || '');
+      setListNumbers(nums);
     }
   };
 
@@ -58,6 +76,26 @@ export default function AdminStudents() {
     
     return matchesSearch && matchesCourse;
   });
+
+  const handleUpdateListNumbers = async () => {
+    setSavingList(true);
+    try {
+      const batch = writeBatch(db);
+      filtered.forEach(s => {
+        const num = listNumbers[s.id];
+        const ref = doc(db, 'estudiantes', s.id);
+        const numeroLista = num === '' || num === null || isNaN(Number(num)) ? null : Number(num);
+        batch.update(ref, { numeroLista });
+      });
+      await batch.commit();
+      alert("Números de lista actualizados correctamente.");
+      loadStudents();
+    } catch(err) {
+      console.error(err);
+      alert("Error al actualizar la lista.");
+    }
+    setSavingList(false);
+  };
 
   const startEdit = (student) => {
     setEditingId(student.id);
@@ -159,6 +197,11 @@ export default function AdminStudents() {
             />
           </div>
 
+          <button onClick={handleUpdateListNumbers} disabled={savingList} className="btn btn-secondary flex items-center gap-2">
+            <Check size={18} />
+            {savingList ? 'Actualizando...' : 'Actualizar Lista'}
+          </button>
+
           <button onClick={() => setShowAddModal(true)} className="btn btn-primary flex items-center gap-2">
             <UserPlus size={18} />
             Agregar Estudiante
@@ -170,6 +213,7 @@ export default function AdminStudents() {
         <table>
           <thead>
             <tr>
+              <th style={{width: '60px'}}>N°</th>
               <th>RUT</th>
               <th>Nombre Completo</th>
               <th>Curso</th>
@@ -181,6 +225,7 @@ export default function AdminStudents() {
               <tr key={s.id}>
                 {editingId === s.id ? (
                   <>
+                    <td>{listNumbers[s.id] ?? '-'}</td>
                     <td><input type="text" value={editData.rut} onChange={e => setEditData({...editData, rut: e.target.value})} /></td>
                     <td><input type="text" value={editData.nombreCompleto} onChange={e => setEditData({...editData, nombreCompleto: e.target.value})} /></td>
                     <td>
@@ -195,6 +240,14 @@ export default function AdminStudents() {
                   </>
                 ) : (
                   <>
+                    <td>
+                      <input 
+                        type="number" 
+                        value={listNumbers[s.id] ?? ''} 
+                        onChange={e => setListNumbers({...listNumbers, [s.id]: e.target.value})}
+                        style={{width: '50px', padding: '0.2rem', textAlign: 'center', margin: 0}}
+                      />
+                    </td>
                     <td>{s.rut}</td>
                     <td>{s.nombreCompleto}</td>
                     <td>{s.curso}</td>
@@ -208,7 +261,7 @@ export default function AdminStudents() {
             ))}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan="4" style={{textAlign: 'center', padding: '2rem'}}>No se encontraron estudiantes para el curso o término de búsqueda seleccionado.</td>
+                <td colSpan="5" style={{textAlign: 'center', padding: '2rem'}}>No se encontraron estudiantes para el curso o término de búsqueda seleccionado.</td>
               </tr>
             )}
           </tbody>

@@ -64,7 +64,12 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
       const snapS = await getDocs(q);
       const list = [];
       snapS.forEach(d => list.push({id: d.id, ...d.data()}));
-      list.sort((a,b) => a.nombreCompleto.localeCompare(b.nombreCompleto));
+      list.sort((a, b) => {
+        const numA = typeof a.numeroLista === 'number' ? a.numeroLista : 999;
+        const numB = typeof b.numeroLista === 'number' ? b.numeroLista : 999;
+        if (numA !== numB) return numA - numB;
+        return a.nombreCompleto.localeCompare(b.nombreCompleto);
+      });
       setStudents(list);
 
       // 2. Fetch Grades for this subject/semester
@@ -263,6 +268,7 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
                       return (
                         <tr key={st.id}>
                            <td style={{position: 'sticky', left: 0, backgroundColor: 'var(--surface-solid)', zIndex: 10, fontWeight: 500, fontSize: '12px'}}>
+                             <span style={{display:'inline-block', width:'20px', color:'var(--text-muted)'}}>{st.numeroLista ?? '-'}</span>
                              {st.nombreCompleto}
                            </td>
                            

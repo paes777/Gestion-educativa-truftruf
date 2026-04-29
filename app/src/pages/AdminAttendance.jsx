@@ -42,7 +42,12 @@ export default function AdminAttendance() {
       const studentList = [];
       snap.forEach(d => studentList.push({ id: d.id, ...d.data() }));
       // Sort alphabetically
-      studentList.sort((a, b) => a.nombreCompleto.localeCompare(b.nombreCompleto));
+      studentList.sort((a, b) => {
+        const numA = typeof a.numeroLista === 'number' ? a.numeroLista : 999;
+        const numB = typeof b.numeroLista === 'number' ? b.numeroLista : 999;
+        if (numA !== numB) return numA - numB;
+        return a.nombreCompleto.localeCompare(b.nombreCompleto);
+      });
       setStudents(studentList);
 
       // Load attendance records
@@ -153,6 +158,7 @@ export default function AdminAttendance() {
                   return (
                     <tr key={st.id}>
                       <td style={{position: 'sticky', left: 0, backgroundColor: 'var(--surface-solid)', zIndex: 10, fontWeight: 500, fontSize: '0.9rem'}}>
+                        <span style={{display:'inline-block', width:'20px', color:'var(--text-muted)'}}>{st.numeroLista ?? '-'}</span>
                         {st.nombreCompleto}
                       </td>
                       {MONTHS.map(m => (

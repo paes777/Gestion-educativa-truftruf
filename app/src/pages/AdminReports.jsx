@@ -39,7 +39,12 @@ export default function AdminReports({ allowedCourses }) {
       const snap = await getDocs(q);
       const list = [];
       snap.forEach(d => list.push({id: d.id, ...d.data()}));
-      list.sort((a,b) => a.nombreCompleto.localeCompare(b.nombreCompleto));
+      list.sort((a, b) => {
+        const numA = typeof a.numeroLista === 'number' ? a.numeroLista : 999;
+        const numB = typeof b.numeroLista === 'number' ? b.numeroLista : 999;
+        if (numA !== numB) return numA - numB;
+        return a.nombreCompleto.localeCompare(b.nombreCompleto);
+      });
       setStudents(list);
       if(list.length > 0) setSelectedStudent(list[0].id);
       else setSelectedStudent('');
