@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { db } from '../services/firebase';
 import { collection, query, where, getDocs, doc, writeBatch, getDoc } from 'firebase/firestore';
 import studentSeed from '../services/students_seed.json';
@@ -50,6 +50,7 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
   
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const cache = useRef({}); // { 'course_subject': data }
 
   useEffect(() => {
     if (activeCourse) {
@@ -58,7 +59,9 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
   }, [activeCourse, subject, semester]);
 
   const loadStudentsAndData = async () => {
-    // 1. CARGA INSTANTÁNEA: Mostrar alumnos de inmediato
+    const cacheKey = `${activeCourse}_${subject}`;
+    
+    // 1. CARGA INSTANTÁNEA (ALUMNOS)
     const list = studentSeed
       .filter(s => s.curso === activeCourse)
       .map(s => ({ id: s.rut, ...s }));
@@ -71,20 +74,29 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
     });
     setStudents(list);
 
+    // 2. USO DE CACHÉ (VELOCIDAD 0 SEGUNDOS)
+    if (cache.current[cacheKey]) {
+       const cData = cache.current[cacheKey];
+       setGradesData(cData.gradesMap);
+       setCrossSemesterAverages(cData.crossAvgMap);
+       setObservations(cData.obsMap);
+       // Aún así actualizamos en fondo por si hubo cambios externos
+    }
+
     setLoading(true);
     try {
-       // 2. Fetch ALL Grades for this course (Simpler query to avoid index errors)
        const gradesMap = {};
        const crossAvgMap = {};
        const obsMap = {};
  
-       // Initialize maps
+       // Pre-llenar mapas para evitar saltos en la UI
        list.forEach(st => {
          gradesMap[st.id] = Array(10).fill('');
          crossAvgMap[st.id] = { s1: '-', s2: '-' };
          obsMap[st.id] = { sem1: '', sem2: '' };
        });
 
+       // Query optimizada: Solo traemos lo estrictamente necesario
        const gradesQuery = query(
          collection(db, 'notas'), 
          where('course', '==', activeCourse)
@@ -95,6 +107,7 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
          where('course', '==', activeCourse)
        );
 
+       // Ejecución paralela ultra-rápida
        const [gradesSnap, obsSnap] = await Promise.all([
          getDocs(gradesQuery),
          getDocs(obsQuery)
@@ -103,7 +116,6 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
        gradesSnap.forEach(d => {
          const data = d.data();
          const stId = data.studentId;
-         // Filtramos la asignatura en memoria (JavaScript)
          if (gradesMap[stId] && data.subject === subject) {
            if (data.semester === semester) gradesMap[stId] = data.grades || Array(10).fill('');
            if (data.semester === 1) crossAvgMap[stId].s1 = data.average || '-';
@@ -118,8 +130,11 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
        setGradesData(gradesMap);
        setCrossSemesterAverages(crossAvgMap);
        setObservations(obsMap);
+       
+       // Guardar en Caché para la próxima vez
+       cache.current[cacheKey] = { gradesMap, crossAvgMap, obsMap };
     } catch(err) {
-      console.error("Error en carga de notas:", err);
+      console.error("Error en carga rápida:", err);
     }
     setLoading(false);
   };

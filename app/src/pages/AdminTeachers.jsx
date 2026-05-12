@@ -18,9 +18,9 @@ export default function AdminTeachers() {
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-   const [seeding, setSeeding] = useState(false);
-  const [seedProgress, setSeedProgress] = useState(0);
+  const [creating, setCreating] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(false); // Para la carga inicial
   
   const [editingId, setEditingId] = useState(null);
   const [editAssignments, setEditAssignments] = useState([]); // Array of {curso, asignatura}
@@ -41,12 +41,11 @@ export default function AdminTeachers() {
   const handleCreateTeacher = async (e) => {
     e.preventDefault();
     if (!username || !password || !name) return;
-    setLoading(true);
+    setCreating(true);
     try {
       const safeUser = username.toLowerCase().replace(/[^a-z0-9]/g, '');
       const email = `${safeUser}@docente.truftruf.cl`;
       
-      // REST API call to create user without signing out the current admin session
       const res = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAbNSjso0uA7l37T9wNl6YOXUxCkN9ZcqY`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -54,50 +53,46 @@ export default function AdminTeachers() {
       });
       
       const data = await res.json();
-      if (data.error) {
-        throw new Error(data.error.message);
-      }
+      if (data.error) throw new Error(data.error.message);
       
       const uid = data.localId;
       await setDoc(doc(db, "docentes", uid), {
          nombre: name,
          usuario: email,
-         cursosAsignados: [], // Array to allow multiple
-         asignaturasAsignadas: [] // Array to allow multiple
+         asignaciones: [],
+         jefatura: ""
       });
       
       setName('');
       setUsername('');
       setPassword('');
-      alert('Cuenta Docente creada exitosamente.');
-      loadTeachers();
+      await loadTeachers();
     } catch(err) {
       console.error(err);
-      alert('Error al crear docente: ' + err.message);
+      alert('Error al crear: ' + err.message);
+    } finally {
+      setCreating(false);
     }
-    setLoading(false);
   };
 
    const [newAssignCourse, setNewAssignCourse] = useState(COURSES[0]);
    const [newAssignSubject, setNewAssignSubject] = useState(SUBJECTS[0]);
 
    const saveAssignment = async (id) => {
-      setLoading(true);
+      setSaving(true);
       try {
         await updateDoc(doc(db, 'docentes', id), {
            asignaciones: editAssignments,
-           jefatura: editJefatura,
-           cursosAsignados: [], 
-           asignaturasAsignadas: []
+           jefatura: editJefatura
         });
         setEditingId(null);
         await loadTeachers();
-        alert("Asignaciones guardadas con éxito.");
       } catch (err) {
         console.error(err);
-        alert("Error al guardar la asignación: " + err.message);
+        alert("Error al guardar: " + err.message);
+      } finally {
+        setSaving(false);
       }
-      setLoading(false);
    };
 
    const handleDeleteTeacher = async (id, name) => {
@@ -137,8 +132,8 @@ export default function AdminTeachers() {
               <label>Contraseña Corta</label>
               <input type="password" value={password} onChange={e => setPassword(e.target.value)} required placeholder="Mínimo 6 caracteres" minLength="6" />
             </div>
-            <button type="submit" disabled={loading} className="btn btn-primary" style={{marginTop: '0.5rem'}}>
-              {loading ? 'Creando...' : 'Crear Cuenta'}
+            <button type="submit" disabled={creating} className="btn btn-primary" style={{marginTop: '0.5rem'}}>
+              {creating ? 'Creando...' : 'Crear Cuenta'}
             </button>
           </form>
         </div>
@@ -228,8 +223,10 @@ export default function AdminTeachers() {
                            </div>
                         </td>
                         <td style={{textAlign: 'center'}}>
-                           <button onClick={() => saveAssignment(t.id)} className="btn btn-primary" style={{padding: '0.2rem 0.5rem', fontSize: '11px'}}>Guardar</button>
-                           <button onClick={() => setEditingId(null)} className="btn btn-secondary" style={{padding: '0.2rem 0.5rem', fontSize: '11px', marginLeft: '0.5rem'}}>X</button>
+                           <button onClick={() => saveAssignment(t.id)} disabled={saving} className="btn btn-primary" style={{padding: '0.2rem 0.5rem', fontSize: '11px'}}>
+                             {saving ? 'Guardando...' : 'Guardar'}
+                           </button>
+                           <button onClick={() => setEditingId(null)} disabled={saving} className="btn btn-secondary" style={{padding: '0.2rem 0.5rem', fontSize: '11px', marginLeft: '0.5rem'}}>X</button>
                         </td>
                       </>
                     ) : (
