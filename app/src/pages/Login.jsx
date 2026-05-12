@@ -60,7 +60,7 @@ export default function Login() {
           <img src="/logo.png" alt="Escuela Truf-Truf" style={{maxWidth: '100px', margin: '0 auto'}} />
           <h1>Escuela Truf-Truf</h1>
           <p className="text-muted text-sm">Sistema de Administración Académica</p>
-          <p style={{fontSize: '10px', color: '#ccc', marginTop: '5px'}}>ID: gestion-educativa-truf-truf</p>
+          <p style={{fontSize: '10px', color: '#ccc', marginTop: '5px'}}>ID: Truf-Truf 2.0 (administrador@truftruf.cl)</p>
         </div>
 
         <div className="auth-tabs">
@@ -106,7 +106,7 @@ export default function Login() {
               type={tab === 'docente' ? 'text' : 'email'} 
               value={email}
               onChange={e => setEmail(e.target.value)}
-              placeholder={tab === 'docente' ? 'Ej: jperez' : 'admin@truftruf.cl'} 
+              placeholder={tab === 'docente' ? 'Ej: jperez' : 'administrador@truftruf.cl'} 
               required
               autoComplete="username"
             />

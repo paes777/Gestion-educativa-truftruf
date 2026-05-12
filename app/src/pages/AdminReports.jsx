@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { db } from '../services/firebase';
 import { collection, getDocs, query, where, doc, getDoc } from 'firebase/firestore';
+import studentSeed from '../services/students_seed.json';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { FileDown, GraduationCap, FileLineChart } from 'lucide-react';
@@ -37,8 +38,17 @@ export default function AdminReports({ allowedCourses }) {
     try {
       const q = query(collection(db, 'estudiantes'), where('curso', '==', course));
       const snap = await getDocs(q);
-      const list = [];
+      let list = [];
       snap.forEach(d => list.push({id: d.id, ...d.data()}));
+      
+      // FALLBACK: Si no hay nada en la nube, usar los datos locales
+      if (list.length === 0) {
+        console.log("Usando datos de respaldo local para:", course);
+        list = studentSeed
+          .filter(s => s.curso === course)
+          .map((s, index) => ({ id: `local-${index}`, ...s }));
+      }
+
       list.sort((a, b) => {
         const numA = typeof a.numeroLista === 'number' ? a.numeroLista : 999;
         const numB = typeof b.numeroLista === 'number' ? b.numeroLista : 999;

@@ -121,34 +121,45 @@ export default function AdminTeachers() {
    };
 
    const handleSeedStudents = async () => {
-    if (!confirm(`¿Estás seguro de cargar los ${studentSeed.length} estudiantes de los PDFs al sistema? Esto borrará cualquier estudiante previo para evitar duplicados.`)) return;
+    if (!confirm(`¿Estás seguro de cargar los ${studentSeed.length} estudiantes al sistema? Se usará un proceso de carga rápida por lotes.`)) return;
     setSeeding(true);
-    setSeedProgress(0);
+    setSeedProgress(10);
     try {
-      const studentsRef = collection(db, 'estudiantes');
-      
-      // 1. Opcional: Limpiar estudiantes previos (para evitar duplicados en la carga masiva)
-      const currentSnap = await getDocs(studentsRef);
-      for (const d of currentSnap.docs) {
-        await deleteDoc(doc(db, 'estudiantes', d.id));
-      }
+      import('firebase/firestore').then(async ({ writeBatch, doc, collection, getDocs, deleteDoc }) => {
+        const batch = writeBatch(db);
+        const studentsRef = collection(db, 'estudiantes');
+        
+        // 1. Limpiar anteriores (opcional pero recomendado para orden)
+        const currentSnap = await getDocs(studentsRef);
+        for (const d of currentSnap.docs) {
+          batch.delete(doc(db, 'estudiantes', d.id));
+        }
+        
+        setSeedProgress(30);
 
-      let count = 0;
-      for (const student of studentSeed) {
-        await addDoc(studentsRef, {
-          ...student,
-          createdAt: new Date().toISOString()
+        // 2. Cargar nuevos en el batch
+        studentSeed.forEach((student) => {
+          const newDocRef = doc(collection(db, 'estudiantes'));
+          batch.set(newDocRef, {
+            ...student,
+            createdAt: new Date().toISOString()
+          });
         });
-        count++;
-        setSeedProgress(Math.round((count / studentSeed.length) * 100));
-      }
-      alert(`¡Éxito! Se han cargado ${count} estudiantes a la base de datos.`);
+
+        setSeedProgress(60);
+
+        // 3. Ejecutar todo el lote de una vez
+        await batch.commit();
+        
+        setSeedProgress(100);
+        alert(`¡Éxito total! Se han cargado los ${studentSeed.length} estudiantes correctamente.`);
+        setSeeding(false);
+      });
     } catch(err) {
       console.error(err);
-      alert('Error al poblar base de datos: ' + err.message);
+      alert('Error crítico en la carga: ' + err.message);
+      setSeeding(false);
     }
-    setSeeding(false);
-    setSeedProgress(0);
   };
 
   return (

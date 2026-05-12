@@ -18,8 +18,8 @@ function App() {
         setUser(currentUser);
         // Explicitly check for admin email
         console.log("Usuario detectado:", currentUser.email);
-        // Permite ambos correos para facilitar la transición
-        if (currentUser.email === 'admin@truftruf.cl' || currentUser.email === 'admin@metrenco.cl') {
+        // Permite los correos definidos como admin
+        if (currentUser.email === 'administrador@truftruf.cl' || currentUser.email === 'admin@truftruf.cl' || currentUser.email === 'admin@metrenco.cl') {
           setRole('admin');
         } else {
           const docRef = doc(db, "docentes", currentUser.uid);

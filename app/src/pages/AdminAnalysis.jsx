@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { db } from '../services/firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
+import studentSeed from '../services/students_seed.json';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -76,8 +77,15 @@ export default function AdminAnalysis() {
     try {
       const q = query(collection(db, 'estudiantes'), where('curso', '==', selectedCourse));
       const snap = await getDocs(q);
-      const list = [];
+      let list = [];
       snap.forEach(d => list.push({ id: d.id, ...d.data() }));
+
+      if (list.length === 0) {
+        list = studentSeed
+          .filter(s => s.curso === selectedCourse)
+          .map((s, index) => ({ id: `local-${index}`, ...s }));
+      }
+
       list.sort((a,b) => a.nombreCompleto.localeCompare(b.nombreCompleto));
       setStudentsInCourse(list);
       if (list.length > 0) setSelectedStudent(list[0].id);

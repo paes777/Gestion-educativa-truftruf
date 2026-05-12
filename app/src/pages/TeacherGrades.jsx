@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { db } from '../services/firebase';
-import { collection, query, where, getDocs, doc, writeBatch, getDoc, setDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, writeBatch, getDoc } from 'firebase/firestore';
+import studentSeed from '../services/students_seed.json';
 import { Save } from 'lucide-react';
 
 const SUBJECTS = [
@@ -62,8 +63,15 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
       // 1. Fetch Students
       const q = query(collection(db, 'estudiantes'), where('curso', '==', activeCourse));
       const snapS = await getDocs(q);
-      const list = [];
+      let list = [];
       snapS.forEach(d => list.push({id: d.id, ...d.data()}));
+      
+      if (list.length === 0) {
+        list = studentSeed
+          .filter(s => s.curso === activeCourse)
+          .map((s, index) => ({ id: `local-${index}`, ...s }));
+      }
+
       list.sort((a, b) => {
         const numA = typeof a.numeroLista === 'number' ? a.numeroLista : 999;
         const numB = typeof b.numeroLista === 'number' ? b.numeroLista : 999;
