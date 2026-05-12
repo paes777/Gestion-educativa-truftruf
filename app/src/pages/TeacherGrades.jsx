@@ -80,44 +80,46 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
       });
       setStudents(list);
 
-      // 2. Fetch Grades for this subject/semester
+      // 2. Fetch ALL Grades for this course and subject at once (Much faster!)
        const gradesMap = {};
        const crossAvgMap = {};
        const obsMap = {};
  
-       const currentPromises = list.map(st => getDoc(doc(db, 'notas', `${st.id}_${subject.replace(/\s+/g,'')}_s${semester}`)));
-       const s1Promises = list.map(st => getDoc(doc(db, 'notas', `${st.id}_${subject.replace(/\s+/g,'')}_s1`)));
-       const s2Promises = list.map(st => getDoc(doc(db, 'notas', `${st.id}_${subject.replace(/\s+/g,'')}_s2`)));
-       const obsPromises = list.map(st => getDoc(doc(db, 'observaciones', st.id)));
+       // Initialize maps
+       list.forEach(st => {
+         gradesMap[st.id] = Array(10).fill('');
+         crossAvgMap[st.id] = { s1: '-', s2: '-' };
+         obsMap[st.id] = { sem1: '', sem2: '' };
+       });
 
-       const [currentSnaps, s1Snaps, s2Snaps, obsSnaps] = await Promise.all([
-           Promise.all(currentPromises),
-           Promise.all(s1Promises),
-           Promise.all(s2Promises),
-           Promise.all(obsPromises)
+       const gradesQuery = query(
+         collection(db, 'notas'), 
+         where('course', '==', activeCourse),
+         where('subject', '==', subject)
+       );
+       
+       const obsQuery = query(
+         collection(db, 'observaciones'),
+         where('course', '==', activeCourse)
+       );
+
+       const [gradesSnap, obsSnap] = await Promise.all([
+         getDocs(gradesQuery),
+         getDocs(obsQuery)
        ]);
 
-       list.forEach((st, idx) => {
-           const currentSnap = currentSnaps[idx];
-           if (currentSnap.exists() && currentSnap.data().grades) {
-               gradesMap[st.id] = currentSnap.data().grades;
-           } else {
-               gradesMap[st.id] = Array(10).fill('');
-           }
+       gradesSnap.forEach(d => {
+         const data = d.data();
+         const stId = data.studentId;
+         if (gradesMap[stId]) {
+           if (data.semester === semester) gradesMap[stId] = data.grades || Array(10).fill('');
+           if (data.semester === 1) crossAvgMap[stId].s1 = data.average || '-';
+           if (data.semester === 2) crossAvgMap[stId].s2 = data.average || '-';
+         }
+       });
 
-           const s1Snap = s1Snaps[idx];
-           const s2Snap = s2Snaps[idx];
-           crossAvgMap[st.id] = {
-             s1: s1Snap.exists() ? s1Snap.data().average : '-',
-             s2: s2Snap.exists() ? s2Snap.data().average : '-'
-           };
- 
-           const oSnap = obsSnaps[idx];
-           if (oSnap.exists()) {
-               obsMap[st.id] = oSnap.data();
-           } else {
-               obsMap[st.id] = { sem1: '', sem2: '' };
-           }
+       obsSnap.forEach(d => {
+         if (obsMap[d.id]) obsMap[d.id] = d.data();
        });
  
        setGradesData(gradesMap);
