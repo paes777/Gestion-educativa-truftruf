@@ -186,9 +186,6 @@ export default function AdminTeachers() {
               <h3>Lista de Docentes y Asignaciones</h3>
               <p className="text-muted mt-2">Asigna el Curso y Asignatura principal a cada docente registrado.</p>
             </div>
-            <div className="flex items-center gap-2 text-sm text-green-600 bg-green-50 px-3 py-1 rounded-full border border-green-200">
-              <span className="animate-pulse">🟢</span> En Vivo
-            </div>
           </div>
           
           <div className="table-container">
