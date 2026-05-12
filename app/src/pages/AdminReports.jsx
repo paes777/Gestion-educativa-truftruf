@@ -161,9 +161,9 @@ export default function AdminReports({ allowedCourses }) {
      const date = new Date();
      const months = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
      
-     // Simulating the "Metrenco, _______________" filled with the actual date
+     // Simulating the "Padre las Casas, _______________" filled with the actual date
      const dateStr = `${date.getDate()} de ${months[date.getMonth()]} de ${date.getFullYear()}`;
-     doc.text(`Metrenco, ${dateStr}`, 190, 50, null, null, "right");
+     doc.text(`Padre las Casas, ${dateStr}`, 190, 50, null, null, "right");
      
      // 3. Title Center
      doc.setFontSize(16);
@@ -174,7 +174,7 @@ export default function AdminReports({ allowedCourses }) {
      doc.setFontSize(12);
      doc.setFont('helvetica', 'normal');
      
-     const text = `EUGENIO OMAR MANRIQUEZ NAVARRO, director de la Escuela Truf-Truf F - 485, certifica que ${st.nombreCompleto.toUpperCase()} RUT ${st.rut}, es alumno(a) regular de este establecimiento educacional y actualmente se encuentra matriculado para proceso lectivo del año ${date.getFullYear()} en ${st.curso}.`;
+     const text = `VIVIANA AILLAHUIL PAILLALEF, directora de la Escuela Truf-Truf F - 485, certifica que ${st.nombreCompleto.toUpperCase()} RUT ${st.rut}, es alumno(a) regular de este establecimiento educacional y actualmente se encuentra matriculado para proceso lectivo del año ${date.getFullYear()} en ${st.curso}.`;
      const footerText = `Se extiende el presente certificado para los fines que estime conveniente.`;
      
      // Justify the body text
@@ -184,8 +184,8 @@ export default function AdminReports({ allowedCourses }) {
      // 5. Bottom Signatures
      doc.setFontSize(12);
      doc.setFont('helvetica', 'bold');
-     doc.text("EUGENIO OMAR MANRIQUEZ NAVARRO", 105, 210, null, null, "center");
-     doc.text("DIRECTOR", 105, 216, null, null, "center");
+     doc.text("VIVIANA AILLAHUIL PAILLALEF", 105, 210, null, null, "center");
+     doc.text("DIRECTORA", 105, 216, null, null, "center");
      doc.text("ESCUELA TRUF-TRUF F - 485", 105, 222, null, null, "center");
 
      doc.save(`Certificado_Alumno_Regular_${st.rut}.pdf`);
