@@ -11,7 +11,7 @@ call npm run build
 
 echo.
 echo [2/3] Subiendo los cambios a Internet (Firebase)...
-call npx firebase deploy --only hosting
+call npx firebase deploy --only hosting,firestore:rules
 
 cd ..
 echo.

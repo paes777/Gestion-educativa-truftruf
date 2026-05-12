@@ -98,13 +98,21 @@ export default function AdminTeachers() {
            }
         } catch(recoverErr) {
            console.error("Error en recuperación:", recoverErr);
-           alert('Este docente ya estaba creado en seguridad, pero no se pudo vincular.');
+           alert('Este docente ya estaba creado en seguridad, pero no se pudo vincular. Error: ' + recoverErr.message);
         }
         setName('');
         setUsername('');
         setPassword('');
       } else {
-        alert('Error al crear: ' + err.message);
+         if (err.message.includes('Missing or insufficient permissions')) {
+            alert('Error de Permisos: Las reglas de seguridad de Firebase expiraron. El actualizador las reparará ahora.');
+         } else if (err.message === 'OPERATION_NOT_ALLOWED') {
+            alert('Error: El inicio de sesión por Correo/Contraseña está desactivado en tu proyecto de Firebase. Actívalo en la consola de Firebase > Authentication > Sign-in method.');
+         } else if (err.message === 'WEAK_PASSWORD') {
+            alert('Error: La contraseña es demasiado débil. Debe tener al menos 6 caracteres.');
+         } else {
+            alert('Error al crear: ' + err.message);
+         }
       }
     } finally {
       setCreating(false);
@@ -145,24 +153,6 @@ export default function AdminTeachers() {
 
 
 
-   const handleClearAll = async () => {
-     if (!confirm('¿Estás seguro de que deseas eliminar a TODOS los docentes del sistema? Esta acción no se puede deshacer.')) return;
-     setLoading(true);
-     try {
-       const snap = await getDocs(collection(db, 'docentes'));
-       const deletePromises = [];
-       snap.forEach(d => {
-         deletePromises.push(deleteDoc(doc(db, 'docentes', d.id)));
-       });
-       await Promise.all(deletePromises);
-       alert('Sistema de docentes limpiado exitosamente. Ahora puedes crearlos de nuevo.');
-     } catch (err) {
-       console.error(err);
-       alert('Error al limpiar el sistema: ' + err.message);
-     }
-     setLoading(false);
-   };
-
   return (
     <div>
 
@@ -196,15 +186,9 @@ export default function AdminTeachers() {
               <h3>Lista de Docentes y Asignaciones</h3>
               <p className="text-muted mt-2">Asigna el Curso y Asignatura principal a cada docente registrado.</p>
             </div>
-            <button 
-              onClick={handleClearAll} 
-              disabled={loading} 
-              className="btn btn-secondary flex items-center gap-2"
-              title="Eliminar todos los docentes"
-              style={{color: 'red', borderColor: 'red'}}
-            >
-              🗑️ Limpiar Todo
-            </button>
+            <div className="flex items-center gap-2 text-sm text-green-600 bg-green-50 px-3 py-1 rounded-full border border-green-200">
+              <span className="animate-pulse">🟢</span> En Vivo
+            </div>
           </div>
           
           <div className="table-container">
