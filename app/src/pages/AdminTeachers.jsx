@@ -145,6 +145,24 @@ export default function AdminTeachers() {
 
 
 
+   const handleClearAll = async () => {
+     if (!confirm('¿Estás seguro de que deseas eliminar a TODOS los docentes del sistema? Esta acción no se puede deshacer.')) return;
+     setLoading(true);
+     try {
+       const snap = await getDocs(collection(db, 'docentes'));
+       const deletePromises = [];
+       snap.forEach(d => {
+         deletePromises.push(deleteDoc(doc(db, 'docentes', d.id)));
+       });
+       await Promise.all(deletePromises);
+       alert('Sistema de docentes limpiado exitosamente. Ahora puedes crearlos de nuevo.');
+     } catch (err) {
+       console.error(err);
+       alert('Error al limpiar el sistema: ' + err.message);
+     }
+     setLoading(false);
+   };
+
   return (
     <div>
 
@@ -178,9 +196,15 @@ export default function AdminTeachers() {
               <h3>Lista de Docentes y Asignaciones</h3>
               <p className="text-muted mt-2">Asigna el Curso y Asignatura principal a cada docente registrado.</p>
             </div>
-            <div className="flex items-center gap-2 text-sm text-green-600 bg-green-50 px-3 py-1 rounded-full border border-green-200">
-              <span className="animate-pulse">🟢</span> En Vivo
-            </div>
+            <button 
+              onClick={handleClearAll} 
+              disabled={loading} 
+              className="btn btn-secondary flex items-center gap-2"
+              title="Eliminar todos los docentes"
+              style={{color: 'red', borderColor: 'red'}}
+            >
+              🗑️ Limpiar Todo
+            </button>
           </div>
           
           <div className="table-container">
