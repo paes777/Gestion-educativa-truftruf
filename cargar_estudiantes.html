@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cargador de Estudiantes - Truf-Truf</title>
+    <style>
+        body { font-family: sans-serif; padding: 40px; background: #f4f7f6; text-align: center; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); max-width: 500px; margin: 0 auto; }
+        h2 { color: #2E7D32; }
+        #progress-container { margin-top: 20px; display: none; }
+        #progress-bar { width: 100%; background: #eee; height: 20px; border-radius: 10px; overflow: hidden; }
+        #progress-fill { width: 0%; height: 100%; background: #2E7D32; transition: width 0.2s; }
+        button { background: #2E7D32; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        #status { margin-top: 15px; font-size: 14px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Cargador de Estudiantes 2026</h2>
+        <p>Este archivo subirá los 145 estudiantes directamente a tu nuevo proyecto de Firebase.</p>
+        <button id="btn-start">Comenzar Carga Masiva</button>
+
+        <div id="progress-container">
+            <div id="progress-bar"><div id="progress-fill"></div></div>
+            <p id="status">Preparando...</p>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.1.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAbNSjso0uA7l37T9wNl6YOXUxCkN9ZcqY",
+            authDomain: "gestion-educativa-truf-truf.firebaseapp.com",
+            projectId: "gestion-educativa-truf-truf",
+            storageBucket: "gestion-educativa-truf-truf.firebasestorage.app",
+            messagingSenderId: "1072537515072",
+            appId: "1:1072537515072:web:d86e9f5abc8eb1d1191ba5"
+        };
+
+        const students = [
+          { "curso": "1° Básico", "rut": "26.968.309-0", "nombreCompleto": "ANIAO TRIPAILAF EMILIA ALEN" },
+          { "curso": "1° Básico", "rut": "27.147.199-8", "nombreCompleto": "CANIO VEJAR JOAQUIN ALONSO" },
+          { "curso": "1° Básico", "rut": "27.121.946-6", "nombreCompleto": "CANIU SANDOVAL SEBASTIAN ALONSO" },
+          { "curso": "1° Básico", "rut": "26.871.959-8", "nombreCompleto": "ESPAÑA FIGUEROA ESMERALDA ABIGAIL" },
+          { "curso": "1° Básico", "rut": "26.882.895-8", "nombreCompleto": "HUIRCAN CARRILAF CRISTOBAL ANDRES" },
+          { "curso": "1° Básico", "rut": "27.138.448-3", "nombreCompleto": "LLANQUINAO CANIO YARELY ABIGAIL" },
+          { "curso": "1° Básico", "rut": "27.076.162-3", "nombreCompleto": "LLANQUINAO CAÑUNAO DIEGO BENJAMÍN" },
+          { "curso": "1° Básico", "rut": "27.017.929-0", "nombreCompleto": "LLEUFUL TRALCAL DANIELA INGRID" },
+          { "curso": "1° Básico", "rut": "26.797.798-4", "nombreCompleto": "MELINAO CANIO AYELEN FERNANDA" },
+          { "curso": "1° Básico", "rut": "26.968.361-9", "nombreCompleto": "PANGUINAO MANQUEL CRISTOBAL FRANCISCO" },
+          { "curso": "1° Básico", "rut": "26.826.565-1", "nombreCompleto": "PICHUMAN ROMERO TRINIDAD MONSERRAT" },
+          { "curso": "1° Básico", "rut": "26.925.360-6", "nombreCompleto": "QUIDEL COLER JUAN ALONSO" },
+          { "curso": "1° Básico", "rut": "27.061.506-6", "nombreCompleto": "QUIDEL SEPULVEDA RAYEN IGNACIA" },
+          { "curso": "1° Básico", "rut": "26.904.179-K", "nombreCompleto": "RIVERA SANDOVAL FRANCO AGUSTIN DAXON" },
+          { "curso": "1° Básico", "rut": "26.919.041-8", "nombreCompleto": "SANDOVAL LLANCAVIL JOEL FELIPE" },
+          { "curso": "1° Básico", "rut": "26.875.568-3", "nombreCompleto": "SANDOVAL QUIDEL MAXIMILIANO AGUSTIN" },
+          { "curso": "1° Básico", "rut": "27.161.564-7", "nombreCompleto": "ANTINAO LLANQUINAO CATALINA ANDREA" },
+          { "curso": "1° Básico", "rut": "27.099.547-0", "nombreCompleto": "QUIDEL ROJAS FERNANDA ANAHIS" },
+          { "curso": "2° Básico", "rut": "26.660.819-5", "nombreCompleto": "ANCALAF COLER SOFÍA FRANCISCA" },
+          { "curso": "2° Básico", "rut": "26.474.288-9", "nombreCompleto": "FUENTEALBA MORA CATALINA ANDREA" },
+          { "curso": "2° Básico", "rut": "26.316.545-4", "nombreCompleto": "HUIRCAL LLANQUÍN ANTONELLA" },
+          { "curso": "2° Básico", "rut": "26.663.607-5", "nombreCompleto": "LEVIO HUAIQUIÁN MAITE AYLIN" },
+          { "curso": "2° Básico", "rut": "26.663.326-2", "nombreCompleto": "MANQUEL COOPER TRINIDAD" },
+          { "curso": "2° Básico", "rut": "26.535.388-6", "nombreCompleto": "MARIMÁN SANDOVAL ALEXIS" },
+          { "curso": "2° Básico", "rut": "26.564.227-6", "nombreCompleto": "NEIRA HUEHUENTRO ANTONELLA" },
+          { "curso": "2° Básico", "rut": "26.349.900-K", "nombreCompleto": "PAINÉN PICHUMÁN JOSÉ FRAN" },
+          { "curso": "2° Básico", "rut": "26.757.243-7", "nombreCompleto": "QUIDEL ANCALAF FELIPE ISAAC" },
+          { "curso": "2° Básico", "rut": "26.394.886-6", "nombreCompleto": "QUIDEL CANIU AGUSTÍN ARIEL" },
+          { "curso": "2° Básico", "rut": "26.614.723-6", "nombreCompleto": "RAMIREZ ROMERO SARA ESTER" },
+          { "curso": "2° Básico", "rut": "26.491.507-4", "nombreCompleto": "ROMERO HUAIQUINAO MATÍAS" },
+          { "curso": "2° Básico", "rut": "26.591.282-6", "nombreCompleto": "RUMINOT QUIDEL MAYLEN" },
+          { "curso": "2° Básico", "rut": "26.491.192-3", "nombreCompleto": "SALAS CANIUPÁN AMALIA" },
+          { "curso": "2° Básico", "rut": "26.564.464-3", "nombreCompleto": "SANDOVAL CAYUNAO MATEO" },
+          { "curso": "2° Básico", "rut": "26.654.798-6", "nombreCompleto": "TRANGOL MANQUEL ROBERTO" },
+          { "curso": "2° Básico", "rut": "26.679.177-1", "nombreCompleto": "TRANGOL PEUCON DÁMARIS" },
+          { "curso": "3° Básico", "rut": "26.195.055-3", "nombreCompleto": "ANTINAO CURÍN MAITE ANTONELLA" },
+          { "curso": "3° Básico", "rut": "25.916.511-3", "nombreCompleto": "CALVULAF HUIRCAL ANAHÍ" },
+          { "curso": "3° Básico", "rut": "25.853.243-0", "nombreCompleto": "CONTRERAS RIFFO ISABELLA" },
+          { "curso": "3° Básico", "rut": "25.992.197-K", "nombreCompleto": "ESPAÑA MANQUEL CRISTOPHER JAVIER" },
+          { "curso": "3° Básico", "rut": "25.872.446-1", "nombreCompleto": "MALIQUEO SANDOVAL BARBARA" },
+          { "curso": "3° Básico", "rut": "25.732.671-3", "nombreCompleto": "MARIMÁN SANDOVAL AGUSTINA" },
+          { "curso": "3° Básico", "rut": "25.814.144-K", "nombreCompleto": "MILLACHE ANCALAF ERIC ISAÍAS" },
+          { "curso": "3° Básico", "rut": "25.861.360-0", "nombreCompleto": "MILLACHE PARRA BYRON CAMILO" },
+          { "curso": "3° Básico", "rut": "25.961.194-6", "nombreCompleto": "PANGUINAO HUANACO STEFANIE" },
+          { "curso": "3° Básico", "rut": "26.048.628-4", "nombreCompleto": "PICHUMÁN CUMILAF VALENTINA" },
+          { "curso": "3° Básico", "rut": "25.728.327-5", "nombreCompleto": "PICHÚN COLER MATÍAS JAVIER" },
+          { "curso": "3° Básico", "rut": "25.905.497-4", "nombreCompleto": "QUIDEL CHEUQUETA ANTONELLA" },
+          { "curso": "3° Básico", "rut": "25.871.356-7", "nombreCompleto": "QUIDEL MARTÍNEZ MONSERRAT" },
+          { "curso": "3° Básico", "rut": "25.762.127-8", "nombreCompleto": "SALINAS SANDOVAL MARTIN ALONSO" },
+          { "curso": "3° Básico", "rut": "26.089.962-7", "nombreCompleto": "SANDOVAL COTAR JAZMÍN" },
+          { "curso": "3° Básico", "rut": "25.964.647-2", "nombreCompleto": "SANDOVAL GALINDO AYLÉN" },
+          { "curso": "3° Básico", "rut": "25.838.150-5", "nombreCompleto": "SANDOVAL PANGUINAO GONZALO MATÍAS" },
+          { "curso": "3° Básico", "rut": "26.006.476-2", "nombreCompleto": "SANDOVAL ROMERO TOMÁS ALEJANDRO" },
+          { "curso": "4° Básico", "rut": "25.495.359-8", "nombreCompleto": "BUSTOS ROMERO MAILÉN GRACIELA" },
+          { "curso": "4° Básico", "rut": "25.654.720-1", "nombreCompleto": "CAYUNAO PAILLAMÁN DANILO HERNÁN" },
+          { "curso": "4° Básico", "rut": "25.652.492-9", "nombreCompleto": "CAYUÑIR MATUS ISABELLA ANTONIA" },
+          { "curso": "4° Básico", "rut": "25.695.890-2", "nombreCompleto": "CALVULAF ROMERO BASTIAN ALEJANDRO" },
+          { "curso": "4° Básico", "rut": "25.518.988-3", "nombreCompleto": "CURIQUEO PALACIOS MAYRA ARAZELY" },
+          { "curso": "4° Básico", "rut": "25.616.856-1", "nombreCompleto": "HÉRNANDEZ SANDOVAL NICOLÁS ALEJANDRO" },
+          { "curso": "4° Básico", "rut": "25.451.858-1", "nombreCompleto": "JELDRES CONTRERAS TRINIDAD ISABELLA" },
+          { "curso": "4° Básico", "rut": "25.371.614-2", "nombreCompleto": "LEVIO MORALES MATEO ALEXIS" },
+          { "curso": "4° Básico", "rut": "25.719.614-3", "nombreCompleto": "MARINAO ALFARO DYLAN AGUSTÍN" },
+          { "curso": "4° Básico", "rut": "25.481.098-3", "nombreCompleto": "MARTÍNEZ SANDOVAL CLAUDIO LIONEL" },
+          { "curso": "4° Básico", "rut": "25.565.124-2", "nombreCompleto": "MUÑOZ NORAMBUENA ÁNGELA PAZ" },
+          { "curso": "4° Básico", "rut": "25.344.369-3", "nombreCompleto": "PAINEN PICHUMÁN MARÍA JESÚS" },
+          { "curso": "4° Básico", "rut": "25.520.548-K", "nombreCompleto": "PICHUMAN HUENULAO FRANCO JOSÉ" },
+          { "curso": "4° Básico", "rut": "25.622.186-1", "nombreCompleto": "QUIDEL MALIQUEO FRANCO IGNACIO" },
+          { "curso": "4° Básico", "rut": "25.617.436-7", "nombreCompleto": "ROMERO TRANGOL CAROLINA TRINIDAD" },
+          { "curso": "4° Básico", "rut": "25.436.420-7", "nombreCompleto": "SANDOVAL SANDOVAL BENJAMÍN ALONSO" },
+          { "curso": "4° Básico", "rut": "25.374.081-7", "nombreCompleto": "TAPIA ROJAS SOFIA ANTONELLA" },
+          { "curso": "4° Básico", "rut": "25.479.326-4", "nombreCompleto": "TRANGOL MANQUEL MARTINA ANGÉLICA" },
+          { "curso": "5° Básico", "rut": "25.188.618-0", "nombreCompleto": "CAYUNAO HUIRCAL ALEXANDER NICOLAS" },
+          { "curso": "5° Básico", "rut": "25.038.496-3", "nombreCompleto": "CONTRERAS YÁÑEZ BENJAMÍN MAXIMILIANO" },
+          { "curso": "5° Básico", "rut": "25.067.112-1", "nombreCompleto": "CURRIHUINCA NAMUNCURA ROBERTO ELÍAS" },
+          { "curso": "5° Básico", "rut": "25.276.013-K", "nombreCompleto": "DUMULEF ARREDONDO CARLOS ALFONSO" },
+          { "curso": "5° Básico", "rut": "25.015.318-K", "nombreCompleto": "ESPAÑA CALFULAF DENISSE ANTONELLA" },
+          { "curso": "5° Básico", "rut": "25.331.847-3", "nombreCompleto": "FUENTEALBA MORA JAIRO ALEJANDRO" },
+          { "curso": "5° Básico", "rut": "24.993.533-6", "nombreCompleto": "HUAIQUILAF TRAVOL JOAQUÍN ALEJANDRO" },
+          { "curso": "5° Básico", "rut": "24.976.118-4", "nombreCompleto": "LIENCURA MILLACHE AYLÉN MILLARAY" },
+          { "curso": "5° Básico", "rut": "25.135.145-7", "nombreCompleto": "MALIQUEO SANDOVAL ANTONIA PASCALE" },
+          { "curso": "5° Básico", "rut": "25.080.355-9", "nombreCompleto": "MARILAF CATRILEO NICOLÁS CRISTÓBAL" },
+          { "curso": "5° Básico", "rut": "25.088.206-8", "nombreCompleto": "MELLADO RICO VICENTE AURELIO" },
+          { "curso": "5° Básico", "rut": "25.076.226-7", "nombreCompleto": "QUIDEL COLER ANGELA BELÉN" },
+          { "curso": "5° Básico", "rut": "25.171.552-1", "nombreCompleto": "RUMINOT QUIDEL ISABELLA AGUSTINA" },
+          { "curso": "5° Básico", "rut": "25.013.524-6", "nombreCompleto": "SANDOVAL CURIQUEO JUAN ESTEBAN" },
+          { "curso": "5° Básico", "rut": "25.015.101-2", "nombreCompleto": "SANDOVAL VERGARA MARTIN IGNACIO" },
+          { "curso": "5° Básico", "rut": "25.200.045-3", "nombreCompleto": "VERA PICHIÑAN ELIÁN ALEXANDER" },
+          { "curso": "6° Básico", "rut": "24.784.067-2", "nombreCompleto": "CAYUPAN PICHUMAN BENJAMÍN EDUARDO" },
+          { "curso": "6° Básico", "rut": "24.706.271-8", "nombreCompleto": "CIFUENTES PRIETO HEBOLETT HARLETT" },
+          { "curso": "6° Básico", "rut": "24.631.725-9", "nombreCompleto": "DUMULEF ARREDONDO RAYEN AILYN" },
+          { "curso": "6° Básico", "rut": "24.675.130-7", "nombreCompleto": "ESPAÑA SANDOVAL DAMIÁN ANTONIO" },
+          { "curso": "6° Básico", "rut": "24.727.406-5", "nombreCompleto": "GONZÁLEZ BURGOS EMILIA ISIDORA" },
+          { "curso": "6° Básico", "rut": "24.943.215-6", "nombreCompleto": "LLANQUINAO CANIO NEHEMIAS DAVÍD" },
+          { "curso": "6° Básico", "rut": "24.897.476-1", "nombreCompleto": "LLANQUINAO MELILLÁN MARCO ESTEBAN" },
+          { "curso": "6° Básico", "rut": "24.894.453-6", "nombreCompleto": "MELIQUEO QUIDEL AYLIN IGNACIA" },
+          { "curso": "6° Básico", "rut": "24.779.216-3", "nombreCompleto": "MILLACHE LLANQUINAO DANNAEE" },
+          { "curso": "6° Básico", "rut": "24.727.436-7", "nombreCompleto": "PICHIÑAN QUIDEL EMILY AILYN" },
+          { "curso": "6° Básico", "rut": "24.602.980-6", "nombreCompleto": "QUIDEL CANIU JUAN DAVID" },
+          { "curso": "6° Básico", "rut": "24.609.299-0", "nombreCompleto": "SANDOVAL LLANCAVIL VALENTINA ESTEFANÍA" },
+          { "curso": "6° Básico", "rut": "24.591.976-K", "nombreCompleto": "SANDOVAL POBLETE ROCÍO ELIZABETH" },
+          { "curso": "6° Básico", "rut": "24.734.845-K", "nombreCompleto": "SANDOVAL SANDOVAL CAROLINA ALEJANDRA" },
+          { "curso": "6° Básico", "rut": "24.840.108-7", "nombreCompleto": "TRANGOL PEUCON DORIAN DANILO" },
+          { "curso": "6° Básico", "rut": "24.837.148-K", "nombreCompleto": "ROMERO HUENULAF SERGIO" },
+          { "curso": "6° Básico", "rut": "24.760.660-2", "nombreCompleto": "SANDOVAL ROMERO SEBASTIAN ISMAEL" },
+          { "curso": "6° Básico", "rut": "24.779.216-3", "nombreCompleto": "MILLACHE PAILLAMAN YARELI ASHLEY" },
+          { "curso": "7° Básico", "rut": "24.279.576-8", "nombreCompleto": "ANIAO MARÍN MATÍAS AGUSTÍN" },
+          { "curso": "7° Básico", "rut": "24.397.083-0", "nombreCompleto": "ANTINAO LLANQUINAO BRIAN ALEXANDER" },
+          { "curso": "7° Básico", "rut": "24.343.700-8", "nombreCompleto": "CAYUQUEO CHEUQUETA FRANCISCA ANAIS" },
+          { "curso": "7° Básico", "rut": "24.555.269-6", "nombreCompleto": "CAYUNAO PARRA LISET MARÍA" },
+          { "curso": "7° Básico", "rut": "24.333.769-0", "nombreCompleto": "DUMULEF LLAUPI LEÓN ANDRÉS" },
+          { "curso": "7° Básico", "rut": "24.309.028-8", "nombreCompleto": "ESPAÑA MANQUEL KEVIN ALEXANDER" },
+          { "curso": "7° Básico", "rut": "24.527.062-3", "nombreCompleto": "GALINDO CHEUQUETA EMILIO GIOVANNY" },
+          { "curso": "7° Básico", "rut": "24.418.009-4", "nombreCompleto": "LICANQUEO LLAUPE JORGE FRANCISCO" },
+          { "curso": "7° Básico", "rut": "24.417.976-2", "nombreCompleto": "LICANQUEO LLAUPE JUAN PEDRO" },
+          { "curso": "7° Básico", "rut": "24.465.651-K", "nombreCompleto": "LLANQUINAO BURGOS PATRICIO ALONSO" },
+          { "curso": "7° Básico", "rut": "24.384.148-8", "nombreCompleto": "MARINAO ALFARO FRANCO BASTIÁN" },
+          { "curso": "7° Básico", "rut": "24.307.034-1", "nombreCompleto": "PAINEMILLA SANDOVAL AGUSTÍN OMAR" },
+          { "curso": "7° Básico", "rut": "24.371.108-8", "nombreCompleto": "PICHIÑAN QUIDEL ESTEBAN ANTONIO" },
+          { "curso": "7° Básico", "rut": "24.420.927-0", "nombreCompleto": "QUIDEL MALIQUEO TOMÁS CRISTÓBAL" },
+          { "curso": "7° Básico", "rut": "24.297.375-5", "nombreCompleto": "QUIDEL PAILLACOI BRYAN NICOLÁS" },
+          { "curso": "7° Básico", "rut": "24.567.894-0", "nombreCompleto": "HUENULEF ROA KEILA ISABEL" },
+          { "curso": "7° Básico", "rut": "24.508.914-7", "nombreCompleto": "ROMERO NAHUELÑIR CHRISTOPHER DAMIAN" },
+          { "curso": "8° Básico", "rut": "24.225.386-8", "nombreCompleto": "ANIAO TRIPAILAF MIJAEL LIKAN" },
+          { "curso": "8° Básico", "rut": "24.155.188-1", "nombreCompleto": "ANTINAO NAMUNCURA ARTURO JUAN" },
+          { "curso": "8° Básico", "rut": "24.240.070-4", "nombreCompleto": "CANIO GARCÍA AYLIN FRANCISCA" },
+          { "curso": "8° Básico", "rut": "24.082.287-3", "nombreCompleto": "CAYUPÁN CANIU DIEGO ALONSO" },
+          { "curso": "8° Básico", "rut": "24.251.894-2", "nombreCompleto": "LLANQUINAO CANIO CAROLINA BELÉN" },
+          { "curso": "8° Básico", "rut": "24.206.352-K", "nombreCompleto": "LLANQUINAO SANDOVAL ANGEL GABRIEL" },
+          { "curso": "8° Básico", "rut": "24.094.236-4", "nombreCompleto": "MANQUEL FERNANDOIS SEBASTIÁN CARLOS" },
+          { "curso": "8° Básico", "rut": "24.171.118-8", "nombreCompleto": "MARTÍNEZ MORENO FRANCISCA ALICIA" },
+          { "curso": "8° Básico", "rut": "24.126.593-5", "nombreCompleto": "MELLADO RICO JAVIERA ANTONIA" },
+          { "curso": "8° Básico", "rut": "24.228.568-9", "nombreCompleto": "PARRA CORREA ALLISON DENISSE" },
+          { "curso": "8° Básico", "rut": "24.091.225-2", "nombreCompleto": "PICHIÑAN ARIAS BÁRBARA NICOL" },
+          { "curso": "8° Básico", "rut": "24.291.452-K", "nombreCompleto": "QUIDEL SANDOVAL JOEL NATANAEL" },
+          { "curso": "8° Básico", "rut": "23.974.520-2", "nombreCompleto": "ROMERO HUENULAF CÉSAR ANTONIO" },
+          { "curso": "8° Básico", "rut": "24.111.997-1", "nombreCompleto": "SANDOVAL CALFULAF FELIPE MATÍAS" },
+          { "curso": "8° Básico", "rut": "24.168.674-4", "nombreCompleto": "SANDOVAL CAYUNAO AGUSTINA AMANDA" },
+          { "curso": "8° Básico", "rut": "24.133.002-8", "nombreCompleto": "SANDOVAL MANQUEL CAMILA FERNANDA" },
+          { "curso": "8° Básico", "rut": "24.047.512-K", "nombreCompleto": "SANDOVAL SANDOVAL PEDRO JAVIER" },
+          { "curso": "8° Básico", "rut": "24.080.689-4", "nombreCompleto": "SANDOVAL TRAMOLAO VICENTE TOMÁS" }
+        ];
+
+        document.getElementById('btn-start').addEventListener('click', async () => {
+            document.getElementById('btn-start').disabled = true;
+            document.getElementById('progress-container').style.display = 'block';
+            
+            try {
+                firebase.initializeApp(firebaseConfig);
+                const db = firebase.firestore();
+                
+                const status = document.getElementById('status');
+                const fill = document.getElementById('progress-fill');
+
+                for (let i = 0; i < students.length; i++) {
+                    const s = students[i];
+                    status.innerText = `Subiendo: ${s.nombreCompleto} (${i + 1}/${students.length})`;
+                    
+                    await db.collection('estudiantes').add({
+                        ...s,
+                        createdAt: new Date().toISOString()
+                    });
+                    
+                    const p = ((i + 1) / students.length) * 100;
+                    fill.style.width = p + '%';
+                }
+                
+                status.innerText = "¡Carga completada con éxito!";
+                alert("Se han subido los 145 estudiantes correctamente.");
+            } catch (err) {
+                console.error(err);
+                alert("Error durante la carga: " + err.message);
+                document.getElementById('btn-start').disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

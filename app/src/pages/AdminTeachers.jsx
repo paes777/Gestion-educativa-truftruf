@@ -19,7 +19,8 @@ export default function AdminTeachers() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [seeding, setSeeding] = useState(false);
+   const [seeding, setSeeding] = useState(false);
+  const [seedProgress, setSeedProgress] = useState(0);
   
   const [editingId, setEditingId] = useState(null);
   const [editAssignments, setEditAssignments] = useState([]); // Array of {curso, asignatura}
@@ -27,7 +28,20 @@ export default function AdminTeachers() {
 
   useEffect(() => {
     loadTeachers();
+    checkAndAutoSeed();
   }, []);
+
+  const checkAndAutoSeed = async () => {
+    try {
+      const snap = await getDocs(collection(db, 'estudiantes'));
+      if (snap.empty && studentSeed.length > 0) {
+        console.log("Auto-seeding students...");
+        handleSeedStudents();
+      }
+    } catch (err) {
+      console.error("Auto-seed check failed:", err);
+    }
+  };
 
   const loadTeachers = async () => {
     const snap = await getDocs(collection(db, 'docentes'));
@@ -106,11 +120,19 @@ export default function AdminTeachers() {
      }
    };
 
-  const handleSeedStudents = async () => {
-    if (!confirm('¿Estás seguro de cargar los 177 estudiantes de los PDFs al sistema? Esto solo debe hacerse UNA vez.')) return;
+   const handleSeedStudents = async () => {
+    if (!confirm(`¿Estás seguro de cargar los ${studentSeed.length} estudiantes de los PDFs al sistema? Esto borrará cualquier estudiante previo para evitar duplicados.`)) return;
     setSeeding(true);
+    setSeedProgress(0);
     try {
       const studentsRef = collection(db, 'estudiantes');
+      
+      // 1. Opcional: Limpiar estudiantes previos (para evitar duplicados en la carga masiva)
+      const currentSnap = await getDocs(studentsRef);
+      for (const d of currentSnap.docs) {
+        await deleteDoc(doc(db, 'estudiantes', d.id));
+      }
+
       let count = 0;
       for (const student of studentSeed) {
         await addDoc(studentsRef, {
@@ -118,13 +140,15 @@ export default function AdminTeachers() {
           createdAt: new Date().toISOString()
         });
         count++;
+        setSeedProgress(Math.round((count / studentSeed.length) * 100));
       }
       alert(`¡Éxito! Se han cargado ${count} estudiantes a la base de datos.`);
     } catch(err) {
       console.error(err);
-      alert('Error al poblar base de datos');
+      alert('Error al poblar base de datos: ' + err.message);
     }
     setSeeding(false);
+    setSeedProgress(0);
   };
 
   return (
@@ -135,8 +159,8 @@ export default function AdminTeachers() {
             <h3 style={{color: 'var(--primary)'}}>Poblar Base de Datos (Inicialización)</h3>
             <p className="text-muted mt-2">Sube los {studentSeed.length} estudiantes extraídos desde los archivos PDF a Firestore.</p>
           </div>
-          <button onClick={handleSeedStudents} disabled={seeding} className="btn btn-primary" style={{whiteSpace: 'nowrap'}}>
-            {seeding ? 'Cargando...' : 'Cargar Estudiantes a BD'}
+           <button onClick={handleSeedStudents} disabled={seeding} className="btn btn-primary" style={{whiteSpace: 'nowrap'}}>
+            {seeding ? `Cargando (${seedProgress}%)...` : 'Cargar Estudiantes a BD'}
           </button>
         </div>
       </div>
