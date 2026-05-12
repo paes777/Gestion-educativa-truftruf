@@ -28,6 +28,29 @@ export default function AdminStudents() {
 
   useEffect(() => {
     loadStudents();
+    
+    // Auto-cleanup for duplicate RUT 24.779.216-3
+    const cleanDuplicates = async () => {
+      try {
+        const q = query(collection(db, 'estudiantes'), where('rut', '==', '24.779.216-3'));
+        const snap = await getDocs(q);
+        const docs = [];
+        snap.forEach(d => docs.push(d));
+        if (docs.length > 1) {
+          const batch = writeBatch(db);
+          // Keep the first one, delete all others
+          for (let i = 1; i < docs.length; i++) {
+            batch.delete(doc(db, 'estudiantes', docs[i].id));
+          }
+          await batch.commit();
+          console.log(`Deleted ${docs.length - 1} duplicates of Dannaee.`);
+          loadStudents(); // reload after cleaning
+        }
+      } catch (err) {
+        console.error("Cleanup error:", err);
+      }
+    };
+    cleanDuplicates();
   }, []);
 
   const loadStudents = async () => {
