@@ -1,10 +1,11 @@
 @echo off
 echo ==================================================
-echo   SISTEMA DE NOTAS METRENCO - ACTUALIZADOR
+echo   SISTEMA DE NOTAS TRUF-TRUF - ACTUALIZADOR
 echo ==================================================
 echo.
 
 cd app
+copy "..\logo.png" "public\logo.png" /Y
 echo [1/3] Compilando la version mas reciente de la plataforma...
 call npm run build
 

@@ -106,7 +106,7 @@ export default function AdminReports({ allowedCourses }) {
       }
       doc.setFontSize(13);
       doc.setFont('helvetica', 'bold');
-      doc.text("ESCUELA METRENCO", 105, 15, null, null, "center");
+      doc.text("ESCUELA TRUF-TRUF", 105, 15, null, null, "center");
       doc.setFontSize(9);
       doc.setFont('helvetica', 'normal');
       doc.text("Educación Básica", 105, 20, null, null, "center");
@@ -134,7 +134,7 @@ export default function AdminReports({ allowedCourses }) {
      doc.setFontSize(10);
      doc.setFont('helvetica', 'normal');
      doc.setTextColor(150, 150, 150);
-     doc.text("Escuela Metrenco F-471", 38, 23);
+     doc.text("Escuela Truf-Truf F-485", 38, 23);
      // Simulating an underline for the second element if needed, but simple text is fine
      doc.text("Municipalidad de Padre las Casas/", 38, 28);
      
@@ -156,7 +156,7 @@ export default function AdminReports({ allowedCourses }) {
      doc.setFontSize(12);
      doc.setFont('helvetica', 'normal');
      
-     const text = `EUGENIO OMAR MANRIQUEZ NAVARRO, director de la Escuela Metrenco F - 471, certifica que ${st.nombreCompleto.toUpperCase()} RUT ${st.rut}, es alumno(a) regular de este establecimiento educacional y actualmente se encuentra matriculado para proceso lectivo del año ${date.getFullYear()} en ${st.curso}.`;
+     const text = `EUGENIO OMAR MANRIQUEZ NAVARRO, director de la Escuela Truf-Truf F - 485, certifica que ${st.nombreCompleto.toUpperCase()} RUT ${st.rut}, es alumno(a) regular de este establecimiento educacional y actualmente se encuentra matriculado para proceso lectivo del año ${date.getFullYear()} en ${st.curso}.`;
      const footerText = `Se extiende el presente certificado para los fines que estime conveniente.`;
      
      // Justify the body text
@@ -168,7 +168,7 @@ export default function AdminReports({ allowedCourses }) {
      doc.setFont('helvetica', 'bold');
      doc.text("EUGENIO OMAR MANRIQUEZ NAVARRO", 105, 210, null, null, "center");
      doc.text("DIRECTOR", 105, 216, null, null, "center");
-     doc.text("ESCUELA METRENCO F - 471", 105, 222, null, null, "center");
+     doc.text("ESCUELA TRUF-TRUF F - 485", 105, 222, null, null, "center");
 
      doc.save(`Certificado_Alumno_Regular_${st.rut}.pdf`);
   };

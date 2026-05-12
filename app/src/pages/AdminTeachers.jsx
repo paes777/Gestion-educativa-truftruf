@@ -42,10 +42,10 @@ export default function AdminTeachers() {
     setLoading(true);
     try {
       const safeUser = username.toLowerCase().replace(/[^a-z0-9]/g, '');
-      const email = `${safeUser}@docente.metrenco.cl`;
+      const email = `${safeUser}@docente.truftruf.cl`;
       
       // REST API call to create user without signing out the current admin session
-      const res = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyB2cdrnvX-VjbNV77kiZw5iNAFyw1I9vB8`, {
+      const res = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAbNSjso0uA7l37T9wNl6YOXUxCkN9ZcqY`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, returnSecureToken: true })

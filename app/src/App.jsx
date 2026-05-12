@@ -17,7 +17,7 @@ function App() {
       if (currentUser) {
         setUser(currentUser);
         // Explicitly check for admin email
-        if (currentUser.email === 'admin@metrenco.cl') {
+        if (currentUser.email === 'admin@truftruf.cl') {
           setRole('admin');
         } else {
           const docRef = doc(db, "docentes", currentUser.uid);

@@ -3,12 +3,13 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  projectId: "gestion-educativa-metrenco",
-  appId: "1:547543511036:web:cdd3222f523f8558700c79",
-  storageBucket: "gestion-educativa-metrenco.firebasestorage.app",
-  apiKey: "AIzaSyB2cdrnvX-VjbNV77kiZw5iNAFyw1I9vB8",
-  authDomain: "gestion-educativa-metrenco.firebaseapp.com",
-  messagingSenderId: "547543511036"
+  apiKey: "AIzaSyAbNSjso0uA7l37T9wNl6YOXUxCkN9ZcqY",
+  authDomain: "gestion-educativa-truf-truf.firebaseapp.com",
+  projectId: "gestion-educativa-truf-truf",
+  storageBucket: "gestion-educativa-truf-truf.firebasestorage.app",
+  messagingSenderId: "1072537515072",
+  appId: "1:1072537515072:web:d86e9f5abc8eb1d1191ba5",
+  measurementId: "G-8L9736M245"
 };
 
 const app = initializeApp(firebaseConfig);

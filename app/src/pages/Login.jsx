@@ -21,7 +21,7 @@ export default function Login() {
       let loginEmail = email;
       if (tab === 'docente' && !email.includes('@')) {
         const safeUser = email.toLowerCase().replace(/[^a-z0-9]/g, '');
-        loginEmail = `${safeUser}@docente.metrenco.cl`;
+        loginEmail = `${safeUser}@docente.truftruf.cl`;
       }
       
       if (isRegistering && tab === 'docente') {
@@ -57,8 +57,8 @@ export default function Login() {
     <div className="auth-container">
       <div className="auth-box card">
         <div className="brand-header">
-          <img src="/logo.png" alt="Escuela Metrenco" style={{maxWidth: '100px', margin: '0 auto'}} />
-          <h1>Escuela Metrenco</h1>
+          <img src="/logo.png" alt="Escuela Truf-Truf" style={{maxWidth: '100px', margin: '0 auto'}} />
+          <h1>Escuela Truf-Truf</h1>
           <p className="text-muted text-sm">Sistema de Administración Académica</p>
         </div>
 
@@ -105,7 +105,7 @@ export default function Login() {
               type={tab === 'docente' ? 'text' : 'email'} 
               value={email}
               onChange={e => setEmail(e.target.value)}
-              placeholder={tab === 'docente' ? 'Ej: jperez' : 'admin@metrenco.cl'} 
+              placeholder={tab === 'docente' ? 'Ej: jperez' : 'admin@truftruf.cl'} 
               required
               autoComplete="username"
             />

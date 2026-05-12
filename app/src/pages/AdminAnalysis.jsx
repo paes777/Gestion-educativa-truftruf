@@ -183,7 +183,7 @@ export default function AdminAnalysis() {
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(20);
     doc.setFont('helvetica', 'bold');
-    doc.text('ESCUELA METRENCO', 20, 20);
+    doc.text('ESCUELA TRUF-TRUF', 20, 20);
     
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
@@ -306,7 +306,7 @@ export default function AdminAnalysis() {
         doc.setPage(i);
         doc.setFontSize(8);
         doc.setTextColor(150);
-        doc.text(`Página ${i} de ${pageCount} - Generado por Brain Metrenco`, pageWidth / 2, doc.internal.pageSize.getHeight() - 10, { align: 'center' });
+        doc.text(`Página ${i} de ${pageCount} - Generado por Brain Truf-Truf`, pageWidth / 2, doc.internal.pageSize.getHeight() - 10, { align: 'center' });
     }
 
     doc.save(`Analisis_${results.type === 'curso' ? selectedCourse : results.studentName}_${new Date().toLocaleDateString()}.pdf`);
@@ -478,7 +478,7 @@ export default function AdminAnalysis() {
                 <BarChart3 size={24} />
               </div>
               <div>
-                <h3 className="font-bold text-gray-800">Cerebro de Análisis Metrenco</h3>
+                <h3 className="font-bold text-gray-800">Cerebro de Análisis Truf-Truf</h3>
                 <p className="text-xs text-muted">Inteligencia de Datos para la Movilidad del Aprendizaje</p>
               </div>
           </div>
@@ -536,7 +536,7 @@ export default function AdminAnalysis() {
          <div className="welcome-analysis">
             <div className="text-center py-20">
                <div className="inline-block p-6 bg-white rounded-3xl shadow-2xl mb-6">
-                 <img src="/logo.png" alt="Metrenco" style={{width: '80px', filter: 'grayscale(1)'}} />
+                 <img src="/logo.png" alt="Truf-Truf" style={{width: '80px', filter: 'grayscale(1)'}} />
                </div>
                <h3 className="text-xl font-bold text-gray-700">Listo para analizar</h3>
                <p className="text-muted max-w-sm mx-auto mt-2">Selecciona un parámetro arriba para generar gráficos de variabilidad y movilidad de aprendizaje.</p>
