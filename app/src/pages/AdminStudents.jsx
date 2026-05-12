@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { db } from '../services/firebase';
-import { collection, query, orderBy, getDocs, doc, deleteDoc, updateDoc, addDoc, writeBatch } from 'firebase/firestore';
+import { collection, query, getDocs, doc, deleteDoc, updateDoc, addDoc, writeBatch } from 'firebase/firestore';
 import { Search, Edit2, Trash2, Check, X, Plus, UserPlus } from 'lucide-react';
+import studentSeed from '../services/students_seed.json';
 
 const COURSES = [
   "1° Básico", "2° Básico", "3° Básico", "4° Básico",
@@ -30,38 +31,41 @@ export default function AdminStudents() {
   }, []);
 
   const loadStudents = async () => {
+    // CARGA INSTANTÁNEA: Mostrar locales de inmediato
+    const initialList = studentSeed.map(s => ({ id: s.rut, ...s, isLocal: true }));
+    setStudents(initialList);
+    const initialNums = {};
+    initialList.forEach(s => initialNums[s.id] = s.numeroLista || '');
+    setListNumbers(initialNums);
+
     try {
-      const q = query(collection(db, 'estudiantes'), orderBy('nombreCompleto'));
+      const q = query(collection(db, 'estudiantes'));
       const snap = await getDocs(q);
-      const data = [];
-      snap.forEach(d => data.push({id: d.id, ...d.data()}));
-      // Sorting by numeroLista then course then name
-      data.sort((a, b) => {
+      const firestoreData = [];
+      snap.forEach(d => firestoreData.push({id: d.id, ...d.data()}));
+      
+      // FUSIÓN EN SEGUNDO PLANO
+      const merged = [...firestoreData];
+      studentSeed.forEach(localSt => {
+        const exists = firestoreData.some(fsSt => fsSt.rut === localSt.rut);
+        if (!exists) {
+          merged.push({ id: localSt.rut, ...localSt, isLocal: true });
+        }
+      });
+
+      merged.sort((a, b) => {
         const numA = typeof a.numeroLista === 'number' ? a.numeroLista : 999;
         const numB = typeof b.numeroLista === 'number' ? b.numeroLista : 999;
         if (numA !== numB) return numA - numB;
         return (a.curso || "").localeCompare(b.curso || "") || a.nombreCompleto.localeCompare(b.nombreCompleto);
       });
-      setStudents(data);
+
+      setStudents(merged);
       const nums = {};
-      data.forEach(s => nums[s.id] = s.numeroLista || '');
+      merged.forEach(s => nums[s.id] = s.numeroLista || '');
       setListNumbers(nums);
     } catch (err) {
       console.error("Error loading students:", err);
-      // Fallback: try without orderBy if it fails due to missing index
-      const snap = await getDocs(collection(db, 'estudiantes'));
-      const data = [];
-      snap.forEach(d => data.push({id: d.id, ...d.data()}));
-      data.sort((a, b) => {
-        const numA = typeof a.numeroLista === 'number' ? a.numeroLista : 999;
-        const numB = typeof b.numeroLista === 'number' ? b.numeroLista : 999;
-        if (numA !== numB) return numA - numB;
-        return (a.curso || "").localeCompare(b.curso || "") || a.nombreCompleto.localeCompare(b.nombreCompleto);
-      });
-      setStudents(data);
-      const nums = {};
-      data.forEach(s => nums[s.id] = s.numeroLista || '');
-      setListNumbers(nums);
     }
   };
 

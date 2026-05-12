@@ -120,61 +120,11 @@ export default function AdminTeachers() {
      }
    };
 
-   const handleSeedStudents = async () => {
-    if (!confirm(`¿Estás seguro de cargar los ${studentSeed.length} estudiantes al sistema? Se usará un proceso de carga rápida por lotes.`)) return;
-    setSeeding(true);
-    setSeedProgress(10);
-    try {
-      import('firebase/firestore').then(async ({ writeBatch, doc, collection, getDocs, deleteDoc }) => {
-        const batch = writeBatch(db);
-        const studentsRef = collection(db, 'estudiantes');
-        
-        // 1. Limpiar anteriores (opcional pero recomendado para orden)
-        const currentSnap = await getDocs(studentsRef);
-        for (const d of currentSnap.docs) {
-          batch.delete(doc(db, 'estudiantes', d.id));
-        }
-        
-        setSeedProgress(30);
 
-        // 2. Cargar nuevos en el batch
-        studentSeed.forEach((student) => {
-          const newDocRef = doc(collection(db, 'estudiantes'));
-          batch.set(newDocRef, {
-            ...student,
-            createdAt: new Date().toISOString()
-          });
-        });
-
-        setSeedProgress(60);
-
-        // 3. Ejecutar todo el lote de una vez
-        await batch.commit();
-        
-        setSeedProgress(100);
-        alert(`¡Éxito total! Se han cargado los ${studentSeed.length} estudiantes correctamente.`);
-        setSeeding(false);
-      });
-    } catch(err) {
-      console.error(err);
-      alert('Error crítico en la carga: ' + err.message);
-      setSeeding(false);
-    }
-  };
 
   return (
     <div>
-      <div className="card" style={{borderColor: 'var(--primary)', backgroundColor: 'var(--primary-light)'}}>
-        <div className="flex justify-between items-center">
-          <div>
-            <h3 style={{color: 'var(--primary)'}}>Poblar Base de Datos (Inicialización)</h3>
-            <p className="text-muted mt-2">Sube los {studentSeed.length} estudiantes extraídos desde los archivos PDF a Firestore.</p>
-          </div>
-           <button onClick={handleSeedStudents} disabled={seeding} className="btn btn-primary" style={{whiteSpace: 'nowrap'}}>
-            {seeding ? `Cargando (${seedProgress}%)...` : 'Cargar Estudiantes a BD'}
-          </button>
-        </div>
-      </div>
+
 
       <div className="grid" style={{gridTemplateColumns: '1fr 2fr', gap: '2rem', marginTop: '1.5rem'}}>
         <div className="card">

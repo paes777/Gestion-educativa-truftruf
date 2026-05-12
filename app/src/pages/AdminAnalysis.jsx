@@ -75,16 +75,10 @@ export default function AdminAnalysis() {
   const loadStudents = async () => {
     setLoading(true);
     try {
-      const q = query(collection(db, 'estudiantes'), where('curso', '==', selectedCourse));
-      const snap = await getDocs(q);
-      let list = [];
-      snap.forEach(d => list.push({ id: d.id, ...d.data() }));
-
-      if (list.length === 0) {
-        list = studentSeed
-          .filter(s => s.curso === selectedCourse)
-          .map((s, index) => ({ id: `local-${index}`, ...s }));
-      }
+      // 1. Uso de Estudiantes PERMANENTES (Desde el código local)
+      const list = studentSeed
+        .filter(s => s.curso === selectedCourse)
+        .map(s => ({ id: s.rut, ...s })); // El ID ahora es el RUT para siempre
 
       list.sort((a,b) => a.nombreCompleto.localeCompare(b.nombreCompleto));
       setStudentsInCourse(list);

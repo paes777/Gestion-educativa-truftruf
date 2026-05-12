@@ -34,35 +34,43 @@ export default function AdminReports({ allowedCourses }) {
   }, [selectedCourse]);
 
   const loadStudents = async (course) => {
+    // 1. CARGA INSTANTÁNEA
+    const initialList = studentSeed
+      .filter(s => s.curso === course)
+      .map(s => ({ id: s.rut, ...s }));
+    setStudents(initialList);
+    if(initialList.length > 0) setSelectedStudent(initialList[0].id);
+
     setLoading(true);
     try {
       const q = query(collection(db, 'estudiantes'), where('curso', '==', course));
       const snap = await getDocs(q);
-      let list = [];
-      snap.forEach(d => list.push({id: d.id, ...d.data()}));
+      const firestoreData = [];
+      snap.forEach(d => firestoreData.push({id: d.id, ...d.data()}));
       
-      // FALLBACK: Si no hay nada en la nube, usar los datos locales
-      if (list.length === 0) {
-        console.log("Usando datos de respaldo local para:", course);
-        list = studentSeed
-          .filter(s => s.curso === course)
-          .map((s, index) => ({ id: `local-${index}`, ...s }));
-      }
+      const merged = [...firestoreData];
+      studentSeed.forEach(localSt => {
+        if (localSt.curso === course) {
+          const exists = firestoreData.some(fsSt => fsSt.rut === localSt.rut);
+          if (!exists) {
+            merged.push({ id: localSt.rut, ...localSt, isLocal: true });
+          }
+        }
+      });
 
-      list.sort((a, b) => {
+      merged.sort((a, b) => {
         const numA = typeof a.numeroLista === 'number' ? a.numeroLista : 999;
         const numB = typeof b.numeroLista === 'number' ? b.numeroLista : 999;
         if (numA !== numB) return numA - numB;
         return a.nombreCompleto.localeCompare(b.nombreCompleto);
       });
-      setStudents(list);
-      if(list.length > 0) setSelectedStudent(list[0].id);
-      else setSelectedStudent('');
-    } catch(err) {
+      setStudents(merged);
+    } catch (err) {
       console.error(err);
     }
     setLoading(false);
   };
+
 
   const getBaseReportData = async (studentId) => {
      const st = students.find(s => s.id === studentId);

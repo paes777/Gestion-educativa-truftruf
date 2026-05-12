@@ -58,29 +58,22 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
   }, [activeCourse, subject, semester]);
 
   const loadStudentsAndData = async () => {
+    // 1. CARGA INSTANTÁNEA: Mostrar alumnos de inmediato
+    const list = studentSeed
+      .filter(s => s.curso === activeCourse)
+      .map(s => ({ id: s.rut, ...s }));
+
+    list.sort((a, b) => {
+      const numA = typeof a.numeroLista === 'number' ? a.numeroLista : 999;
+      const numB = typeof b.numeroLista === 'number' ? b.numeroLista : 999;
+      if (numA !== numB) return numA - numB;
+      return a.nombreCompleto.localeCompare(b.nombreCompleto);
+    });
+    setStudents(list);
+
     setLoading(true);
     try {
-      // 1. Fetch Students
-      const q = query(collection(db, 'estudiantes'), where('curso', '==', activeCourse));
-      const snapS = await getDocs(q);
-      let list = [];
-      snapS.forEach(d => list.push({id: d.id, ...d.data()}));
-      
-      if (list.length === 0) {
-        list = studentSeed
-          .filter(s => s.curso === activeCourse)
-          .map((s, index) => ({ id: `local-${index}`, ...s }));
-      }
-
-      list.sort((a, b) => {
-        const numA = typeof a.numeroLista === 'number' ? a.numeroLista : 999;
-        const numB = typeof b.numeroLista === 'number' ? b.numeroLista : 999;
-        if (numA !== numB) return numA - numB;
-        return a.nombreCompleto.localeCompare(b.nombreCompleto);
-      });
-      setStudents(list);
-
-      // 2. Fetch ALL Grades for this course and subject at once (Much faster!)
+       // 2. Fetch ALL Grades for this course (Simpler query to avoid index errors)
        const gradesMap = {};
        const crossAvgMap = {};
        const obsMap = {};
@@ -94,8 +87,7 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
 
        const gradesQuery = query(
          collection(db, 'notas'), 
-         where('course', '==', activeCourse),
-         where('subject', '==', subject)
+         where('course', '==', activeCourse)
        );
        
        const obsQuery = query(
@@ -111,7 +103,8 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
        gradesSnap.forEach(d => {
          const data = d.data();
          const stId = data.studentId;
-         if (gradesMap[stId]) {
+         // Filtramos la asignatura en memoria (JavaScript)
+         if (gradesMap[stId] && data.subject === subject) {
            if (data.semester === semester) gradesMap[stId] = data.grades || Array(10).fill('');
            if (data.semester === 1) crossAvgMap[stId].s1 = data.average || '-';
            if (data.semester === 2) crossAvgMap[stId].s2 = data.average || '-';
@@ -126,10 +119,11 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
        setCrossSemesterAverages(crossAvgMap);
        setObservations(obsMap);
     } catch(err) {
-      console.error(err);
+      console.error("Error en carga de notas:", err);
     }
     setLoading(false);
   };
+
 
   const handleGradeChange = (stId, index, value) => {
      let val = value.replace(',', '.');
