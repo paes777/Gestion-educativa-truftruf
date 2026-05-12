@@ -28,20 +28,8 @@ export default function AdminTeachers() {
 
   useEffect(() => {
     loadTeachers();
-    checkAndAutoSeed();
   }, []);
 
-  const checkAndAutoSeed = async () => {
-    try {
-      const snap = await getDocs(collection(db, 'estudiantes'));
-      if (snap.empty && studentSeed.length > 0) {
-        console.log("Auto-seeding students...");
-        handleSeedStudents();
-      }
-    } catch (err) {
-      console.error("Auto-seed check failed:", err);
-    }
-  };
 
   const loadTeachers = async () => {
     const snap = await getDocs(collection(db, 'docentes'));
@@ -90,34 +78,40 @@ export default function AdminTeachers() {
     setLoading(false);
   };
 
-    const saveAssignment = async (id) => {
+   const [newAssignCourse, setNewAssignCourse] = useState(COURSES[0]);
+   const [newAssignSubject, setNewAssignSubject] = useState(SUBJECTS[0]);
+
+   const saveAssignment = async (id) => {
+      setLoading(true);
       try {
         await updateDoc(doc(db, 'docentes', id), {
            asignaciones: editAssignments,
            jefatura: editJefatura,
-           // Keep legacy fields empty to avoid confusion or just stop using them
            cursosAsignados: [], 
            asignaturasAsignadas: []
         });
         setEditingId(null);
-        loadTeachers();
+        await loadTeachers();
+        alert("Asignaciones guardadas con éxito.");
       } catch (err) {
         console.error(err);
-        alert("Error al guardar la asignación.");
+        alert("Error al guardar la asignación: " + err.message);
       }
+      setLoading(false);
    };
 
    const handleDeleteTeacher = async (id, name) => {
-     if (!confirm(`¿Estás seguro de que deseas eliminar permanentemente al docente "${name}"? Esta acción no se puede deshacer.`)) return;
-     
+     if (!confirm(`¿Estás seguro de que deseas eliminar al docente "${name}"?`)) return;
+     setLoading(true);
      try {
        await deleteDoc(doc(db, 'docentes', id));
        alert('Docente eliminado exitosamente.');
-       loadTeachers();
+       await loadTeachers();
      } catch (err) {
        console.error(err);
        alert('Error al eliminar docente: ' + err.message);
      }
+     setLoading(false);
    };
 
 
@@ -191,13 +185,15 @@ export default function AdminTeachers() {
                            </div>
                            <div style={{display:'flex', gap:'10px', alignItems:'center', marginBottom:'10px'}}>
                               <select 
-                                id="new-assignment-course"
+                                value={newAssignCourse}
+                                onChange={(e) => setNewAssignCourse(e.target.value)}
                                 style={{fontSize:'12px', padding:'4px'}}
                               >
                                 {COURSES.map(c => <option key={c} value={c}>{c}</option>)}
                               </select>
                               <select 
-                                id="new-assignment-subject"
+                                value={newAssignSubject}
+                                onChange={(e) => setNewAssignSubject(e.target.value)}
                                 style={{fontSize:'12px', padding:'4px'}}
                               >
                                 {SUBJECTS.map(s => <option key={s} value={s}>{s}</option>)}
@@ -207,10 +203,8 @@ export default function AdminTeachers() {
                                 className="btn btn-primary" 
                                 style={{padding:'2px 8px', fontSize:'11px'}}
                                 onClick={() => {
-                                  const c = document.getElementById('new-assignment-course').value;
-                                  const s = document.getElementById('new-assignment-subject').value;
-                                  if (!editAssignments.some(a => a.curso === c && a.asignatura === s)) {
-                                    setEditAssignments([...editAssignments, { curso: c, asignatura: s }]);
+                                  if (!editAssignments.some(a => a.curso === newAssignCourse && a.asignatura === newAssignSubject)) {
+                                    setEditAssignments([...editAssignments, { curso: newAssignCourse, asignatura: newAssignSubject }]);
                                   }
                                 }}
                               >
