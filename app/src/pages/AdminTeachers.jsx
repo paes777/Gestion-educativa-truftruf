@@ -69,7 +69,15 @@ export default function AdminTeachers() {
       await loadTeachers();
     } catch(err) {
       console.error(err);
-      alert('Error al crear: ' + err.message);
+      if (err.message === 'EMAIL_EXISTS') {
+        alert('Este docente ya estaba creado. Actualizando la lista para que aparezca...');
+        await loadTeachers();
+        setName('');
+        setUsername('');
+        setPassword('');
+      } else {
+        alert('Error al crear: ' + err.message);
+      }
     } finally {
       setCreating(false);
     }
