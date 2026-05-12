@@ -32,10 +32,17 @@ export default function AdminTeachers() {
 
 
   const loadTeachers = async () => {
-    const snap = await getDocs(collection(db, 'docentes'));
-    const data = [];
-    snap.forEach(d => data.push({id: d.id, ...d.data()}));
-    setTeachers(data);
+    setLoading(true);
+    try {
+      const snap = await getDocs(collection(db, 'docentes'));
+      const data = [];
+      snap.forEach(d => data.push({id: d.id, ...d.data()}));
+      setTeachers(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCreateTeacher = async (e) => {
@@ -147,8 +154,21 @@ export default function AdminTeachers() {
         </div>
 
         <div className="card">
-          <h3>Lista de Docentes y Asignaciones</h3>
-          <p className="text-muted mt-2 mb-4">Asigna el Curso y Asignatura principal a cada docente registrado.</p>
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <h3>Lista de Docentes y Asignaciones</h3>
+              <p className="text-muted mt-2">Asigna el Curso y Asignatura principal a cada docente registrado.</p>
+            </div>
+            <button 
+              onClick={loadTeachers} 
+              disabled={loading} 
+              className="btn btn-secondary flex items-center gap-2"
+              title="Actualizar lista"
+            >
+              <span className={loading ? 'animate-spin' : ''}>🔄</span>
+              {loading ? 'Actualizando...' : 'Actualizar Lista'}
+            </button>
+          </div>
           
           <div className="table-container">
             <table>
