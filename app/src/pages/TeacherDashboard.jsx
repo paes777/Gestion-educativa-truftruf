@@ -62,7 +62,7 @@ export default function TeacherDashboard({ user }) {
     <div className="dashboard-layout">
       <aside className="sidebar">
         <div className="sidebar-logo">
-          <img src="/logo.png" alt="Metrenco" />
+          <img src="/logo.png" alt="Truf-Truf" />
         </div>
 
         <nav className="sidebar-nav">

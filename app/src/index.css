@@ -1,28 +1,30 @@
 @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap');
 
 :root {
-  /* Institutional Metrenco Palette (Blues & Gold) */
-  --primary: #1A237E; /* Institutional Blue */
-  --primary-hover: #121858;
-  --primary-light: #E8EAF6; /* Light Blue for active backgrounds */
+  /* Institutional Truf-Truf Palette (Greens & Reds) */
+  --primary: #2E7D32; /* Forest Green from logo tree/shield */
+  --primary-hover: #1B5E20;
+  --primary-light: #E8F5E9; /* Light Green for active backgrounds */
   
-  --secondary: #FBC02D; /* Institutional Gold/Yellow */
-  --secondary-hover: #F9A825;
+  --secondary: #C62828; /* Copihue Red */
+  --secondary-hover: #B71C1C;
   
-  --danger: #37474F; /* Deep Slate (Replacing red for "danger/delete" actions) */
-  --danger-hover: #263238;
+  --accent: #FBC02D; /* Sun Gold */
   
-  --bg-color: #F0F7FF; /* Light Celestial Blue */
+  --danger: #D32F2F; 
+  --danger-hover: #C62828;
+  
+  --bg-color: #F9FBF9; /* Very light subtle green-tinted background */
   --surface-solid: #FFFFFF;
   
-  --text-main: #111827; /* Near black for better contrast on light backgrounds */
+  --text-main: #1A1A1A; 
   --text-muted: #4B5563;
   
-  --border: #CBD5E1;
-  --border-focus: #FBC02D; /* Golden focus border */
-  --table-head-bg: #D1E9FF; /* More defined celestial blue for headers */
+  --border: #D1D5DB;
+  --border-focus: #2E7D32; 
+  --table-head-bg: #E8F5E9; /* Light green for headers */
   
-  --failing-red: #D32F2F; /* Restored for insufficient grades */
+  --failing-red: #D32F2F; 
   
   --radius-sm: 4px;
   --radius-md: 8px;
@@ -258,7 +260,7 @@ label {
 /* Top Nav Bar replacement for "header-top" */
 .top-navbar {
   height: 60px;
-  background-color: #EBF5FF; /* Soft Celestial Blue */
+  background-color: #F1F8E9; /* Soft Green */
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;

@@ -291,16 +291,16 @@ export default function AdminReports({ allowedCourses }) {
 
           autoTable(doc, {
             startY: finalY,
-            head: [[{ content: title, colSpan: 12, styles: { halign: 'center', fillColor: [13, 19, 88] } }], headParams],
+            head: [[{ content: title, colSpan: 12, styles: { halign: 'center', fillColor: [27, 94, 32] } }], headParams],
             body: tableRows,
             theme: 'grid',
-            headStyles: { fillColor: [26, 35, 126], fontSize: 6.5, halign: 'center' },
+            headStyles: { fillColor: [46, 125, 50], fontSize: 6.5, halign: 'center' },
             styles: { fontSize: 7, halign: 'center', cellPadding: 1 },
             columnStyles: { 0: { halign: 'left', minCellWidth: 50 } },
             didParseCell: function(dataTarget) {
                if (dataTarget.row.index === tableRows.length - 1 && dataTarget.section === 'body') {
                    dataTarget.cell.styles.fontStyle = 'bold';
-                   dataTarget.cell.styles.fillColor = [232, 234, 246];
+                   dataTarget.cell.styles.fillColor = [232, 245, 233];
                }
             }
           });
@@ -323,12 +323,12 @@ export default function AdminReports({ allowedCourses }) {
           autoTable(doc, {
             startY: finalY,
             margin: { left: 14, right: 14 },
-            head: [[{ content: "RESUMEN DE PROMEDIOS", colSpan: 2, styles: { halign: 'center', fillColor: [13, 19, 88] } }]],
+            head: [[{ content: "RESUMEN DE PROMEDIOS", colSpan: 2, styles: { halign: 'center', fillColor: [27, 94, 32] } }]],
             body: [
               ["Promedio General 1° Semestre", s1Gen],
               ["Promedio General 2° Semestre", s2Gen],
-              [{ content: "PROMEDIO GENERAL ANUAL", styles: { fontStyle: 'bold', fillColor: [26, 35, 126], textColor: 255 } }, 
-               { content: finalGen, styles: { fontStyle: 'bold', fillColor: [26, 35, 126], textColor: 255 } }]
+              [{ content: "PROMEDIO GENERAL ANUAL", styles: { fontStyle: 'bold', fillColor: [46, 125, 50], textColor: 255 } }, 
+               { content: finalGen, styles: { fontStyle: 'bold', fillColor: [46, 125, 50], textColor: 255 } }]
             ],
             theme: 'grid',
             styles: { fontSize: 8.5, cellPadding: 1.5 },

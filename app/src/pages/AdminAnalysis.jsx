@@ -176,10 +176,9 @@ export default function AdminAnalysis() {
     });
     const pageWidth = doc.internal.pageSize.getWidth();
     
-    // --- Header ---
-    doc.setFillColor(26, 35, 126); // var(--primary)
+    // PDF Header with Green background
+    doc.setFillColor(46, 125, 50);
     doc.rect(0, 0, pageWidth, 40, 'F');
-    
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(20);
     doc.setFont('helvetica', 'bold');
