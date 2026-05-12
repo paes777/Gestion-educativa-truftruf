@@ -28,30 +28,63 @@ export default function AdminStudents() {
 
   useEffect(() => {
     loadStudents();
-    
-    // Auto-cleanup for duplicate RUT 24.779.216-3
-    const cleanDuplicates = async () => {
-      try {
-        const q = query(collection(db, 'estudiantes'), where('rut', '==', '24.779.216-3'));
-        const snap = await getDocs(q);
-        const docs = [];
-        snap.forEach(d => docs.push(d));
-        if (docs.length > 1) {
-          const batch = writeBatch(db);
-          // Keep the first one, delete all others
-          for (let i = 1; i < docs.length; i++) {
-            batch.delete(doc(db, 'estudiantes', docs[i].id));
-          }
-          await batch.commit();
-          console.log(`Deleted ${docs.length - 1} duplicates of Dannaee.`);
-          loadStudents(); // reload after cleaning
-        }
-      } catch (err) {
-        console.error("Cleanup error:", err);
-      }
-    };
-    cleanDuplicates();
   }, []);
+
+  const handleMigrateDatabase = async () => {
+    if (!confirm("⚠️ ADVERTENCIA: Esto sincronizará toda la base de datos de estudiantes con los archivos oficiales, eliminando todos los duplicados y corrigiendo los cursos. ¿Deseas continuar?")) return;
+    
+    setSavingList(true);
+    try {
+      // 1. Fetch all existing documents to salvage 'numeroLista' and then delete them
+      const q = query(collection(db, 'estudiantes'));
+      const snap = await getDocs(q);
+      
+      const numeroListaMap = {};
+      const docsToDelete = [];
+      
+      snap.forEach(d => {
+        const data = d.data();
+        if (data.rut && data.numeroLista) {
+          numeroListaMap[data.rut] = data.numeroLista;
+        }
+        docsToDelete.push(d.id);
+      });
+
+      console.log(`Borrando ${docsToDelete.length} documentos antiguos...`);
+      // Delete in chunks of 500 (Firestore batch limit)
+      for (let i = 0; i < docsToDelete.length; i += 400) {
+        const chunk = docsToDelete.slice(i, i + 400);
+        const batch = writeBatch(db);
+        chunk.forEach(id => {
+          batch.delete(doc(db, 'estudiantes', id));
+        });
+        await batch.commit();
+      }
+
+      console.log(`Subiendo ${studentSeed.length} estudiantes limpios...`);
+      // Upload new strictly unique documents based on RUT
+      for (let i = 0; i < studentSeed.length; i += 400) {
+        const chunk = studentSeed.slice(i, i + 400);
+        const batch = writeBatch(db);
+        chunk.forEach(st => {
+          const ref = doc(db, 'estudiantes', st.rut); // STRICTLY UNIQUE ID
+          const dataToSave = { ...st, createdAt: new Date().toISOString() };
+          if (numeroListaMap[st.rut]) {
+            dataToSave.numeroLista = numeroListaMap[st.rut];
+          }
+          batch.set(ref, dataToSave);
+        });
+        await batch.commit();
+      }
+
+      alert("✅ Sincronización exitosa. La base de datos está perfectamente limpia y sin duplicados.");
+      loadStudents();
+    } catch (err) {
+      console.error(err);
+      alert("Error en la sincronización.");
+    }
+    setSavingList(false);
+  };
 
   const loadStudents = async () => {
     // CARGA INSTANTÁNEA: Mostrar locales de inmediato
@@ -235,6 +268,11 @@ export default function AdminStudents() {
           <button onClick={handleUpdateListNumbers} disabled={savingList} className="btn btn-secondary flex items-center gap-2">
             <Check size={18} />
             {savingList ? 'Actualizando...' : 'Actualizar Lista'}
+          </button>
+
+          <button onClick={handleMigrateDatabase} disabled={savingList} className="btn btn-secondary flex items-center gap-2" style={{ backgroundColor: '#dc3545', color: 'white' }} title="Sincronizar y Limpiar Duplicados">
+            <Check size={18} />
+            Sincronizar Datos
           </button>
 
           <button onClick={() => setShowAddModal(true)} className="btn btn-primary flex items-center gap-2">
