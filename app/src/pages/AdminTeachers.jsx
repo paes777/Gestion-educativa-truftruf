@@ -27,23 +27,20 @@ export default function AdminTeachers() {
   const [editJefatura, setEditJefatura] = useState('');
 
   useEffect(() => {
-    loadTeachers();
-  }, []);
-
-
-  const loadTeachers = async () => {
     setLoading(true);
-    try {
-      const snap = await getDocs(collection(db, 'docentes'));
+    const unsubscribe = onSnapshot(collection(db, 'docentes'), (snap) => {
       const data = [];
       snap.forEach(d => data.push({id: d.id, ...d.data()}));
       setTeachers(data);
-    } catch (err) {
-      console.error(err);
-    } finally {
       setLoading(false);
-    }
-  };
+    }, (error) => {
+      console.error("Error cargando docentes:", error);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
 
   const handleCreateTeacher = async (e) => {
     e.preventDefault();
@@ -72,13 +69,37 @@ export default function AdminTeachers() {
       
       setName('');
       setUsername('');
+      setName('');
+      setUsername('');
       setPassword('');
-      await loadTeachers();
     } catch(err) {
       console.error(err);
       if (err.message === 'EMAIL_EXISTS') {
-        alert('Este docente ya estaba creado. Actualizando la lista para que aparezca...');
-        await loadTeachers();
+        try {
+           // Intento de recuperación: hacer login para obtener el UID
+           const loginRes = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAbNSjso0uA7l37T9wNl6YOXUxCkN9ZcqY`, {
+             method: 'POST',
+             headers: { 'Content-Type': 'application/json' },
+             body: JSON.stringify({ email: `${username.toLowerCase().replace(/[^a-z0-9]/g, '')}@docente.truftruf.cl`, password, returnSecureToken: true })
+           });
+           const loginData = await loginRes.json();
+           
+           if (!loginData.error) {
+              const uid = loginData.localId;
+              await setDoc(doc(db, "docentes", uid), {
+                 nombre: name,
+                 usuario: loginData.email,
+                 asignaciones: [],
+                 jefatura: ""
+              }, { merge: true });
+              alert('Docente recuperado exitosamente. Sus datos aparecerán automáticamente en la lista.');
+           } else {
+              alert('Este usuario ya existe, pero la contraseña no coincide. Usa una cuenta nueva o contacta a soporte.');
+           }
+        } catch(recoverErr) {
+           console.error("Error en recuperación:", recoverErr);
+           alert('Este docente ya estaba creado en seguridad, pero no se pudo vincular.');
+        }
         setName('');
         setUsername('');
         setPassword('');
@@ -101,7 +122,6 @@ export default function AdminTeachers() {
            jefatura: editJefatura
         });
         setEditingId(null);
-        await loadTeachers();
       } catch (err) {
         console.error(err);
         alert("Error al guardar: " + err.message);
@@ -116,7 +136,6 @@ export default function AdminTeachers() {
      try {
        await deleteDoc(doc(db, 'docentes', id));
        alert('Docente eliminado exitosamente.');
-       await loadTeachers();
      } catch (err) {
        console.error(err);
        alert('Error al eliminar docente: ' + err.message);
@@ -159,15 +178,9 @@ export default function AdminTeachers() {
               <h3>Lista de Docentes y Asignaciones</h3>
               <p className="text-muted mt-2">Asigna el Curso y Asignatura principal a cada docente registrado.</p>
             </div>
-            <button 
-              onClick={loadTeachers} 
-              disabled={loading} 
-              className="btn btn-secondary flex items-center gap-2"
-              title="Actualizar lista"
-            >
-              <span className={loading ? 'animate-spin' : ''}>🔄</span>
-              {loading ? 'Actualizando...' : 'Actualizar Lista'}
-            </button>
+            <div className="flex items-center gap-2 text-sm text-green-600 bg-green-50 px-3 py-1 rounded-full border border-green-200">
+              <span className="animate-pulse">🟢</span> En Vivo
+            </div>
           </div>
           
           <div className="table-container">
