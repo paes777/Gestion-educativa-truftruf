@@ -60,6 +60,7 @@ export default function Login() {
           <img src="/logo.png" alt="Escuela Truf-Truf" style={{maxWidth: '100px', margin: '0 auto'}} />
           <h1>Escuela Truf-Truf</h1>
           <p className="text-muted text-sm">Sistema de Administración Académica</p>
+          <p style={{fontSize: '10px', color: '#ccc', marginTop: '5px'}}>ID: gestion-educativa-truf-truf</p>
         </div>
 
         <div className="auth-tabs">
