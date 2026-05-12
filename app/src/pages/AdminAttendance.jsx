@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { db } from '../services/firebase';
 import { collection, query, where, getDocs, doc, writeBatch, getDoc } from 'firebase/firestore';
 import { Save } from 'lucide-react';
+import studentSeed from '../services/students_seed.json';
 
 const MONTHS = [
   { id: 'mar', name: 'Marzo', defaultDays: 22 },
@@ -40,7 +41,16 @@ export default function AdminAttendance() {
       const q = query(collection(db, 'estudiantes'), where('curso', '==', course));
       const snap = await getDocs(q);
       const studentList = [];
-      snap.forEach(d => studentList.push({ id: d.id, ...d.data() }));
+      snap.forEach(d => {
+         const data = d.data();
+         // Force correct course and names from seed
+         const seedMatch = studentSeed.find(seed => seed.rut === data.rut);
+         if (seedMatch) {
+            data.curso = seedMatch.curso;
+            data.nombreCompleto = seedMatch.nombreCompleto;
+         }
+         studentList.push({ id: d.id, ...data });
+      });
       // Sort alphabetically
       studentList.sort((a, b) => {
         const numA = typeof a.numeroLista === 'number' ? a.numeroLista : 999;

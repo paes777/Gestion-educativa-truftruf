@@ -44,8 +44,16 @@ export default function AdminStudents() {
       const firestoreData = [];
       snap.forEach(d => firestoreData.push({id: d.id, ...d.data()}));
       
-      // FUSIÓN EN SEGUNDO PLANO
       const merged = [...firestoreData];
+      // Force correct course and names from seed to fix corrupted data
+      merged.forEach(st => {
+         const seedMatch = studentSeed.find(seed => seed.rut === st.rut);
+         if (seedMatch) {
+            st.curso = seedMatch.curso;
+            st.nombreCompleto = seedMatch.nombreCompleto;
+         }
+      });
+      
       studentSeed.forEach(localSt => {
         const exists = firestoreData.some(fsSt => fsSt.rut === localSt.rut);
         if (!exists) {

@@ -49,6 +49,16 @@ export default function AdminReports({ allowedCourses }) {
       snap.forEach(d => firestoreData.push({id: d.id, ...d.data()}));
       
       const merged = [...firestoreData];
+      
+      // Force correct course and names from seed to fix corrupted data
+      merged.forEach(st => {
+         const seedMatch = studentSeed.find(seed => seed.rut === st.rut);
+         if (seedMatch) {
+            st.curso = seedMatch.curso;
+            st.nombreCompleto = seedMatch.nombreCompleto;
+         }
+      });
+      
       studentSeed.forEach(localSt => {
         if (localSt.curso === course) {
           const exists = firestoreData.some(fsSt => fsSt.rut === localSt.rut);
