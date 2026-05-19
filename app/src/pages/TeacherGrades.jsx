@@ -20,8 +20,10 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
   const [selectedCourseForTeacher, setSelectedCourseForTeacher] = useState(defaultCourse);
   const activeCourse = isAdmin ? selectedCourseForAdmin : selectedCourseForTeacher;
 
+  const canEditObs = isAdmin || activeCourse === jefatura;
+
   // Compute subjects for the selected course
-  const currentAvailableSubjects = (isAdmin || activeCourse === jefatura)
+  const currentAvailableSubjects = canEditObs
     ? SUBJECTS 
     : (assignments || []).filter(a => a.curso === activeCourse).map(a => a.asignatura);
 
@@ -284,8 +286,12 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
                     <th style={{textAlign:'center', width: '50px', backgroundColor: 'var(--primary-light)'}}>S1</th>
                     <th style={{textAlign:'center', width: '50px', backgroundColor: 'var(--primary-light)'}}>S2</th>
                     <th style={{textAlign:'center', width: '50px', backgroundColor: 'var(--primary)' , color: 'white'}}>Anual</th>
-                    <th className="text-left" style={{width: '300px'}}>Observaciones (Semestre {semester})</th>
-                    <th className="text-left" style={{width: '250px'}}>Resultados apoyos PIE (Semestre {semester})</th>
+                    {canEditObs && (
+                      <>
+                        <th className="text-left" style={{width: '300px'}}>Observaciones (Semestre {semester})</th>
+                        <th className="text-left" style={{width: '250px'}}>Resultados apoyos PIE (Semestre {semester})</th>
+                      </>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
@@ -332,24 +338,28 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
                               })()}
                            </td>
 
-                           <td style={{padding: '4px'}}>
-                              <textarea 
-                                 rows="1"
-                                 value={semester === 1 ? observations[st.id]?.sem1 : observations[st.id]?.sem2}
-                                 onChange={e => handleObsChange(st.id, e.target.value)}
-                                 placeholder={`Agregar observación...`}
-                                 style={{minHeight: '32px', resize: 'vertical', width: '100%', fontSize: '12px'}}
-                              />
-                           </td>
-                           <td style={{padding: '4px'}}>
-                              <textarea 
-                                 rows="1"
-                                 value={semester === 1 ? observations[st.id]?.pie1 : observations[st.id]?.pie2}
-                                 onChange={e => handlePieChange(st.id, e.target.value)}
-                                 placeholder={`Resultados PIE...`}
-                                 style={{minHeight: '32px', resize: 'vertical', width: '100%', fontSize: '12px'}}
-                              />
-                           </td>
+                           {canEditObs && (
+                              <>
+                                 <td style={{padding: '4px'}}>
+                                    <textarea 
+                                       rows="1"
+                                       value={semester === 1 ? observations[st.id]?.sem1 : observations[st.id]?.sem2}
+                                       onChange={e => handleObsChange(st.id, e.target.value)}
+                                       placeholder={`Agregar observación...`}
+                                       style={{minHeight: '32px', resize: 'vertical', width: '100%', fontSize: '12px'}}
+                                    />
+                                 </td>
+                                 <td style={{padding: '4px'}}>
+                                    <textarea 
+                                       rows="1"
+                                       value={semester === 1 ? observations[st.id]?.pie1 : observations[st.id]?.pie2}
+                                       onChange={e => handlePieChange(st.id, e.target.value)}
+                                       placeholder={`Resultados PIE...`}
+                                       style={{minHeight: '32px', resize: 'vertical', width: '100%', fontSize: '12px'}}
+                                    />
+                                 </td>
+                              </>
+                           )}
                         </tr>
                       );
                   })}
