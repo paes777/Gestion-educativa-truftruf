@@ -46,7 +46,7 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
   const [students, setStudents] = useState([]);
   const [gradesData, setGradesData] = useState({}); // { stId: ['', '', ...] } (array of 10)
   const [crossSemesterAverages, setCrossSemesterAverages] = useState({}); // { stId: { s1: '-', s2: '-' } }
-  const [observations, setObservations] = useState({}); // { stId: { sem1: '', sem2: '' } }
+  const [observations, setObservations] = useState({}); // { stId: { sem1: '', sem2: '', pie1: '', pie2: '' } }
   
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -93,7 +93,7 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
        list.forEach(st => {
          gradesMap[st.id] = Array(10).fill('');
          crossAvgMap[st.id] = { s1: '-', s2: '-' };
-         obsMap[st.id] = { sem1: '', sem2: '' };
+         obsMap[st.id] = { sem1: '', sem2: '', pie1: '', pie2: '' };
        });
 
        // Query optimizada: Solo traemos lo estrictamente necesario
@@ -169,11 +169,20 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
   };
 
   const handleObsChange = (stId, value) => {
-     const current = observations[stId] || {sem1: '', sem2: ''};
+     const current = observations[stId] || {sem1: '', sem2: '', pie1: '', pie2: ''};
      if (semester === 1) {
          setObservations({...observations, [stId]: {...current, sem1: value}});
      } else {
          setObservations({...observations, [stId]: {...current, sem2: value}});
+     }
+  };
+
+  const handlePieChange = (stId, value) => {
+     const current = observations[stId] || {sem1: '', sem2: '', pie1: '', pie2: ''};
+     if (semester === 1) {
+         setObservations({...observations, [stId]: {...current, pie1: value}});
+     } else {
+         setObservations({...observations, [stId]: {...current, pie2: value}});
      }
   };
 
@@ -276,6 +285,7 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
                     <th style={{textAlign:'center', width: '50px', backgroundColor: 'var(--primary-light)'}}>S2</th>
                     <th style={{textAlign:'center', width: '50px', backgroundColor: 'var(--primary)' , color: 'white'}}>Anual</th>
                     <th className="text-left" style={{width: '300px'}}>Observaciones (Semestre {semester})</th>
+                    <th className="text-left" style={{width: '250px'}}>Resultados apoyos PIE (Semestre {semester})</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -328,6 +338,15 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
                                  value={semester === 1 ? observations[st.id]?.sem1 : observations[st.id]?.sem2}
                                  onChange={e => handleObsChange(st.id, e.target.value)}
                                  placeholder={`Agregar observación...`}
+                                 style={{minHeight: '32px', resize: 'vertical', width: '100%', fontSize: '12px'}}
+                              />
+                           </td>
+                           <td style={{padding: '4px'}}>
+                              <textarea 
+                                 rows="1"
+                                 value={semester === 1 ? observations[st.id]?.pie1 : observations[st.id]?.pie2}
+                                 onChange={e => handlePieChange(st.id, e.target.value)}
+                                 placeholder={`Resultados PIE...`}
                                  style={{minHeight: '32px', resize: 'vertical', width: '100%', fontSize: '12px'}}
                               />
                            </td>

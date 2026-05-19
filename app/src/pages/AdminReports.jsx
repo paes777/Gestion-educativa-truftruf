@@ -98,7 +98,7 @@ export default function AdminReports({ allowedCourses }) {
 
      // Obtener Observaciones (Asumiendo colleccion observaciones: doc ID = studentId)
      const docObs = await getDoc(doc(db, 'observaciones', studentId));
-     const observaciones = docObs.exists() ? docObs.data() : { sem1: '', sem2: '' };
+     const observaciones = docObs.exists() ? docObs.data() : { sem1: '', sem2: '', pie1: '', pie2: '' };
 
      return { student: st, notas, asistencia, observaciones };
   };
@@ -385,8 +385,16 @@ export default function AdminReports({ allowedCourses }) {
          doc.setFontSize(9);
          doc.text("Observación Semestre 1:", 14, finalY);
          doc.setFont('helvetica', 'normal');
-         doc.text(doc.splitTextToSize(obs.sem1 || "Sin observaciones.", 180), 14, finalY + 4);
-         finalY += 10;
+         const obs1Lines = doc.splitTextToSize(obs.sem1 || "Sin observaciones.", 180);
+         doc.text(obs1Lines, 14, finalY + 4);
+         finalY += (obs1Lines.length * 4) + 4;
+
+         doc.setFont('helvetica', 'bold');
+         doc.text("Resultados apoyos PIE Semestre 1:", 14, finalY);
+         doc.setFont('helvetica', 'normal');
+         const pie1Lines = doc.splitTextToSize(obs.pie1 || "NO APLICA", 180);
+         doc.text(pie1Lines, 14, finalY + 4);
+         finalY += (pie1Lines.length * 4) + 4;
       }
 
       if (mode === 's2' || mode === 'full') {
@@ -394,8 +402,16 @@ export default function AdminReports({ allowedCourses }) {
          doc.setFontSize(9);
          doc.text("Observación Semestre 2:", 14, finalY);
          doc.setFont('helvetica', 'normal');
-         doc.text(doc.splitTextToSize(obs.sem2 || "Sin observaciones.", 180), 14, finalY + 4);
-         finalY += 7;
+         const obs2Lines = doc.splitTextToSize(obs.sem2 || "Sin observaciones.", 180);
+         doc.text(obs2Lines, 14, finalY + 4);
+         finalY += (obs2Lines.length * 4) + 4;
+
+         doc.setFont('helvetica', 'bold');
+         doc.text("Resultados apoyos PIE Semestre 2:", 14, finalY);
+         doc.setFont('helvetica', 'normal');
+         const pie2Lines = doc.splitTextToSize(obs.pie2 || "NO APLICA", 180);
+         doc.text(pie2Lines, 14, finalY + 4);
+         finalY += (pie2Lines.length * 4) + 4;
       }
 
       // Firmas
