@@ -11,6 +11,7 @@ export default function TeacherDashboard({ user }) {
   const [courses, setCourses] = useState([]);
   const [assignments, setAssignments] = useState([]); // Array of {curso, asignatura}
   const [jefatura, setJefatura] = useState('');
+  const [isDiferencial, setIsDiferencial] = useState(false);
   const [loading, setLoading] = useState(true);
 
    useEffect(() => {
@@ -21,6 +22,7 @@ export default function TeacherDashboard({ user }) {
           const data = snap.data();
           
           if (data.jefatura) setJefatura(data.jefatura);
+          if (data.isDiferencial) setIsDiferencial(data.isDiferencial);
 
           let loadedAssignments = [];
           if (data.asignaciones && data.asignaciones.length > 0) {
@@ -108,7 +110,7 @@ export default function TeacherDashboard({ user }) {
              </div>
         ) : (
              <>
-               {activeTab === 'notas' && <TeacherGrades user={user} assignedCourses={courses} assignments={assignments} jefatura={jefatura} />}
+               {activeTab === 'notas' && <TeacherGrades user={user} assignedCourses={courses} assignments={assignments} jefatura={jefatura} isDiferencial={isDiferencial} />}
                {activeTab === 'informes' && <AdminReports allowedCourses={courses} />}
              </>
         )}

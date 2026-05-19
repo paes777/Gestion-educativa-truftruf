@@ -14,13 +14,14 @@ const COURSES = [
   "5° Básico", "6° Básico", "7° Básico", "8° Básico"
 ];
 
-export default function TeacherGrades({ user, assignedCourses, isAdmin, assignments, jefatura }) {
+export default function TeacherGrades({ user, assignedCourses, isAdmin, assignments, jefatura, isDiferencial }) {
   const defaultCourse = (assignedCourses && assignedCourses.length > 0) ? assignedCourses[0] : COURSES[0];
   const [selectedCourseForAdmin, setSelectedCourseForAdmin] = useState(COURSES[0]);
   const [selectedCourseForTeacher, setSelectedCourseForTeacher] = useState(defaultCourse);
   const activeCourse = isAdmin ? selectedCourseForAdmin : selectedCourseForTeacher;
 
   const canEditObs = isAdmin || activeCourse === jefatura;
+  const canEditPie = canEditObs || isDiferencial;
 
   // Compute subjects for the selected course
   const currentAvailableSubjects = canEditObs
@@ -286,12 +287,8 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
                     <th style={{textAlign:'center', width: '50px', backgroundColor: 'var(--primary-light)'}}>S1</th>
                     <th style={{textAlign:'center', width: '50px', backgroundColor: 'var(--primary-light)'}}>S2</th>
                     <th style={{textAlign:'center', width: '50px', backgroundColor: 'var(--primary)' , color: 'white'}}>Anual</th>
-                    {canEditObs && (
-                      <>
-                        <th className="text-left" style={{width: '300px'}}>Observaciones (Semestre {semester})</th>
-                        <th className="text-left" style={{width: '250px'}}>Resultados apoyos PIE (Semestre {semester})</th>
-                      </>
-                    )}
+                    {canEditObs && <th className="text-left" style={{width: '300px'}}>Observaciones (Semestre {semester})</th>}
+                    {canEditPie && <th className="text-left" style={{width: '250px'}}>Resultados apoyos PIE (Semestre {semester})</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -339,7 +336,6 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
                            </td>
 
                            {canEditObs && (
-                              <>
                                  <td style={{padding: '4px'}}>
                                     <textarea 
                                        rows="1"
@@ -349,6 +345,8 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
                                        style={{minHeight: '32px', resize: 'vertical', width: '100%', fontSize: '12px'}}
                                     />
                                  </td>
+                           )}
+                           {canEditPie && (
                                  <td style={{padding: '4px'}}>
                                     <textarea 
                                        rows="1"
@@ -358,7 +356,6 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
                                        style={{minHeight: '32px', resize: 'vertical', width: '100%', fontSize: '12px'}}
                                     />
                                  </td>
-                              </>
                            )}
                         </tr>
                       );

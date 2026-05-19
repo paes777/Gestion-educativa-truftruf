@@ -25,6 +25,7 @@ export default function AdminTeachers() {
   const [editingId, setEditingId] = useState(null);
   const [editAssignments, setEditAssignments] = useState([]); // Array of {curso, asignatura}
   const [editJefatura, setEditJefatura] = useState('');
+  const [editIsDiferencial, setEditIsDiferencial] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -64,7 +65,8 @@ export default function AdminTeachers() {
          nombre: name,
          usuario: email,
          asignaciones: [],
-         jefatura: ""
+         jefatura: "",
+         isDiferencial: false
       });
       
       setName('');
@@ -90,7 +92,8 @@ export default function AdminTeachers() {
                  nombre: name,
                  usuario: loginData.email,
                  asignaciones: [],
-                 jefatura: ""
+                 jefatura: "",
+                 isDiferencial: false
               }, { merge: true });
               alert('Docente recuperado exitosamente. Sus datos aparecerán automáticamente en la lista.');
            } else {
@@ -127,7 +130,8 @@ export default function AdminTeachers() {
       try {
         await updateDoc(doc(db, 'docentes', id), {
            asignaciones: editAssignments,
-           jefatura: editJefatura
+           jefatura: editJefatura,
+           isDiferencial: editIsDiferencial
         });
         setEditingId(null);
       } catch (err) {
@@ -209,6 +213,11 @@ export default function AdminTeachers() {
                            🏅 Prof. Jefe: {t.jefatura}
                          </div>
                        )}
+                       {t.isDiferencial && (
+                         <div style={{fontSize: '11px', color: '#6a1b9a', marginTop: '2px', fontWeight: 'bold'}}>
+                           ⭐ Educadora Diferencial
+                         </div>
+                       )}
                     </td>
                     {editingId === t.id ? (
                       <>
@@ -223,6 +232,10 @@ export default function AdminTeachers() {
                                  <option value="">Ninguno</option>
                                  {COURSES.map(c => <option key={c} value={c}>{c}</option>)}
                               </select>
+                              <label style={{fontSize: '11px', margin: 0, fontWeight: 'bold', marginLeft: '10px'}}>
+                                 <input type="checkbox" checked={editIsDiferencial} onChange={e => setEditIsDiferencial(e.target.checked)} style={{marginRight: '4px'}} />
+                                 Educadora Diferencial
+                              </label>
                            </div>
                            <div style={{display:'flex', gap:'10px', alignItems:'center', marginBottom:'10px'}}>
                               <select 
@@ -308,6 +321,7 @@ export default function AdminTeachers() {
                                  }
                                  setEditAssignments(initial);
                                  setEditJefatura(t.jefatura || '');
+                                 setEditIsDiferencial(t.isDiferencial || false);
                                  setEditingId(t.id);
                               }}
                             >
