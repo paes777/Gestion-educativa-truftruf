@@ -205,7 +205,11 @@ export default function AdminReports({ allowedCourses }) {
       const data = await getBaseReportData(stId);
       const st = data.student;
       
-      const title = mode === 'full' ? "INFORME COMPLETO DE NOTAS FINALES" : (mode === 's1' ? "INFORME DE NOTAS PARCIALES (1° SEM)" : "INFORME DE NOTAS PARCIALES (2° SEM)");
+      let title = "INFORME COMPLETO DE NOTAS FINALES";
+      if (mode === 's1') title = "INFORME DE NOTAS PARCIALES (1° SEM)";
+      else if (mode === 's2') title = "INFORME DE NOTAS PARCIALES (2° SEM)";
+      else if (mode === 'final_s1') title = "INFORME SEMESTRAL FINAL (1° SEM)";
+      else if (mode === 'final_s2') title = "INFORME SEMESTRAL FINAL (2° SEM)";
       
       if (!isFirstPage) doc.addPage();
       await buildDocumentHeader(doc, title);
@@ -335,10 +339,10 @@ export default function AdminReports({ allowedCourses }) {
           finalY = doc.lastAutoTable.finalY + 4;
       };
 
-      if (mode === 's1' || mode === 'full') {
+      if (mode === 's1' || mode === 'final_s1' || mode === 'full') {
           renderSemesterTable("CALIFICACIONES: PRIMER SEMESTRE", "grades1", "s1", "totalS1", "countS1");
       }
-      if (mode === 's2' || mode === 'full') {
+      if (mode === 's2' || mode === 'final_s2' || mode === 'full') {
           renderSemesterTable("CALIFICACIONES: SEGUNDO SEMESTRE", "grades2", "s2", "totalS2", "countS2");
       }
       
@@ -374,13 +378,17 @@ export default function AdminReports({ allowedCourses }) {
       doc.setFontSize(9);
       doc.text("Porcentaje de Asistencia Anual:", 14, finalY);
       doc.setFont('helvetica', 'normal');
-      doc.text(`${attendance.perc}%`, 70, finalY);
+      
+      const isPartial = mode === 's1' || mode === 's2';
+      const displayAttendance = isPartial ? '-' : `${attendance.perc}%`;
+      
+      doc.text(displayAttendance, 70, finalY);
 
       finalY += 7;
       
       // Observaciones
       const obs = data.observaciones;
-      if (mode === 's1' || mode === 'full') {
+      if (mode === 's1' || mode === 'final_s1' || mode === 'full') {
          doc.setFont('helvetica', 'bold');
          doc.setFontSize(9);
          doc.text("Observación Semestre 1:", 14, finalY);
@@ -397,7 +405,7 @@ export default function AdminReports({ allowedCourses }) {
          finalY += (pie1Lines.length * 4) + 4;
       }
 
-      if (mode === 's2' || mode === 'full') {
+      if (mode === 's2' || mode === 'final_s2' || mode === 'full') {
          doc.setFont('helvetica', 'bold');
          doc.setFontSize(9);
          doc.text("Observación Semestre 2:", 14, finalY);
@@ -523,6 +531,26 @@ export default function AdminReports({ allowedCourses }) {
                <span className="flex items-center gap-4"><FileLineChart size={20} /> Informe Notas Parciales (2° Sem)</span>
                <FileDown size={18} />
             </button>
+            
+            <button 
+               onClick={() => downloadInformeCompleto('final_s1')}
+               className="btn btn-primary justify-between" 
+               style={{textAlign: 'left', backgroundColor: '#3949ab', color: 'white'}}
+               disabled={!selectedStudent}
+            >
+               <span className="flex items-center gap-4"><FileLineChart size={20} /> Informe Semestral Final (1° Sem)</span>
+               <FileDown size={18} />
+            </button>
+
+            <button 
+               onClick={() => downloadInformeCompleto('final_s2')}
+               className="btn btn-primary justify-between" 
+               style={{textAlign: 'left', backgroundColor: '#3949ab', color: 'white'}}
+               disabled={!selectedStudent}
+            >
+               <span className="flex items-center gap-4"><FileLineChart size={20} /> Informe Semestral Final (2° Sem)</span>
+               <FileDown size={18} />
+            </button>
 
             <button 
                onClick={() => downloadInformeCompleto('full')}
@@ -557,6 +585,24 @@ export default function AdminReports({ allowedCourses }) {
                disabled={students.length === 0}
             >
                <span className="flex items-center gap-4"><FileDown size={20} /> Curso: Notas Parciales (2° Sem)</span>
+            </button>
+
+            <button 
+               onClick={() => downloadInformeCurso('final_s1')}
+               className="btn btn-primary justify-between" 
+               style={{textAlign: 'left', backgroundColor: '#3949ab', color: 'white'}}
+               disabled={students.length === 0}
+            >
+               <span className="flex items-center gap-4"><FileDown size={20} /> Curso: Semestral Final (1° Sem)</span>
+            </button>
+
+            <button 
+               onClick={() => downloadInformeCurso('final_s2')}
+               className="btn btn-primary justify-between" 
+               style={{textAlign: 'left', backgroundColor: '#3949ab', color: 'white'}}
+               disabled={students.length === 0}
+            >
+               <span className="flex items-center gap-4"><FileDown size={20} /> Curso: Semestral Final (2° Sem)</span>
             </button>
 
             <button 
