@@ -5,28 +5,26 @@ async function main() {
         console.log('Reading logo...');
         const logo = await Jimp.read('public/logo.png');
         
-        // Manual crop based on precise pixel measurements of the border
-        // Content bounds: minX=79, minY=12, maxX=1533, maxY=1684
-        // Crop just 5 pixels inside the content bounds to remove the 1px line without cutting the shield
-        const cropX = 79 + 5;
-        const cropY = 12 + 5;
-        const cropW = (1533 - 79) - 10;
-        const cropH = (1684 - 12) - 10;
+        // Create a solid white background of the SAME SIZE as the original logo
+        const solidWhiteBg = new Jimp(logo.bitmap.width, logo.bitmap.height, '#FFFFFF');
         
-        logo.crop(cropX, cropY, cropW, cropH);
+        // Composite the original transparent logo onto the white background BEFORE scaling
+        // This prevents black fringes caused by interpolating transparent-black pixels (rgba(0,0,0,0))
+        solidWhiteBg.composite(logo, 0, 0);
         
-        logo.scaleToFit(384, 384);
+        // Now scale the solid white version down to 384x384
+        solidWhiteBg.scaleToFit(384, 384);
         
-        // Create 512x512 fully opaque white background
-        const bg = new Jimp(512, 512, '#FFFFFF');
+        // Create the final 512x512 maskable canvas
+        const finalBg = new Jimp(512, 512, '#FFFFFF');
         
-        // Composite logo into the center
-        const x = (512 - logo.bitmap.width) / 2;
-        const y = (512 - logo.bitmap.height) / 2;
-        bg.composite(logo, x, y);
+        // Composite the scaled logo into the center
+        const x = (512 - solidWhiteBg.bitmap.width) / 2;
+        const y = (512 - solidWhiteBg.bitmap.height) / 2;
+        finalBg.composite(solidWhiteBg, x, y);
         
-        await bg.writeAsync('public/logo-padded.png');
-        console.log('logo-padded.png created successfully!');
+        await finalBg.writeAsync('public/logo-padded.png');
+        console.log('logo-padded.png created with clean white interpolation!');
     } catch (err) {
         console.error('Error:', err);
     }
