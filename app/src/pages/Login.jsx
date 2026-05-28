@@ -108,11 +108,11 @@ export default function Login({ onParentLogin }) {
                     * Escríbalo tal como aparece en la plataforma, <strong>con puntos y guion</strong>.
                   </small>
                 </div>
-                <button type="submit" disabled={loading} style={{ width: '100%', padding: '0.8rem', backgroundColor: '#1e88e5', color: 'white', fontWeight: 'bold', border: 'none', borderRadius: '8px', fontSize: '1rem', cursor: 'pointer', marginTop: '0.5rem' }}>
+                <button type="submit" disabled={loading} style={{ width: '100%', padding: '0.8rem', backgroundColor: '#388E3C', color: 'white', fontWeight: 'bold', border: 'none', borderRadius: '8px', fontSize: '1rem', cursor: 'pointer', marginTop: '0.5rem' }}>
                   {loading ? 'Ingresando...' : 'Ver Notas del Estudiante'}
                 </button>
               </form>
-              <button onClick={() => setTab('docente')} style={{ background: 'none', border: 'none', color: '#1a237e', marginTop: '1.5rem', cursor: 'pointer', fontSize: '0.95rem', textDecoration: 'underline' }}>
+              <button onClick={() => setTab('docente')} style={{ background: 'none', border: 'none', color: '#2E7D32', marginTop: '1.5rem', cursor: 'pointer', fontSize: '0.95rem', textDecoration: 'underline' }}>
                  Volver al inicio de sesión
               </button>
            </div>
@@ -122,14 +122,14 @@ export default function Login({ onParentLogin }) {
               <button 
                 type="button"
                 onClick={() => { setTab('docente'); setError(''); }}
-                style={{ flex: 1, padding: '0.75rem', background: 'none', border: 'none', borderBottom: tab === 'docente' ? '2px solid #1a237e' : '2px solid transparent', color: tab === 'docente' ? '#1a237e' : '#666', fontWeight: tab === 'docente' ? 'bold' : 'normal', cursor: 'pointer', fontSize: '1rem' }}
+                style={{ flex: 1, padding: '0.75rem', background: 'none', border: 'none', borderBottom: tab === 'docente' ? '2px solid #2E7D32' : '2px solid transparent', color: tab === 'docente' ? '#2E7D32' : '#666', fontWeight: tab === 'docente' ? 'bold' : 'normal', cursor: 'pointer', fontSize: '1rem' }}
               >
                 Docentes
               </button>
               <button 
                 type="button"
                 onClick={() => { setTab('admin'); setError(''); }}
-                style={{ flex: 1, padding: '0.75rem', background: 'none', border: 'none', borderBottom: tab === 'admin' ? '2px solid #1a237e' : '2px solid transparent', color: tab === 'admin' ? '#1a237e' : '#666', fontWeight: tab === 'admin' ? 'bold' : 'normal', cursor: 'pointer', fontSize: '1rem' }}
+                style={{ flex: 1, padding: '0.75rem', background: 'none', border: 'none', borderBottom: tab === 'admin' ? '2px solid #2E7D32' : '2px solid transparent', color: tab === 'admin' ? '#2E7D32' : '#666', fontWeight: tab === 'admin' ? 'bold' : 'normal', cursor: 'pointer', fontSize: '1rem' }}
               >
                 Administración
               </button>
@@ -177,14 +177,14 @@ export default function Login({ onParentLogin }) {
                 />
               </div>
               
-              <button type="submit" disabled={loading} style={{ width: '100%', padding: '0.9rem', backgroundColor: '#1a237e', color: 'white', fontWeight: 'bold', border: 'none', borderRadius: '4px', fontSize: '1rem', cursor: 'pointer', marginTop: '0.5rem' }}>
+              <button type="submit" disabled={loading} style={{ width: '100%', padding: '0.9rem', backgroundColor: '#2E7D32', color: 'white', fontWeight: 'bold', border: 'none', borderRadius: '4px', fontSize: '1rem', cursor: 'pointer', marginTop: '0.5rem' }}>
                 {loading ? 'Procesando...' : (isRegistering ? 'Crear Cuenta Docente' : 'Ingresar al Portal')}
               </button>
             </form>
 
             {tab === 'docente' && (
               <div style={{ textAlign: 'center', marginTop: '1.2rem' }}>
-                <a href="#!" onClick={(e) => {e.preventDefault(); setIsRegistering(!isRegistering);}} style={{ color: '#5c6bc0', textDecoration: 'none', fontSize: '0.95rem' }}>
+                <a href="#!" onClick={(e) => {e.preventDefault(); setIsRegistering(!isRegistering);}} style={{ color: '#1B5E20', textDecoration: 'none', fontSize: '0.95rem' }}>
                   {isRegistering ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate'}
                 </a>
               </div>
@@ -197,7 +197,7 @@ export default function Login({ onParentLogin }) {
                <button 
                  type="button"
                  onClick={() => { setTab('apoderado'); setError(''); }}
-                 style={{ width: '100%', backgroundColor: '#1e88e5', color: 'white', padding: '0.9rem', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '1.1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+                 style={{ width: '100%', backgroundColor: '#388E3C', color: 'white', padding: '0.9rem', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '1.1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
                >
                   <User size={20} /> Acceso Apoderado
                </button>
