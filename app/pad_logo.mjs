@@ -7,11 +7,11 @@ async function main() {
         
         // Manual crop based on precise pixel measurements of the border
         // Content bounds: minX=79, minY=12, maxX=1533, maxY=1684
-        // Crop 30 pixels inside the content bounds to obliterate any edge artifact
-        const cropX = 79 + 30;
-        const cropY = 12 + 30;
-        const cropW = (1533 - 79) - 60;
-        const cropH = (1684 - 12) - 60;
+        // Crop just 5 pixels inside the content bounds to remove the 1px line without cutting the shield
+        const cropX = 79 + 5;
+        const cropY = 12 + 5;
+        const cropW = (1533 - 79) - 10;
+        const cropH = (1684 - 12) - 10;
         
         logo.crop(cropX, cropY, cropW, cropH);
         
