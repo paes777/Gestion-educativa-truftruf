@@ -133,8 +133,8 @@ export default function ParentDashboard({ rut, onLogout }) {
   return (
     <div style={{ backgroundColor: '#f5f7fa', minHeight: '100vh', paddingBottom: '70px', fontFamily: 'sans-serif' }}>
       
-      {/* HEADER AZUL */}
-      <div style={{ backgroundColor: '#0077ff', padding: '2rem 1rem 4rem 1rem', color: 'white', textAlign: 'center', borderBottomLeftRadius: '30px', borderBottomRightRadius: '30px', position: 'relative' }}>
+      {/* HEADER AZUL -> VERDE */}
+      <div style={{ backgroundColor: '#2E7D32', padding: '2rem 1rem 4rem 1rem', color: 'white', textAlign: 'center', borderBottomLeftRadius: '30px', borderBottomRightRadius: '30px', position: 'relative' }}>
          <button onClick={onLogout} style={{ position: 'absolute', top: '15px', right: '15px', background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '8px', borderRadius: '50%' }}>
             <LogOut size={20} />
          </button>
@@ -257,7 +257,7 @@ export default function ParentDashboard({ rut, onLogout }) {
                   messages.map(msg => (
                      <div key={msg.id} style={{ backgroundColor: 'white', padding: '1rem', borderRadius: '12px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                           <strong style={{ color: '#0077ff' }}>{msg.teacherName}</strong>
+                           <strong style={{ color: '#2E7D32' }}>{msg.teacherName}</strong>
                            <span style={{ fontSize: '0.8rem', color: '#888' }}>
                               {new Date(msg.timestamp).toLocaleDateString()}
                            </span>
@@ -280,16 +280,16 @@ export default function ParentDashboard({ rut, onLogout }) {
       <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, backgroundColor: 'white', display: 'flex', borderTop: '1px solid #e0e0e0', padding: '8px 0', zIndex: 50, justifyContent: 'space-around' }}>
          <button 
             onClick={() => setActiveTab('notas')}
-            style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'none', border: 'none', color: activeTab === 'notas' ? '#0077ff' : '#999' }}
+            style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'none', border: 'none', color: activeTab === 'notas' ? '#2E7D32' : '#999' }}
          >
-            <Star size={24} fill={activeTab === 'notas' ? '#0077ff' : 'none'} />
+            <Star size={24} fill={activeTab === 'notas' ? '#2E7D32' : 'none'} />
             <span style={{ fontSize: '0.75rem', marginTop: '4px', fontWeight: activeTab === 'notas' ? 'bold' : 'normal' }}>Notas</span>
          </button>
          <button 
             onClick={() => setActiveTab('comunicaciones')}
-            style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'none', border: 'none', color: activeTab === 'comunicaciones' ? '#0077ff' : '#999' }}
+            style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'none', border: 'none', color: activeTab === 'comunicaciones' ? '#2E7D32' : '#999' }}
          >
-            <MessageCircle size={24} fill={activeTab === 'comunicaciones' ? '#0077ff' : 'none'} />
+            <MessageCircle size={24} fill={activeTab === 'comunicaciones' ? '#2E7D32' : 'none'} />
             <span style={{ fontSize: '0.75rem', marginTop: '4px', fontWeight: activeTab === 'comunicaciones' ? 'bold' : 'normal' }}>Comunica.</span>
          </button>
       </div>
