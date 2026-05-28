@@ -36,7 +36,7 @@ async function main() {
         // Borde izquierdo
         finalBg.composite(whiteBlock.clone().crop(0,0, 10, h), x, y);
         // Borde derecho
-        finalBg.composite(whiteBlock.clone().crop(0,0, 10, h), x + w - 10);
+        finalBg.composite(whiteBlock.clone().crop(0,0, 10, h), x + w - 10, y);
         
         await finalBg.writeAsync('public/logo-padded.png');
         console.log('logo-padded.png creado con bordes pintados de blanco!');
