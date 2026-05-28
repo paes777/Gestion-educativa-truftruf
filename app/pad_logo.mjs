@@ -6,10 +6,14 @@ async function main() {
         const logo = await Jimp.read('public/logo.png');
         
         console.log('Original size:', logo.bitmap.width, 'x', logo.bitmap.height);
-        // Crop 20 pixels from all sides to remove the gray border
-        logo.crop(20, 20, logo.bitmap.width - 40, logo.bitmap.height - 40);
         
-        // Increase size by 20% (320 * 1.2 = 384)
+        // Autocrop removes all pure white/transparent outer space until it hits the gray border
+        logo.autocrop();
+        
+        // Now crop 10 pixels inward from all sides to eliminate the gray border itself
+        logo.crop(10, 10, logo.bitmap.width - 20, logo.bitmap.height - 20);
+        
+        // Increase size by 20% (from 320 to 384)
         logo.scaleToFit(384, 384);
         console.log('Scaled size:', logo.bitmap.width, 'x', logo.bitmap.height);
         
