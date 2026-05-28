@@ -5,22 +5,11 @@ async function main() {
         console.log('Reading logo...');
         const logo = await Jimp.read('public/logo.png');
         
-        // Manual crop based on precise pixel measurements of the border
-        // Content bounds: minX=79, minY=12, maxX=1533, maxY=1684
-        // Crop 30 pixels inside the content bounds to obliterate any edge artifact
-        const cropX = 79 + 30;
-        const cropY = 12 + 30;
-        const cropW = (1533 - 79) - 60;
-        const cropH = (1684 - 12) - 60;
-        
-        logo.crop(cropX, cropY, cropW, cropH);
-        
-        // Increase size by 20% (from 320 to 384)
+        // Use the entire original logo without cropping to prevent cutting it off
         logo.scaleToFit(384, 384);
-        console.log('Scaled size:', logo.bitmap.width, 'x', logo.bitmap.height);
         
-        // Create 512x512 white background (using string to guarantee opaque white)
-        const bg = new Jimp(512, 512, '#FFFFFF');
+        // Create 512x512 fully transparent background (0x00000000)
+        const bg = new Jimp(512, 512, 0x00000000);
         
         // Composite logo into the center
         const x = (512 - logo.bitmap.width) / 2;
