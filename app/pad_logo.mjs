@@ -6,8 +6,11 @@ async function main() {
         const logo = await Jimp.read('public/logo.png');
         
         console.log('Original size:', logo.bitmap.width, 'x', logo.bitmap.height);
-        // Scale logo to fit within 320x320 (plenty of safe space for a 512x512 maskable icon)
-        logo.scaleToFit(320, 320);
+        // Crop 20 pixels from all sides to remove the gray border
+        logo.crop(20, 20, logo.bitmap.width - 40, logo.bitmap.height - 40);
+        
+        // Increase size by 20% (320 * 1.2 = 384)
+        logo.scaleToFit(384, 384);
         console.log('Scaled size:', logo.bitmap.width, 'x', logo.bitmap.height);
         
         // Create 512x512 white background
