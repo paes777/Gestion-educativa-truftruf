@@ -18,8 +18,8 @@ export default function Login({ onParentLogin }) {
     setError('');
     
     if (tab === 'apoderado') {
-       if (!rut || !rut.includes('-')) {
-          setError('El RUT debe contener un guion.');
+       if (!rut || !rut.includes('-') || !rut.includes('.')) {
+          setError('El RUT debe contener puntos y guion.');
           return;
        }
        setLoading(true);
@@ -100,12 +100,12 @@ export default function Login({ onParentLogin }) {
                     type="text" 
                     value={rut}
                     onChange={e => setRut(e.target.value)}
-                    placeholder="Ej: 22222222-2" 
+                    placeholder="Ej: 26.474.288-9" 
                     required
                     style={{ width: '100%', padding: '0.75rem', border: '1px solid #ccc', borderRadius: '4px', fontSize: '1rem' }}
                   />
                   <small style={{color: '#888', display: 'block', marginTop: '0.4rem', fontSize: '0.8rem'}}>
-                    * Escríbalo tal como aparece en la plataforma, <strong>sin puntos y con guion</strong>.
+                    * Escríbalo tal como aparece en la plataforma, <strong>con puntos y guion</strong>.
                   </small>
                 </div>
                 <button type="submit" disabled={loading} style={{ width: '100%', padding: '0.8rem', backgroundColor: '#1e88e5', color: 'white', fontWeight: 'bold', border: 'none', borderRadius: '8px', fontSize: '1rem', cursor: 'pointer', marginTop: '0.5rem' }}>

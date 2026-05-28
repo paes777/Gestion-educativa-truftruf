@@ -19,7 +19,7 @@ export default function ParentDashboard({ rut, onLogout }) {
       // 1. Find student
       const st = studentSeed.find(s => s.rut === rut);
       if (!st) {
-        alert("RUT no encontrado en el sistema. Asegúrese de ingresarlo sin puntos y con guion.");
+        alert("RUT no encontrado en el sistema. Asegúrese de ingresarlo con puntos y con guion.");
         onLogout();
         return;
       }
@@ -73,6 +73,12 @@ export default function ParentDashboard({ rut, onLogout }) {
 
   // Aggregate subjects from grades
   const subjectsMap = {};
+  
+  // Initialize with all assigned subjects
+  Object.keys(subjectTeacherMap).forEach(subj => {
+      subjectsMap[subj] = { s1: null, s2: null, n1: [], n2: [] };
+  });
+
   grades.forEach(g => {
      if (!subjectsMap[g.subject]) {
          subjectsMap[g.subject] = { s1: null, s2: null, n1: [], n2: [] };
@@ -134,12 +140,13 @@ export default function ParentDashboard({ rut, onLogout }) {
          </button>
          
          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
-            <div style={{ backgroundColor: 'white', borderRadius: '50%', padding: '4px', display: 'inline-block' }}>
-               <img src="/logo.png" alt="Logo" style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover' }} onError={(e) => e.target.style.display='none'} />
+            <div style={{ display: 'inline-block' }}>
+               <img src="/logo.png" alt="Logo" style={{ width: '80px', height: '80px', objectFit: 'contain' }} onError={(e) => e.target.style.display='none'} />
             </div>
          </div>
 
          <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 'bold' }}>{student?.nombreCompleto}</h2>
+         <div style={{ margin: '0.2rem 0 0.5rem 0', fontSize: '0.9rem', opacity: 0.9 }}>{rut}</div>
          <div style={{ marginTop: '0.5rem' }}>
             <span style={{ backgroundColor: 'rgba(0,0,0,0.15)', padding: '4px 12px', borderRadius: '20px', fontSize: '0.9rem' }}>
                {student?.curso}
@@ -151,12 +158,12 @@ export default function ParentDashboard({ rut, onLogout }) {
       <div style={{ margin: '-40px 1rem 1rem 1rem', backgroundColor: 'white', borderRadius: '15px', padding: '1.5rem', display: 'flex', justifyContent: 'space-around', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', position: 'relative', zIndex: 10 }}>
           <div style={{ textAlign: 'center' }}>
              <div style={{ fontSize: '0.85rem', color: '#666', lineHeight: 1.2 }}>Promedio<br/>Estudiante</div>
-             <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: generalAvg >= 4.0 ? '#4caf50' : '#f44336', marginTop: '5px' }}>{generalAvg}</div>
+             <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: generalAvg >= 4.0 ? '#4caf50' : (generalAvg === '-' ? '#333' : '#f44336'), marginTop: '5px' }}>{generalAvg}</div>
           </div>
           <div style={{ width: '1px', backgroundColor: '#eee' }}></div>
           <div style={{ textAlign: 'center' }}>
-             <div style={{ fontSize: '0.85rem', color: '#666', lineHeight: 1.2 }}>RUT<br/>Estudiante</div>
-             <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#333', marginTop: '15px' }}>{rut}</div>
+             <div style={{ fontSize: '0.85rem', color: '#666', lineHeight: 1.2 }}>Promedio<br/>Curso</div>
+             <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#333', marginTop: '5px' }}>-</div>
           </div>
       </div>
 
@@ -191,7 +198,7 @@ export default function ParentDashboard({ rut, onLogout }) {
 
                            {/* Promedio */}
                            <div style={{ textAlign: 'center', paddingLeft: '1rem' }}>
-                              <div style={{ fontSize: '1.4rem', fontWeight: 'bold', color: subj.avg >= 4.0 ? '#333' : '#f44336' }}>{subj.avg}</div>
+                              <div style={{ fontSize: '1.4rem', fontWeight: 'bold', color: subj.avg === '-' ? '#333' : (subj.avg >= 4.0 ? '#333' : '#f44336') }}>{subj.avg}</div>
                               <div style={{ fontSize: '0.7rem', color: '#888' }}>Promedio</div>
                            </div>
 
