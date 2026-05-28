@@ -5,13 +5,15 @@ async function main() {
         console.log('Reading logo...');
         const logo = await Jimp.read('public/logo.png');
         
-        console.log('Original size:', logo.bitmap.width, 'x', logo.bitmap.height);
+        // Manual crop based on precise pixel measurements of the border
+        // Content bounds: minX=79, minY=12, maxX=1533, maxY=1684
+        // Crop 30 pixels inside the content bounds to obliterate any edge artifact
+        const cropX = 79 + 30;
+        const cropY = 12 + 30;
+        const cropW = (1533 - 79) - 60;
+        const cropH = (1684 - 12) - 60;
         
-        // Autocrop removes all pure white/transparent outer space until it hits the gray border
-        logo.autocrop();
-        
-        // Now crop 10 pixels inward from all sides to eliminate the gray border itself
-        logo.crop(10, 10, logo.bitmap.width - 20, logo.bitmap.height - 20);
+        logo.crop(cropX, cropY, cropW, cropH);
         
         // Increase size by 20% (from 320 to 384)
         logo.scaleToFit(384, 384);
