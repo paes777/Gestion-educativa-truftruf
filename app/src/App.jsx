@@ -6,11 +6,23 @@ import { doc, getDoc } from 'firebase/firestore';
 import Login from './pages/Login';
 import AdminDashboard from './pages/AdminDashboard';
 import TeacherDashboard from './pages/TeacherDashboard';
+import ParentDashboard from './pages/ParentDashboard';
 
 function App() {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState(null); // 'admin' | 'docente'
   const [loading, setLoading] = useState(true);
+  const [parentRut, setParentRut] = useState(localStorage.getItem('parentRut') || null);
+
+  const handleParentLogin = (rut) => {
+    localStorage.setItem('parentRut', rut);
+    setParentRut(rut);
+  };
+
+  const handleParentLogout = () => {
+    localStorage.removeItem('parentRut');
+    setParentRut(null);
+  };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -57,14 +69,16 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={!user ? <Login /> : <Navigate to="/" replace />} />
+        <Route path="/login" element={!user && !parentRut ? <Login onParentLogin={handleParentLogin} /> : <Navigate to="/" replace />} />
         
         <Route 
           path="/" 
           element={
-            user 
-              ? (role === 'admin' ? <AdminDashboard user={user} /> : <TeacherDashboard user={user} />) 
-              : <Navigate to="/login" replace />
+            parentRut 
+              ? <ParentDashboard rut={parentRut} onLogout={handleParentLogout} />
+              : user 
+                ? (role === 'admin' ? <AdminDashboard user={user} /> : <TeacherDashboard user={user} />) 
+                : <Navigate to="/login" replace />
           } 
         />
       </Routes>
