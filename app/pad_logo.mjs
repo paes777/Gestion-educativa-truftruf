@@ -13,8 +13,8 @@ async function main() {
         logo.scaleToFit(384, 384);
         console.log('Scaled size:', logo.bitmap.width, 'x', logo.bitmap.height);
         
-        // Create 512x512 white background
-        const bg = new Jimp(512, 512, 0xFFFFFFFF);
+        // Create 512x512 white background (using string to guarantee opaque white)
+        const bg = new Jimp(512, 512, '#FFFFFF');
         
         // Composite logo into the center
         const x = (512 - logo.bitmap.width) / 2;
