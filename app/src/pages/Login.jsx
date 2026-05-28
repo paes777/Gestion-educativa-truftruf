@@ -78,8 +78,8 @@ export default function Login({ onParentLogin }) {
       <div className="auth-box card" style={{ backgroundColor: '#ffffff', borderRadius: '8px', padding: '2rem', width: '100%', maxWidth: '400px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
         
         <div className="brand-header" style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <img src="/logo.png" alt="Escuela Metrenco" style={{ maxWidth: '90px', margin: '0 auto 1rem auto' }} />
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 'bold', color: '#1a1a1a', marginBottom: '0.5rem', marginTop: 0 }}>Escuela Metrenco</h2>
+          <img src="/logo.png" alt="Escuela Truf-Truf" style={{ maxWidth: '90px', margin: '0 auto 1rem auto' }} />
+          <h2 style={{ fontSize: '1.4rem', fontWeight: 'bold', color: '#1a1a1a', marginBottom: '0.5rem', marginTop: 0 }}>Escuela Truf-Truf</h2>
           <p style={{ color: '#666', fontSize: '0.95rem', margin: 0 }}>Sistema de Administración Académica</p>
         </div>
 
