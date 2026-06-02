@@ -79,15 +79,27 @@ export default function ParentDashboard({ rut, onLogout }) {
       subjectsMap[subj] = { s1: null, s2: null, n1: [], n2: [] };
   });
 
+  const calculateTruncatedAverage = (gradesArray) => {
+     if (!gradesArray || gradesArray.length === 0) return '-';
+     const validGrades = gradesArray.map(g => Number(g)).filter(g => !isNaN(g) && g > 0 && g <= 7);
+     if (validGrades.length === 0) return '-';
+     const sum = validGrades.reduce((a,b) => a+b, 0);
+     return (Math.floor((sum / validGrades.length) * 10) / 10).toFixed(1);
+  };
+
   grades.forEach(g => {
      if (!subjectsMap[g.subject]) {
          subjectsMap[g.subject] = { s1: null, s2: null, n1: [], n2: [] };
      }
+     
+     const validGradesExist = g.grades && g.grades.some(gr => gr !== '');
+     const currentAvg = validGradesExist ? calculateTruncatedAverage(g.grades) : g.average;
+
      if (g.semester === 1) {
-         subjectsMap[g.subject].s1 = g.average;
+         subjectsMap[g.subject].s1 = currentAvg;
          subjectsMap[g.subject].n1 = g.grades || [];
      } else if (g.semester === 2) {
-         subjectsMap[g.subject].s2 = g.average;
+         subjectsMap[g.subject].s2 = currentAvg;
          subjectsMap[g.subject].n2 = g.grades || [];
      }
   });

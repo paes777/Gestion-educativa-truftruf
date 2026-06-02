@@ -251,17 +251,29 @@ export default function AdminReports({ allowedCourses }) {
          subjectsMap[sub] = { s1: '-', s2: '-', final: '-', grades1: Array(10).fill(''), grades2: Array(10).fill('') };
       });
 
+      const calculateTruncatedAverage = (gradesArray) => {
+         if (!gradesArray || gradesArray.length === 0) return '-';
+         const validGrades = gradesArray.map(g => Number(g)).filter(g => !isNaN(g) && g > 0 && g <= 7);
+         if (validGrades.length === 0) return '-';
+         const sum = validGrades.reduce((a,b) => a+b, 0);
+         return (Math.floor((sum / validGrades.length) * 10) / 10).toFixed(1);
+      };
+
       data.notas.forEach(n => {
          if(!subjectsMap[n.subject]) {
             // Fallback for subjects not in the main list
             subjectsMap[n.subject] = { s1: '-', s2: '-', final: '-', grades1: Array(10).fill(''), grades2: Array(10).fill('') };
          }
+         
+         const validGradesExist = n.grades && n.grades.some(g => g !== '');
+         const currentAvg = validGradesExist ? calculateTruncatedAverage(n.grades) : (n.average || '-');
+         
          if(n.semester === 1) {
-             subjectsMap[n.subject].s1 = n.average;
+             subjectsMap[n.subject].s1 = currentAvg;
              subjectsMap[n.subject].grades1 = n.grades || Array(10).fill('');
          }
          if(n.semester === 2) {
-             subjectsMap[n.subject].s2 = n.average;
+             subjectsMap[n.subject].s2 = currentAvg;
              subjectsMap[n.subject].grades2 = n.grades || Array(10).fill('');
          }
       });
