@@ -43,7 +43,7 @@ export default function AdminReports({ allowedCourses }) {
 
     setLoading(true);
     try {
-      const q = query(collection(db, 'estudiantes'), where('curso', '==', course));
+      const q = query(collection(db, 'estudiantes'));
       const snap = await getDocs(q);
       const firestoreData = [];
       snap.forEach(d => firestoreData.push({id: d.id, ...d.data()}));
@@ -60,21 +60,21 @@ export default function AdminReports({ allowedCourses }) {
       });
       
       studentSeed.forEach(localSt => {
-        if (localSt.curso === course) {
-          const exists = firestoreData.some(fsSt => fsSt.rut === localSt.rut);
-          if (!exists) {
-            merged.push({ id: localSt.rut, ...localSt, isLocal: true });
-          }
+        const exists = firestoreData.some(fsSt => fsSt.rut === localSt.rut);
+        if (!exists) {
+          merged.push({ id: localSt.rut, ...localSt, isLocal: true });
         }
       });
 
-      merged.sort((a, b) => {
+      const studentList = merged.filter(st => st.curso === course);
+
+      studentList.sort((a, b) => {
         const numA = typeof a.numeroLista === 'number' ? a.numeroLista : 999;
         const numB = typeof b.numeroLista === 'number' ? b.numeroLista : 999;
         if (numA !== numB) return numA - numB;
         return a.nombreCompleto.localeCompare(b.nombreCompleto);
       });
-      setStudents(merged);
+      setStudents(studentList);
     } catch (err) {
       console.error(err);
     }

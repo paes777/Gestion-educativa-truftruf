@@ -38,26 +38,35 @@ export default function AdminAttendance() {
     setLoading(true);
     setStudents([]);
     try {
-      const q = query(collection(db, 'estudiantes'), where('curso', '==', course));
+      const q = query(collection(db, 'estudiantes'));
       const snap = await getDocs(q);
-      const studentList = [];
-      snap.forEach(d => {
-         const data = d.data();
-         // Force correct course and names from seed
-         const seedMatch = studentSeed.find(seed => seed.rut === data.rut);
+      const firestoreData = [];
+      snap.forEach(d => firestoreData.push({id: d.id, ...d.data()}));
+      
+      const merged = [...firestoreData];
+      merged.forEach(st => {
+         const seedMatch = studentSeed.find(seed => seed.rut === st.rut);
          if (seedMatch) {
-            data.curso = seedMatch.curso;
-            data.nombreCompleto = seedMatch.nombreCompleto;
+            st.curso = seedMatch.curso;
+            st.nombreCompleto = seedMatch.nombreCompleto;
          }
-         studentList.push({ id: d.id, ...data });
       });
-      // Sort alphabetically
+      
+      studentSeed.forEach(localSt => {
+        if (!firestoreData.some(fsSt => fsSt.rut === localSt.rut)) {
+          merged.push({ id: localSt.rut, ...localSt });
+        }
+      });
+
+      const studentList = merged.filter(st => st.curso === course);
+
       studentList.sort((a, b) => {
         const numA = typeof a.numeroLista === 'number' ? a.numeroLista : 999;
         const numB = typeof b.numeroLista === 'number' ? b.numeroLista : 999;
         if (numA !== numB) return numA - numB;
         return a.nombreCompleto.localeCompare(b.nombreCompleto);
       });
+      
       setStudents(studentList);
 
       // Load attendance records
