@@ -389,7 +389,7 @@ export default function AdminReports({ allowedCourses }) {
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(9);
       const isS1 = (mode === 's1' || mode === 'final_s1');
-      doc.text(isS1 ? "Porcentaje de Asistencia (1° Semestre):" : "Porcentaje de Asistencia Anual:", 14, finalY);
+      doc.text(isS1 ? "Porcentaje de Asistencia 1er Semestre:" : "Porcentaje de Asistencia Anual:", 14, finalY);
       doc.setFont('helvetica', 'normal');
       
       const isPartial = mode === 's1' || mode === 's2';
