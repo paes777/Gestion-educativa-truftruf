@@ -103,15 +103,27 @@ export default function AdminReports({ allowedCourses }) {
      return { student: st, notas, asistencia, observaciones };
   };
 
-  const calculateAttendancePerc = (asistenciaObj) => {
-      if(!asistenciaObj) return { worked: 0, total: 182, perc: 100 };
+  const calculateAttendancePerc = (asistenciaObj, mode) => {
+      const isS1 = (mode === 's1' || mode === 'final_s1');
+      const totalDays = isS1 ? 76 : 182; // 76 days for March-June, 182 for the full year
+      const monthsToCount = isS1 ? ['mar', 'abr', 'may', 'jun'] : null;
+
+      if(!asistenciaObj) return { worked: 0, total: totalDays, perc: 100 };
+      
       let present = 0;
-      Object.values(asistenciaObj).forEach(m => {
-          present += (Number(m.present) || 0);
-      });
-      let perc = (present / 182) * 100;
+      if (monthsToCount) {
+         monthsToCount.forEach(m => {
+            if (asistenciaObj[m]) present += (Number(asistenciaObj[m].present) || 0);
+         });
+      } else {
+         Object.values(asistenciaObj).forEach(m => {
+             present += (Number(m.present) || 0);
+         });
+      }
+      
+      let perc = (present / totalDays) * 100;
       if (perc > 100) perc = 100;
-      return { worked: present, total: 182, perc: perc.toFixed(1) };
+      return { worked: present, total: totalDays, perc: perc.toFixed(1) };
   };
 
   const getImageFromUrl = (url) => {
@@ -373,16 +385,17 @@ export default function AdminReports({ allowedCourses }) {
       }
 
       // Asistencia
-      const attendance = calculateAttendancePerc(data.asistencia);
+      const attendance = calculateAttendancePerc(data.asistencia, mode);
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(9);
-      doc.text("Porcentaje de Asistencia Anual:", 14, finalY);
+      const isS1 = (mode === 's1' || mode === 'final_s1');
+      doc.text(isS1 ? "Porcentaje de Asistencia (1° Semestre):" : "Porcentaje de Asistencia Anual:", 14, finalY);
       doc.setFont('helvetica', 'normal');
       
       const isPartial = mode === 's1' || mode === 's2';
       const displayAttendance = isPartial ? '-' : `${attendance.perc}%`;
       
-      doc.text(displayAttendance, 70, finalY);
+      doc.text(displayAttendance, 75, finalY);
 
       finalY += 7;
       
