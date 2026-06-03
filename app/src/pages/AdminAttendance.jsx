@@ -23,8 +23,16 @@ const COURSES = [
   "5° Básico", "6° Básico", "7° Básico", "8° Básico"
 ];
 
-export default function AdminAttendance() {
-  const [selectedCourse, setSelectedCourse] = useState(COURSES[0]);
+export default function AdminAttendance({ allowedCourses }) {
+  const availableCourses = allowedCourses && allowedCourses.length > 0 ? allowedCourses : COURSES;
+  const [selectedCourse, setSelectedCourse] = useState(availableCourses[0]);
+  
+  useEffect(() => {
+     if (availableCourses.length > 0 && !availableCourses.includes(selectedCourse)) {
+         setSelectedCourse(availableCourses[0]);
+     }
+  }, [allowedCourses, selectedCourse]);
+
   const [students, setStudents] = useState([]);
   const [attendanceData, setAttendanceData] = useState({}); // { studentId: { mar: { present, absent }, abr: ... } }
   const [loading, setLoading] = useState(false);
@@ -147,7 +155,7 @@ export default function AdminAttendance() {
           </div>
           <div className="flex gap-4">
             <select value={selectedCourse} onChange={e => setSelectedCourse(e.target.value)} style={{width: '200px'}}>
-              {COURSES.map(c => <option key={c} value={c}>{c}</option>)}
+              {availableCourses.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
             <button onClick={handleSave} disabled={saving || loading} className="btn btn-primary" style={{whiteSpace: 'nowrap'}}>
               {saving ? 'Guardando...' : <><Save size={18} /> Guardar Asistencia</>}

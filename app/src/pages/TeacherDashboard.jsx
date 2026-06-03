@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { db, auth } from '../services/firebase';
 import { signOut } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
-import { LogOut, BookOpen, FileText, MessageSquare } from 'lucide-react';
+import { LogOut, BookOpen, FileText, MessageSquare, Calendar } from 'lucide-react';
 import TeacherGrades from './TeacherGrades';
 import AdminReports from './AdminReports';
 import TeacherCommunications from './TeacherCommunications';
+import AdminAttendance from './AdminAttendance';
 
 export default function TeacherDashboard({ user }) {
   const [activeTab, setActiveTab] = useState('notas');
@@ -93,6 +94,16 @@ export default function TeacherDashboard({ user }) {
             <MessageSquare size={20} />
             Apoderados
           </button>
+          {jefatura && (
+            <button
+              className={`nav-item ${activeTab === 'asistencia' ? 'active' : ''}`}
+              onClick={() => setActiveTab('asistencia')}
+              style={{background: 'none', border: 'none', width: '100%', textAlign: 'left', font: 'inherit'}}
+            >
+              <Calendar size={20} />
+              Asistencia
+            </button>
+          )}
         </nav>
       </aside>
 
@@ -102,6 +113,7 @@ export default function TeacherDashboard({ user }) {
             {activeTab === 'notas' && 'Registro de Calificaciones'}
             {activeTab === 'informes' && 'Descarga de Informes'}
             {activeTab === 'apoderados' && 'Comunicaciones con Apoderados'}
+            {activeTab === 'asistencia' && 'Registro de Asistencia'}
           </div>
           <div className="top-navbar-actions">
             <span style={{color: 'var(--text-muted)', fontSize: '13px', alignSelf: 'center'}}>
@@ -126,6 +138,7 @@ export default function TeacherDashboard({ user }) {
                {activeTab === 'notas' && <TeacherGrades user={user} assignedCourses={courses} assignments={assignments} jefatura={jefatura} isDiferencial={isDiferencial} />}
                {activeTab === 'informes' && <AdminReports allowedCourses={courses} />}
                {activeTab === 'apoderados' && <TeacherCommunications user={user} assignedCourses={courses} teacherName={user.email.split('@')[0]} />}
+               {activeTab === 'asistencia' && <AdminAttendance allowedCourses={[jefatura]} />}
              </>
         )}
         </div>
