@@ -64,30 +64,46 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
   const loadStudentsAndData = async () => {
     const cacheKey = `${activeCourse}_${subject}`;
     
-    // 1. CARGA INSTANTÁNEA (ALUMNOS)
-    const list = studentSeed
-      .filter(s => s.curso === activeCourse)
-      .map(s => ({ id: s.rut, ...s }));
-
-    list.sort((a, b) => {
-      const numA = typeof a.numeroLista === 'number' ? a.numeroLista : 999;
-      const numB = typeof b.numeroLista === 'number' ? b.numeroLista : 999;
-      if (numA !== numB) return numA - numB;
-      return a.nombreCompleto.localeCompare(b.nombreCompleto);
-    });
-    setStudents(list);
-
-    // 2. USO DE CACHÉ (VELOCIDAD 0 SEGUNDOS)
-    if (cache.current[cacheKey]) {
-       const cData = cache.current[cacheKey];
-       setGradesData(cData.gradesMap);
-       setCrossSemesterAverages(cData.crossAvgMap);
-       setObservations(cData.obsMap);
-       // Aún así actualizamos en fondo por si hubo cambios externos
-    }
-
     setLoading(true);
     try {
+       // 1. CARGA DE ESTUDIANTES (DB + SEED)
+       const qEstudiantes = query(collection(db, 'estudiantes'));
+       const snapEst = await getDocs(qEstudiantes);
+       const firestoreData = [];
+       snapEst.forEach(d => firestoreData.push({id: d.id, ...d.data()}));
+       
+       const merged = [...firestoreData];
+       merged.forEach(st => {
+          const seedMatch = studentSeed.find(seed => seed.rut === st.rut);
+          if (seedMatch) {
+             st.curso = seedMatch.curso;
+             st.nombreCompleto = seedMatch.nombreCompleto;
+          }
+       });
+       
+       studentSeed.forEach(localSt => {
+         if (!firestoreData.some(fsSt => fsSt.rut === localSt.rut)) {
+           merged.push({ id: localSt.rut, ...localSt });
+         }
+       });
+
+       const list = merged.filter(st => st.curso === activeCourse);
+
+       list.sort((a, b) => {
+         const numA = typeof a.numeroLista === 'number' ? a.numeroLista : 999;
+         const numB = typeof b.numeroLista === 'number' ? b.numeroLista : 999;
+         if (numA !== numB) return numA - numB;
+         return a.nombreCompleto.localeCompare(b.nombreCompleto);
+       });
+       setStudents(list);
+
+       // 2. USO DE CACHÉ PARA NOTAS
+       if (cache.current[cacheKey]) {
+          const cData = cache.current[cacheKey];
+          setGradesData(cData.gradesMap);
+          setCrossSemesterAverages(cData.crossAvgMap);
+          setObservations(cData.obsMap);
+       }
        const gradesMap = {};
        const crossAvgMap = {};
        const obsMap = {};
