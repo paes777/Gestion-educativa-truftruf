@@ -50,6 +50,7 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
   const [gradesData, setGradesData] = useState({}); // { stId: ['', '', ...] } (array of 10)
   const [crossSemesterAverages, setCrossSemesterAverages] = useState({}); // { stId: { s1: '-', s2: '-' } }
   const [observations, setObservations] = useState({}); // { stId: { sem1: '', sem2: '', pie1: '', pie2: '' } }
+  const [tabDirection, setTabDirection] = useState('horizontal'); // 'horizontal' or 'vertical'
   
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -245,6 +246,18 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
      setSaving(false);
   };
 
+   const handleKeyDown = (e, stIndex, colIndex) => {
+      if (e.key === 'Tab' && tabDirection === 'vertical') {
+          e.preventDefault();
+          const nextRow = stIndex + (e.shiftKey ? -1 : 1);
+          const nextInput = document.querySelector(`input[data-row="${nextRow}"][data-col="${colIndex}"]`);
+          if (nextInput) {
+              nextInput.focus();
+              nextInput.select();
+          }
+      }
+   };
+
   return (
     <div>
       <div className="card">
@@ -285,6 +298,15 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
                  <option value={2}>Segundo Semestre</option>
               </select>
 
+              <button 
+                 onClick={() => setTabDirection(prev => prev === 'horizontal' ? 'vertical' : 'horizontal')} 
+                 className="btn btn-secondary"
+                 style={{whiteSpace: 'nowrap'}}
+                 title="Cambiar dirección de navegación con Tabulador"
+              >
+                 {tabDirection === 'horizontal' ? 'Tab: →' : 'Tab: ↓'}
+              </button>
+
               <button onClick={handleSave} disabled={saving || loading} className="btn btn-primary" style={{whiteSpace: 'nowrap'}}>
                  {saving ? 'Guardando...' : <><Save size={18} /> Guardar Cambios</>}
               </button>
@@ -308,7 +330,7 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
                   </tr>
                 </thead>
                 <tbody>
-                  {students.map(st => {
+                  {students.map((st, studentIndex) => {
                       const arr = gradesData[st.id] || Array(10).fill('');
                       const avg = calculateAverage(arr);
                       const isDanger = avg && Number(avg) < 4.0;
@@ -327,6 +349,9 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
                                     className={`grade-input ${val && Number(val) < 4 ? 'failing' : ''}`}
                                     maxLength="3"
                                     value={val}
+                                    data-row={studentIndex}
+                                    data-col={idx}
+                                    onKeyDown={(e) => handleKeyDown(e, studentIndex, idx)}
                                     onChange={e => handleGradeChange(st.id, idx, e.target.value)}
                                     onBlur={e => handleGradeBlur(st.id, idx, e.target.value)}
                                     placeholder=""
