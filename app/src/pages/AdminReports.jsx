@@ -255,8 +255,8 @@ export default function AdminReports({ allowedCourses }) {
          if (!gradesArray || gradesArray.length === 0) return '-';
          const validGrades = gradesArray.map(g => Number(g)).filter(g => !isNaN(g) && g > 0 && g <= 7);
          if (validGrades.length === 0) return '-';
-         const sum = validGrades.reduce((a,b) => a+b, 0);
-         return (Math.floor((sum / validGrades.length) * 10) / 10).toFixed(1);
+         const sumInt = validGrades.reduce((a,b) => a + Math.round(b * 10), 0);
+         return (Math.floor(sumInt / validGrades.length) / 10).toFixed(1);
       };
 
       data.notas.forEach(n => {
