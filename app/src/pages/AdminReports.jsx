@@ -105,7 +105,7 @@ export default function AdminReports({ allowedCourses }) {
 
   const calculateAttendancePerc = (asistenciaObj, mode) => {
       const isS1 = (mode === 's1' || mode === 'final_s1');
-      const totalDays = isS1 ? 76 : 182; // 76 days for March-June, 182 for the full year
+      const totalDays = isS1 ? 72 : 179; // 72 days for March-June, 179 for the full year
       const monthsToCount = isS1 ? ['mar', 'abr', 'may', 'jun'] : null;
 
       if(!asistenciaObj) return { worked: 0, total: totalDays, perc: 100 };

@@ -5,10 +5,10 @@ import { Save } from 'lucide-react';
 import studentSeed from '../services/students_seed.json';
 
 const MONTHS = [
-  { id: 'mar', name: 'Marzo', defaultDays: 22 },
+  { id: 'mar', name: 'Marzo', defaultDays: 20 },
   { id: 'abr', name: 'Abril', defaultDays: 21 },
-  { id: 'may', name: 'Mayo', defaultDays: 18 },
-  { id: 'jun', name: 'Junio', defaultDays: 15 },
+  { id: 'may', name: 'Mayo', defaultDays: 17 },
+  { id: 'jun', name: 'Junio', defaultDays: 14 },
   { id: 'jul', name: 'Julio', defaultDays: 18 },
   { id: 'ago', name: 'Agosto', defaultDays: 21 },
   { id: 'sep', name: 'Septiembre', defaultDays: 17 },
@@ -16,7 +16,7 @@ const MONTHS = [
   { id: 'nov', name: 'Noviembre', defaultDays: 21 },
   { id: 'dic', name: 'Diciembre', defaultDays: 10 },
 ];
-const TOTAL_YEAR_DAYS = 182;
+const TOTAL_YEAR_DAYS = 179;
 
 const COURSES = [
   "1° Básico", "2° Básico", "3° Básico", "4° Básico",
