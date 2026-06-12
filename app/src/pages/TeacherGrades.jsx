@@ -116,21 +116,15 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
          obsMap[st.id] = { sem1: '', sem2: '', pie1: '', pie2: '' };
        });
 
-       // Query optimizada: Solo traemos lo estrictamente necesario
+       // Query optimizada para notas
        const gradesQuery = query(
          collection(db, 'notas'), 
          where('course', '==', activeCourse)
        );
-       
-       const obsQuery = query(
-         collection(db, 'observaciones'),
-         where('course', '==', activeCourse)
-       );
 
-       // Ejecución paralela ultra-rápida
-       const [gradesSnap, obsSnap] = await Promise.all([
+       const [gradesSnap, ...obsSnaps] = await Promise.all([
          getDocs(gradesQuery),
-         getDocs(obsQuery)
+         ...list.map(st => getDoc(doc(db, 'observaciones', st.id)))
        ]);
 
        gradesSnap.forEach(d => {
@@ -143,8 +137,10 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
          }
        });
 
-       obsSnap.forEach(d => {
-         if (obsMap[d.id]) obsMap[d.id] = d.data();
+       obsSnaps.forEach(d => {
+         if (d.exists() && obsMap[d.id]) {
+             obsMap[d.id] = d.data();
+         }
        });
  
        setGradesData(gradesMap);
@@ -234,7 +230,7 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
           }, { merge: true });
 
           const oRef = doc(db, 'observaciones', st.id);
-          batch.set(oRef, observations[st.id], { merge: true });
+          batch.set(oRef, { ...observations[st.id], course: activeCourse }, { merge: true });
        }
 
        await batch.commit();
