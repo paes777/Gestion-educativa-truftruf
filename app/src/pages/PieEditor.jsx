@@ -22,8 +22,16 @@ export default function PieEditor() {
 
     const loadData = async () => {
         try {
-            // 1. Get student name
-            const stDoc = await getDoc(doc(db, 'estudiantes', studentId));
+            // Paralelizar las consultas a la base de datos para máxima velocidad
+            const qDocentes = query(collection(db, 'docentes'), where('isDiferencial', '==', true));
+            
+            const [stDoc, docentesSnap, obsDoc] = await Promise.all([
+                getDoc(doc(db, 'estudiantes', studentId)),
+                getDocs(qDocentes),
+                getDoc(doc(db, 'observaciones', studentId))
+            ]);
+
+            // 1. Set student name
             if (stDoc.exists()) {
                 setStudentName(stDoc.data().nombreCompleto || stDoc.data().nombres);
             } else {
@@ -32,9 +40,7 @@ export default function PieEditor() {
                 else setStudentName('Estudiante Desconocido');
             }
 
-            // 2. Get differential educators
-            const qDocentes = query(collection(db, 'docentes'), where('isDiferencial', '==', true));
-            const docentesSnap = await getDocs(qDocentes);
+            // 2. Set differential educators
             const courseEducators = [];
             docentesSnap.forEach(d => {
                 const data = d.data();
@@ -48,8 +54,7 @@ export default function PieEditor() {
             });
             setPieEducators(courseEducators);
 
-            // 3. Get existing observations
-            const obsDoc = await getDoc(doc(db, 'observaciones', studentId));
+            // 3. Set existing observations
             if (obsDoc.exists()) {
                 setObservations(obsDoc.data());
             }
