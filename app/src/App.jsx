@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import AdminDashboard from './pages/AdminDashboard';
 import TeacherDashboard from './pages/TeacherDashboard';
 import ParentDashboard from './pages/ParentDashboard';
+import PieEditor from './pages/PieEditor';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -79,6 +80,13 @@ function App() {
               : user 
                 ? (role === 'admin' ? <AdminDashboard user={user} /> : <TeacherDashboard user={user} />) 
                 : <Navigate to="/login" replace />
+          } 
+        />
+        
+        <Route 
+          path="/pie/:studentId/:course/:semester" 
+          element={
+            user ? <PieEditor /> : <Navigate to="/login" replace />
           } 
         />
       </Routes>

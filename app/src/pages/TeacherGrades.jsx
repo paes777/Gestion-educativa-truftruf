@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { db } from '../services/firebase';
 import { collection, query, where, getDocs, doc, writeBatch, getDoc } from 'firebase/firestore';
 import studentSeed from '../services/students_seed.json';
-import { Save, X } from 'lucide-react';
+import { Save } from 'lucide-react';
 
 const SUBJECTS = [
   "Lenguaje y Comunicación", "Matemática", "Historia, Geografía y Cs. Sociales",
@@ -52,10 +52,6 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
   const [observations, setObservations] = useState({}); // { stId: { sem1: '', sem2: '', pie1: '', pie2: '' } }
   const [tabDirection, setTabDirection] = useState('horizontal'); // 'horizontal' or 'vertical'
   
-  const [pieEducators, setPieEducators] = useState([]); // [{id, nombre}]
-  const [isPieModalOpen, setIsPieModalOpen] = useState(false);
-  const [activePieStudent, setActivePieStudent] = useState(null);
-
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const cache = useRef({}); // { 'course_subject': data }
@@ -125,26 +121,11 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
          collection(db, 'notas'), 
          where('course', '==', activeCourse)
        );
-       const qDocentes = query(collection(db, 'docentes'), where('isDiferencial', '==', true));
 
-       const [gradesSnap, docentesSnap, ...obsSnaps] = await Promise.all([
+       const [gradesSnap, ...obsSnaps] = await Promise.all([
          getDocs(gradesQuery),
-         getDocs(qDocentes),
          ...list.map(st => getDoc(doc(db, 'observaciones', st.id)))
        ]);
-
-       const courseEducators = [];
-       docentesSnap.forEach(d => {
-           const data = d.data();
-           let isAssigned = false;
-           if (data.jefatura === activeCourse) isAssigned = true;
-           if (data.asignaciones && data.asignaciones.some(a => a.curso === activeCourse)) isAssigned = true;
-           if (data.cursosAsignados && data.cursosAsignados.includes(activeCourse)) isAssigned = true;
-           if (data.cursoAsignado === activeCourse) isAssigned = true;
-           
-           if (isAssigned) courseEducators.push({ id: d.id, name: data.nombre });
-       });
-       setPieEducators(courseEducators);
 
        gradesSnap.forEach(d => {
          const data = d.data();
@@ -219,33 +200,6 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
      } else {
          setObservations({...observations, [stId]: {...current, pie2: value}});
      }
-  };
-
-  const handlePieDetailsChange = (stId, educatorId, educatorName, text) => {
-      const currentObs = observations[stId] || { sem1: '', sem2: '', pie1: '', pie2: '', pie_details_1: {}, pie_details_2: {} };
-      const field = semester === 1 ? 'pie_details_1' : 'pie_details_2';
-      const currentDetails = currentObs[field] || {};
-      
-      setObservations({
-          ...observations,
-          [stId]: {
-             ...currentObs,
-             [field]: {
-                ...currentDetails,
-                [educatorId]: { nombre: educatorName, texto: text }
-             }
-          }
-      });
-  };
-
-  const openPieModal = (st) => {
-     setActivePieStudent(st);
-     setIsPieModalOpen(true);
-  };
-
-  const closePieModal = () => {
-     setIsPieModalOpen(false);
-     setActivePieStudent(null);
   };
 
   const calculateAverage = (gradesArray) => {
@@ -434,7 +388,7 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
                                     <button 
                                        className="btn btn-secondary" 
                                        style={{padding: '0.4rem', fontSize: '12px'}}
-                                       onClick={() => openPieModal(st)}
+                                       onClick={() => window.open(`/pie/${st.id}/${encodeURIComponent(activeCourse)}/${semester}`, '_blank')}
                                     >
                                        Resultado PIE
                                     </button>
@@ -448,67 +402,6 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
            </div>
         )}
       </div>
-
-      {isPieModalOpen && activePieStudent && (
-          <div className="modal-overlay" onClick={closePieModal} style={{position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-             <div className="modal-content card" onClick={e => e.stopPropagation()} style={{width: '600px', maxWidth: '90vw', maxHeight: '90vh', overflowY: 'auto'}}>
-                <div className="flex justify-between items-center mb-4">
-                   <h3 style={{color: 'var(--primary)', fontWeight: 'bold'}}>
-                      Resultados PIE: {activePieStudent.nombreCompleto}
-                   </h3>
-                   <button onClick={closePieModal} style={{background: 'none', border: 'none', cursor: 'pointer'}}><X size={24} color="var(--text-muted)" /></button>
-                </div>
-                
-                {pieEducators.length === 0 ? (
-                   <div style={{padding: '2rem', textAlign: 'center', backgroundColor: 'var(--surface-solid)', borderRadius: '8px'}}>
-                      <p className="text-muted">No hay educadoras diferenciales asignadas a este curso en el sistema.</p>
-                   </div>
-                ) : (
-                   <div className="flex flex-col gap-4">
-                      {pieEducators.map(educator => {
-                         const field = semester === 1 ? 'pie_details_1' : 'pie_details_2';
-                         const text = observations[activePieStudent.id]?.[field]?.[educator.id]?.texto || '';
-                         
-                         return (
-                            <div key={educator.id} style={{backgroundColor: 'var(--surface-solid)', padding: '1rem', borderRadius: '8px'}}>
-                               <label style={{fontWeight: 'bold', display: 'block', marginBottom: '0.5rem', color: 'var(--text)'}}>
-                                  Educadora: {educator.name}
-                               </label>
-                               <textarea 
-                                  value={text}
-                                  onChange={e => handlePieDetailsChange(activePieStudent.id, educator.id, educator.name, e.target.value)}
-                                  placeholder="Escribe el reporte aquí..."
-                                  style={{width: '100%', minHeight: '80px', padding: '0.5rem', resize: 'vertical'}}
-                               />
-                            </div>
-                         );
-                      })}
-                   </div>
-                )}
-
-                {/* Legacy Data Fallback Display */}
-                {((semester === 1 && observations[activePieStudent.id]?.pie1) || (semester === 2 && observations[activePieStudent.id]?.pie2)) && (
-                   <div style={{marginTop: '1rem', padding: '1rem', border: '1px solid #e2e8f0', borderRadius: '8px'}}>
-                      <label style={{fontWeight: 'bold', display: 'block', marginBottom: '0.5rem', color: '#64748b'}}>
-                         Reporte Antiguo / General
-                      </label>
-                      <textarea 
-                         value={semester === 1 ? observations[activePieStudent.id]?.pie1 : observations[activePieStudent.id]?.pie2}
-                         onChange={e => handlePieChange(activePieStudent.id, e.target.value)}
-                         style={{width: '100%', minHeight: '60px', padding: '0.5rem', resize: 'vertical', borderColor: '#cbd5e1', backgroundColor: '#f8fafc'}}
-                      />
-                   </div>
-                )}
-                
-                <div className="mt-6 flex justify-end">
-                   <button className="btn btn-primary" onClick={closePieModal}>
-                      Listo (Recuerda Guardar Cambios)
-                   </button>
-                </div>
-             </div>
-          </div>
-       )}
-
     </div>
   );
 }
