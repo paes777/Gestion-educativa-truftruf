@@ -425,9 +425,34 @@ export default function AdminReports({ allowedCourses }) {
          doc.setFont('helvetica', 'bold');
          doc.text("Resultados apoyos PIE Semestre 1:", 14, finalY);
          doc.setFont('helvetica', 'normal');
-         const pie1Lines = doc.splitTextToSize(obs.pie1 || "NO APLICA", 180);
-         doc.text(pie1Lines, 14, finalY + 4);
-         finalY += (pie1Lines.length * 4) + 4;
+         
+         const pieDetails1 = obs.pie_details_1 ? Object.values(obs.pie_details_1) : [];
+         if (pieDetails1.length > 0 || (obs.pie1 && obs.pie1.trim() !== "")) {
+             finalY += 4;
+             pieDetails1.forEach(p => {
+                 if (p.texto && p.texto.trim() !== "") {
+                     doc.setFont('helvetica', 'bold');
+                     doc.text(`- ${p.nombre}:`, 14, finalY);
+                     doc.setFont('helvetica', 'normal');
+                     finalY += 4;
+                     const pLines = doc.splitTextToSize(p.texto, 180);
+                     doc.text(pLines, 14, finalY);
+                     finalY += (pLines.length * 4) + 2;
+                 }
+             });
+             if (obs.pie1 && obs.pie1.trim() !== "") {
+                 doc.setFont('helvetica', 'bold');
+                 doc.text(pieDetails1.length > 0 ? `- Reporte General:` : `-`, 14, finalY);
+                 doc.setFont('helvetica', 'normal');
+                 finalY += 4;
+                 const pLines = doc.splitTextToSize(obs.pie1, 180);
+                 doc.text(pLines, 14, finalY);
+                 finalY += (pLines.length * 4) + 2;
+             }
+         } else {
+             doc.text("NO APLICA", 14, finalY + 4);
+             finalY += 8;
+         }
       }
 
       if (mode === 's2' || mode === 'final_s2' || mode === 'full') {
@@ -442,9 +467,34 @@ export default function AdminReports({ allowedCourses }) {
          doc.setFont('helvetica', 'bold');
          doc.text("Resultados apoyos PIE Semestre 2:", 14, finalY);
          doc.setFont('helvetica', 'normal');
-         const pie2Lines = doc.splitTextToSize(obs.pie2 || "NO APLICA", 180);
-         doc.text(pie2Lines, 14, finalY + 4);
-         finalY += (pie2Lines.length * 4) + 4;
+         
+         const pieDetails2 = obs.pie_details_2 ? Object.values(obs.pie_details_2) : [];
+         if (pieDetails2.length > 0 || (obs.pie2 && obs.pie2.trim() !== "")) {
+             finalY += 4;
+             pieDetails2.forEach(p => {
+                 if (p.texto && p.texto.trim() !== "") {
+                     doc.setFont('helvetica', 'bold');
+                     doc.text(`- ${p.nombre}:`, 14, finalY);
+                     doc.setFont('helvetica', 'normal');
+                     finalY += 4;
+                     const pLines = doc.splitTextToSize(p.texto, 180);
+                     doc.text(pLines, 14, finalY);
+                     finalY += (pLines.length * 4) + 2;
+                 }
+             });
+             if (obs.pie2 && obs.pie2.trim() !== "") {
+                 doc.setFont('helvetica', 'bold');
+                 doc.text(pieDetails2.length > 0 ? `- Reporte General:` : `-`, 14, finalY);
+                 doc.setFont('helvetica', 'normal');
+                 finalY += 4;
+                 const pLines = doc.splitTextToSize(obs.pie2, 180);
+                 doc.text(pLines, 14, finalY);
+                 finalY += (pLines.length * 4) + 2;
+             }
+         } else {
+             doc.text("NO APLICA", 14, finalY + 4);
+             finalY += 8;
+         }
       }
 
       // Firmas
