@@ -118,20 +118,18 @@ export default function Login({ onParentLogin }) {
            </div>
         ) : (
           <>
-            <div style={{ display: 'flex', borderBottom: '1px solid #e0e0e0', marginBottom: '1.5rem' }}>
+            <div className="tabs-container" style={{ display: 'flex', borderBottom: '1px solid #e0e0e0', marginBottom: '1.5rem' }}>
               <button 
-                type="button"
-                onClick={() => { setTab('docente'); setError(''); }}
-                style={{ flex: 1, padding: '0.75rem', background: 'none', border: 'none', borderBottom: tab === 'docente' ? '2px solid #2E7D32' : '2px solid transparent', color: tab === 'docente' ? '#2E7D32' : '#666', fontWeight: tab === 'docente' ? 'bold' : 'normal', cursor: 'pointer', fontSize: '1rem' }}
+                className={`auth-tab ${tab === 'docente' ? 'active' : ''}`}
+                onClick={() => setTab('docente')}
               >
-                Docentes
+                Ingreso Docente
               </button>
               <button 
-                type="button"
-                onClick={() => { setTab('admin'); setError(''); }}
-                style={{ flex: 1, padding: '0.75rem', background: 'none', border: 'none', borderBottom: tab === 'admin' ? '2px solid #2E7D32' : '2px solid transparent', color: tab === 'admin' ? '#2E7D32' : '#666', fontWeight: tab === 'admin' ? 'bold' : 'normal', cursor: 'pointer', fontSize: '1rem' }}
+                className={`auth-tab ${tab === 'admin' ? 'active' : ''}`}
+                onClick={() => setTab('admin')}
               >
-                Administración
+                Ingreso Admin
               </button>
             </div>
 

@@ -73,7 +73,6 @@ export default function TeacherDashboard({ user }) {
           <button
             className={`nav-item ${activeTab === 'notas' ? 'active' : ''}`}
             onClick={() => setActiveTab('notas')}
-            style={{background: 'none', border: 'none', width: '100%', textAlign: 'left', font: 'inherit'}}
           >
             <BookOpen size={20} />
             Subir Notas
@@ -81,7 +80,6 @@ export default function TeacherDashboard({ user }) {
           <button
             className={`nav-item ${activeTab === 'informes' ? 'active' : ''}`}
             onClick={() => setActiveTab('informes')}
-            style={{background: 'none', border: 'none', width: '100%', textAlign: 'left', font: 'inherit'}}
           >
             <FileText size={20} />
             Generar Informes
@@ -89,7 +87,6 @@ export default function TeacherDashboard({ user }) {
           <button
             className={`nav-item ${activeTab === 'apoderados' ? 'active' : ''}`}
             onClick={() => setActiveTab('apoderados')}
-            style={{background: 'none', border: 'none', width: '100%', textAlign: 'left', font: 'inherit'}}
           >
             <MessageSquare size={20} />
             Apoderados
@@ -98,7 +95,6 @@ export default function TeacherDashboard({ user }) {
             <button
               className={`nav-item ${activeTab === 'asistencia' ? 'active' : ''}`}
               onClick={() => setActiveTab('asistencia')}
-              style={{background: 'none', border: 'none', width: '100%', textAlign: 'left', font: 'inherit'}}
             >
               <Calendar size={20} />
               Asistencia

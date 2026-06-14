@@ -37,7 +37,6 @@ export default function AdminDashboard({ user }) {
               key={item.id}
               className={`nav-item ${activeTab === item.id ? 'active' : ''}`}
               onClick={() => setActiveTab(item.id)}
-              style={{background: 'none', border: 'none', width: '100%', textAlign: 'left', font: 'inherit'}}
             >
               {item.icon}
               {item.label}
