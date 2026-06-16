@@ -49,6 +49,7 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
   const [students, setStudents] = useState([]);
   const [gradesData, setGradesData] = useState({}); // { stId: ['', '', ...] } (array of 10)
   const [crossSemesterAverages, setCrossSemesterAverages] = useState({}); // { stId: { s1: '-', s2: '-' } }
+  const [pendingStatus, setPendingStatus] = useState({}); // { stId: true/false }
   const [observations, setObservations] = useState({}); // { stId: { sem1: '', sem2: '', pie1: '', pie2: '' } }
   const [tabDirection, setTabDirection] = useState('horizontal'); // 'horizontal' or 'vertical'
   
@@ -104,16 +105,19 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
           setGradesData(cData.gradesMap);
           setCrossSemesterAverages(cData.crossAvgMap);
           setObservations(cData.obsMap);
+          setPendingStatus(cData.pendingMap);
        }
        const gradesMap = {};
        const crossAvgMap = {};
        const obsMap = {};
+       const pendingMap = {};
  
        // Pre-llenar mapas para evitar saltos en la UI
        list.forEach(st => {
          gradesMap[st.id] = Array(10).fill('');
          crossAvgMap[st.id] = { s1: '-', s2: '-' };
          obsMap[st.id] = { sem1: '', sem2: '', pie1: '', pie2: '', pie_details_1: {}, pie_details_2: {} };
+         pendingMap[st.id] = false;
        });
 
        // Query optimizada para notas
@@ -131,7 +135,10 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
          const data = d.data();
          const stId = data.studentId;
          if (gradesMap[stId] && (data.subject || '').normalize('NFC') === (subject || '').normalize('NFC')) {
-           if (data.semester === semester) gradesMap[stId] = data.grades || Array(10).fill('');
+           if (data.semester === semester) {
+               gradesMap[stId] = data.grades || Array(10).fill('');
+               if (data.average === 'P') pendingMap[stId] = true;
+           }
            if (data.semester === 1) crossAvgMap[stId].s1 = data.average || '-';
            if (data.semester === 2) crossAvgMap[stId].s2 = data.average || '-';
          }
@@ -146,9 +153,10 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
        setGradesData(gradesMap);
        setCrossSemesterAverages(crossAvgMap);
        setObservations(obsMap);
+       setPendingStatus(pendingMap);
        
        // Guardar en Caché para la próxima vez
-       cache.current[cacheKey] = { gradesMap, crossAvgMap, obsMap };
+       cache.current[cacheKey] = { gradesMap, crossAvgMap, obsMap, pendingMap };
     } catch(err) {
       console.error("Error en carga rápida:", err);
     }
@@ -217,7 +225,8 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
        
        for (const st of students) {
           const arr = gradesData[st.id];
-          const avg = calculateAverage(arr);
+          let avg = calculateAverage(arr);
+          if (pendingStatus[st.id]) avg = 'P';
           
           const gRef = doc(db, 'notas', `${st.id}_${subject.replace(/\s+/g,'')}_s${semester}`);
           batch.set(gRef, {
@@ -370,15 +379,36 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
                            ))}
 
                            <td style={{textAlign: 'center', fontSize: '12px', fontWeight: semester === 1 ? 'bold' : 'normal', backgroundColor: semester === 1 ? '#f0f4ff' : 'transparent'}}>
-                              {semester === 1 ? (avg || '-') : (crossSemesterAverages[st.id]?.s1 || '-')}
+                              {semester === 1 ? (
+                                 <select 
+                                    value={pendingStatus[st.id] ? 'P' : 'calc'} 
+                                    onChange={(e) => setPendingStatus({...pendingStatus, [st.id]: e.target.value === 'P'})}
+                                    className="grade-select-hidden"
+                                    title="Haz clic para marcar como Pendiente"
+                                 >
+                                    <option value="calc">{avg || '-'}</option>
+                                    <option value="P">P</option>
+                                 </select>
+                              ) : (crossSemesterAverages[st.id]?.s1 || '-')}
                            </td>
                            <td style={{textAlign: 'center', fontSize: '12px', fontWeight: semester === 2 ? 'bold' : 'normal', backgroundColor: semester === 2 ? '#f0f4ff' : 'transparent'}}>
-                              {semester === 2 ? (avg || '-') : (crossSemesterAverages[st.id]?.s2 || '-')}
+                              {semester === 2 ? (
+                                 <select 
+                                    value={pendingStatus[st.id] ? 'P' : 'calc'} 
+                                    onChange={(e) => setPendingStatus({...pendingStatus, [st.id]: e.target.value === 'P'})}
+                                    className="grade-select-hidden"
+                                    title="Haz clic para marcar como Pendiente"
+                                 >
+                                    <option value="calc">{avg || '-'}</option>
+                                    <option value="P">P</option>
+                                 </select>
+                              ) : (crossSemesterAverages[st.id]?.s2 || '-')}
                            </td>
                            <td style={{textAlign: 'center', fontSize: '12px', fontWeight: 'bold', backgroundColor: '#e8eaf6'}}>
                               {(() => {
-                                 const s1 = semester === 1 ? (avg || '-') : (crossSemesterAverages[st.id]?.s1 || '-');
-                                 const s2 = semester === 2 ? (avg || '-') : (crossSemesterAverages[st.id]?.s2 || '-');
+                                 const s1 = semester === 1 ? (pendingStatus[st.id] ? 'P' : (avg || '-')) : (crossSemesterAverages[st.id]?.s1 || '-');
+                                 const s2 = semester === 2 ? (pendingStatus[st.id] ? 'P' : (avg || '-')) : (crossSemesterAverages[st.id]?.s2 || '-');
+                                 if (s1 === 'P' || s2 === 'P') return 'P';
                                  if (s1 !== '-' && s2 !== '-') {
                                     return ((Number(s1) + Number(s2)) / 2).toFixed(1);
                                  }
