@@ -341,8 +341,8 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
                   <tr>
                     <th className="text-left" style={{position: 'sticky', left: 0, backgroundColor: 'var(--surface-solid)', zIndex: 10, width: '250px'}}>Alumnos del Curso</th>
                     {[...Array(10)].map((_, i) => <th key={i} style={{textAlign:'center', width: '50px'}}>N{i+1}</th>)}
-                    <th style={{textAlign:'center', width: '50px', backgroundColor: 'var(--primary-light)'}}>S1</th>
-                    <th style={{textAlign:'center', width: '50px', backgroundColor: 'var(--primary-light)'}}>S2</th>
+                    <th style={{textAlign:'center', width: '70px', backgroundColor: 'var(--primary-light)'}}>S1</th>
+                    <th style={{textAlign:'center', width: '70px', backgroundColor: 'var(--primary-light)'}}>S2</th>
                     <th style={{textAlign:'center', width: '50px', backgroundColor: 'var(--primary)' , color: 'white'}}>Anual</th>
                     {canEditObs && <th className="text-left" style={{width: '300px'}}>Observaciones (Semestre {semester})</th>}
                     {canEditPie && <th className="text-center" style={{width: '150px'}}>Resultados PIE</th>}
