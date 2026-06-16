@@ -140,8 +140,8 @@ export default function AdminReports({ allowedCourses }) {
       });
   };
 
-  const buildDocumentHeader = async (doc, headerText) => {
-      const logo = await getImageFromUrl('/logo.png');
+  const buildDocumentHeader = async (doc, headerText, logoImg = null) => {
+      const logo = logoImg || await getImageFromUrl('/logo.png');
       if (logo) {
          const aspectRatio = logo.width / logo.height;
          const displayHeight = 22;
@@ -218,8 +218,8 @@ export default function AdminReports({ allowedCourses }) {
      doc.save(`Certificado_Alumno_Regular_${st.rut}.pdf`);
   };
 
-  const generateInformeForStudentDoc = async (doc, stId, mode, isFirstPage) => {
-      const data = await getBaseReportData(stId);
+  const generateInformeForStudentDoc = async (doc, stId, mode, isFirstPage, prefetchedData = null, logoImg = null) => {
+      const data = prefetchedData || await getBaseReportData(stId);
       const st = data.student;
       
       let title = "INFORME COMPLETO DE NOTAS FINALES";
@@ -229,7 +229,7 @@ export default function AdminReports({ allowedCourses }) {
       else if (mode === 'final_s2') title = "INFORME SEMESTRAL FINAL (2° SEM)";
       
       if (!isFirstPage) doc.addPage();
-      await buildDocumentHeader(doc, title);
+      await buildDocumentHeader(doc, title, logoImg);
 
       doc.setFontSize(9);
       doc.setFont('helvetica', 'bold');
@@ -534,11 +534,42 @@ export default function AdminReports({ allowedCourses }) {
       if(students.length === 0) return;
       setLoading(true);
       try {
-        const doc = new jsPDF({ format: [219, 330], compress: true }); 
-        for (let i = 0; i < students.length; i++) {
-            await generateInformeForStudentDoc(doc, students[i].id, mode, i === 0);
+        const logoImg = await getImageFromUrl('/logo.png');
+        
+        // Fetch all course data concurrently
+        const qNotas = query(collection(db, 'notas'), where('course', '==', selectedCourse));
+        const [snapNotas, ...attObsSnaps] = await Promise.all([
+            getDocs(qNotas),
+            ...students.map(st => getDoc(doc(db, 'asistencias', st.id))),
+            ...students.map(st => getDoc(doc(db, 'observaciones', st.id)))
+        ]);
+        
+        const allNotas = [];
+        snapNotas.forEach(d => allNotas.push(d.data()));
+        
+        const allAsistencias = {};
+        for(let i=0; i<students.length; i++) {
+           const snap = attObsSnaps[i];
+           if (snap.exists()) allAsistencias[snap.id] = snap.data();
         }
-        doc.save(`Informes_${selectedCourse}_${mode}.pdf`);
+        const allObservaciones = {};
+        for(let i=0; i<students.length; i++) {
+           const snap = attObsSnaps[students.length + i];
+           if (snap.exists()) allObservaciones[snap.id] = snap.data();
+        }
+
+        const docPDF = new jsPDF({ format: [219, 330], compress: true }); 
+        for (let i = 0; i < students.length; i++) {
+            const stId = students[i].id;
+            const st = students[i];
+            const notas = allNotas.filter(n => n.studentId === stId);
+            const asistencia = allAsistencias[stId] || null;
+            const observaciones = allObservaciones[stId] || { sem1: '', sem2: '', pie1: '', pie2: '' };
+            const prefetchedData = { student: st, notas, asistencia, observaciones };
+            
+            await generateInformeForStudentDoc(docPDF, stId, mode, i === 0, prefetchedData, logoImg);
+        }
+        docPDF.save(`Informes_${selectedCourse}_${mode}.pdf`);
       } catch (err) {
         console.error(err);
         alert("Error al generar los PDFs del curso.");
