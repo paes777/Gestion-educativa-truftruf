@@ -817,5 +817,6 @@ export default function AdminReports({ allowedCourses }) {
         </div>
       </div>
     </div>
+    </div>
   );
 }
