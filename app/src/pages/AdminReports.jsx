@@ -586,9 +586,13 @@ export default function AdminReports({ allowedCourses }) {
           if(s.includes('Comuni')) return 'Lenguaje';
           return s.substring(0, 5) + '.';
        });
+       shortHeaders.push('PROM.');
 
        const rows = students.map((st, i) => {
           const row = [i + 1, st.nombreCompleto];
+          
+          let sumNum = 0;
+          let countNum = 0;
           
           SUBJECTS.forEach(sub => {
              const stGrades = allGrades.filter(g => g.studentId === st.id && (g.subject||'').normalize('NFC') === sub.normalize('NFC'));
@@ -613,12 +617,23 @@ export default function AdminReports({ allowedCourses }) {
              }
              
              const isConcept = sub.includes('Religi') || sub.includes('Orientaci');
+             if (!isConcept && val !== '-') {
+                 sumNum += Number(val);
+                 countNum++;
+             }
              if (isConcept && val !== '-') {
                  val = toConcept(val);
              }
              
              row.push(val);
           });
+
+          if (countNum > 0) {
+              row.push((sumNum / countNum).toFixed(1));
+          } else {
+              row.push('-');
+          }
+
           return row;
        });
 
