@@ -108,19 +108,20 @@ export default function AdminAttendance({ allowedCourses }) {
     
     // Solo contar S1 (Marzo a Junio) por solicitud
     const s1Months = ['mar', 'abr', 'may', 'jun'];
-    let totalPresent = 0;
+    let totalAbsent = 0;
     let totalDays = 0;
     
     MONTHS.forEach(m => {
       if (s1Months.includes(m.id)) {
-        totalPresent += parseInt(record[m.id]?.present || 0);
+        totalAbsent += parseInt(record[m.id]?.absent || 0);
         totalDays += m.defaultDays;
       }
     });
     
     if (totalDays === 0) return 100;
+    const totalPresent = totalDays - totalAbsent;
     const perc = (totalPresent / totalDays) * 100;
-    return perc > 100 ? 100 : perc;
+    return perc > 100 ? 100 : (perc < 0 ? 0 : perc);
   };
 
   const handleAbsenceChange = (studentId, monthId, maxDays, absentValue) => {

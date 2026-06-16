@@ -110,18 +110,21 @@ export default function AdminReports({ allowedCourses }) {
       const totalDays = isS1 ? 72 : 179; // 72 days for March-June, 179 for the full year
       const monthsToCount = isS1 ? ['mar', 'abr', 'may', 'jun'] : null;
 
-      if(!asistenciaObj) return { worked: 0, total: totalDays, perc: 100 };
+      if(!asistenciaObj) return { worked: totalDays, total: totalDays, perc: 100 };
       
-      let present = 0;
+      let totalAbsent = 0;
       if (monthsToCount) {
          monthsToCount.forEach(m => {
-            if (asistenciaObj[m]) present += (Number(asistenciaObj[m].present) || 0);
+            if (asistenciaObj[m]) totalAbsent += (Number(asistenciaObj[m].absent) || 0);
          });
       } else {
          Object.values(asistenciaObj).forEach(m => {
-             present += (Number(m.present) || 0);
+             totalAbsent += (Number(m.absent) || 0);
          });
       }
+      
+      let present = totalDays - totalAbsent;
+      if (present < 0) present = 0;
       
       let perc = (present / totalDays) * 100;
       if (perc > 100) perc = 100;
