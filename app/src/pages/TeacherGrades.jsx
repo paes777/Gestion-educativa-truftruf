@@ -381,12 +381,16 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
                            <td style={{textAlign: 'center', fontSize: '12px', fontWeight: semester === 1 ? 'bold' : 'normal', backgroundColor: semester === 1 ? '#f0f4ff' : 'transparent'}}>
                               {semester === 1 ? (
                                  <select 
-                                    value={pendingStatus[st.id] ? 'P' : 'calc'} 
+                                    value={pendingStatus[st.id] ? 'P' : (avg || '-')} 
                                     onChange={(e) => setPendingStatus({...pendingStatus, [st.id]: e.target.value === 'P'})}
-                                    className="grade-select-hidden"
+                                    style={{
+                                        width: '100%', border: 'none', background: 'transparent',
+                                        textAlign: 'center', cursor: 'pointer', fontWeight: 'inherit',
+                                        color: '#333', fontSize: 'inherit'
+                                    }}
                                     title="Haz clic para marcar como Pendiente"
                                  >
-                                    <option value="calc">{avg || '-'}</option>
+                                    <option value={avg || '-'}>{avg || '-'}</option>
                                     <option value="P">P</option>
                                  </select>
                               ) : (crossSemesterAverages[st.id]?.s1 || '-')}
@@ -394,12 +398,16 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
                            <td style={{textAlign: 'center', fontSize: '12px', fontWeight: semester === 2 ? 'bold' : 'normal', backgroundColor: semester === 2 ? '#f0f4ff' : 'transparent'}}>
                               {semester === 2 ? (
                                  <select 
-                                    value={pendingStatus[st.id] ? 'P' : 'calc'} 
+                                    value={pendingStatus[st.id] ? 'P' : (avg || '-')} 
                                     onChange={(e) => setPendingStatus({...pendingStatus, [st.id]: e.target.value === 'P'})}
-                                    className="grade-select-hidden"
+                                    style={{
+                                        width: '100%', border: 'none', background: 'transparent',
+                                        textAlign: 'center', cursor: 'pointer', fontWeight: 'inherit',
+                                        color: '#333', fontSize: 'inherit'
+                                    }}
                                     title="Haz clic para marcar como Pendiente"
                                  >
-                                    <option value="calc">{avg || '-'}</option>
+                                    <option value={avg || '-'}>{avg || '-'}</option>
                                     <option value="P">P</option>
                                  </select>
                               ) : (crossSemesterAverages[st.id]?.s2 || '-')}
@@ -408,7 +416,7 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
                               {(() => {
                                  const s1 = semester === 1 ? (pendingStatus[st.id] ? 'P' : (avg || '-')) : (crossSemesterAverages[st.id]?.s1 || '-');
                                  const s2 = semester === 2 ? (pendingStatus[st.id] ? 'P' : (avg || '-')) : (crossSemesterAverages[st.id]?.s2 || '-');
-                                 if (s1 === 'P' || s2 === 'P') return 'P';
+                                 if (s1 === 'P' || s2 === 'P') return '-';
                                  if (s1 !== '-' && s2 !== '-') {
                                     return ((Number(s1) + Number(s2)) / 2).toFixed(1);
                                  }
