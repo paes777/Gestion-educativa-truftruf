@@ -341,8 +341,8 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
                   <tr>
                     <th className="text-left" style={{position: 'sticky', left: 0, backgroundColor: 'var(--surface-solid)', zIndex: 10, width: '250px'}}>Alumnos del Curso</th>
                     {[...Array(10)].map((_, i) => <th key={i} style={{textAlign:'center', width: '50px'}}>N{i+1}</th>)}
-                    <th style={{textAlign:'center', width: '70px', backgroundColor: 'var(--primary-light)'}}>S1</th>
-                    <th style={{textAlign:'center', width: '70px', backgroundColor: 'var(--primary-light)'}}>S2</th>
+                    <th style={{textAlign:'center', width: '80px', backgroundColor: 'var(--primary-light)'}}>S1</th>
+                    <th style={{textAlign:'center', width: '80px', backgroundColor: 'var(--primary-light)'}}>S2</th>
                     <th style={{textAlign:'center', width: '50px', backgroundColor: 'var(--primary)' , color: 'white'}}>Anual</th>
                     {canEditObs && <th className="text-left" style={{width: '300px'}}>Observaciones (Semestre {semester})</th>}
                     {canEditPie && <th className="text-center" style={{width: '150px'}}>Resultados PIE</th>}
@@ -381,13 +381,9 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
                            <td style={{textAlign: 'center', fontSize: '12px', fontWeight: semester === 1 ? 'bold' : 'normal', backgroundColor: semester === 1 ? '#f0f4ff' : 'transparent'}}>
                               {semester === 1 ? (
                                  <select 
+                                    className="grade-select-hidden"
                                     value={pendingStatus[st.id] ? 'P' : (avg || '-')} 
                                     onChange={(e) => setPendingStatus({...pendingStatus, [st.id]: e.target.value === 'P'})}
-                                    style={{
-                                        width: '100%', border: 'none', background: 'transparent',
-                                        textAlign: 'center', cursor: 'pointer', fontWeight: 'inherit',
-                                        color: '#333', fontSize: 'inherit'
-                                    }}
                                     title="Haz clic para marcar como Pendiente"
                                  >
                                     <option value={avg || '-'}>{avg || '-'}</option>
@@ -398,13 +394,9 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
                            <td style={{textAlign: 'center', fontSize: '12px', fontWeight: semester === 2 ? 'bold' : 'normal', backgroundColor: semester === 2 ? '#f0f4ff' : 'transparent'}}>
                               {semester === 2 ? (
                                  <select 
+                                    className="grade-select-hidden"
                                     value={pendingStatus[st.id] ? 'P' : (avg || '-')} 
                                     onChange={(e) => setPendingStatus({...pendingStatus, [st.id]: e.target.value === 'P'})}
-                                    style={{
-                                        width: '100%', border: 'none', background: 'transparent',
-                                        textAlign: 'center', cursor: 'pointer', fontWeight: 'inherit',
-                                        color: '#333', fontSize: 'inherit'
-                                    }}
                                     title="Haz clic para marcar como Pendiente"
                                  >
                                     <option value={avg || '-'}>{avg || '-'}</option>

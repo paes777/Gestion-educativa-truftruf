@@ -496,7 +496,7 @@ tr:hover td {
 }
 .grade-select-hidden {
   width: 100%;
-  border: 1px dashed transparent;
+  border: 1px solid transparent;
   background: transparent;
   cursor: pointer;
   text-align: center;
@@ -505,8 +505,12 @@ tr:hover td {
   font-family: inherit;
   font-size: inherit;
   color: inherit;
+  border-radius: 6px;
+  padding: 4px 0;
+  transition: all 0.2s ease;
 }
 .grade-select-hidden:hover {
-  border-color: #ccc;
-  background: white;
+  border-color: #bbdefb;
+  background: #e3f2fd;
+  color: #1976d2;
 }
