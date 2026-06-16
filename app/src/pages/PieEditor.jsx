@@ -185,15 +185,9 @@ export default function PieEditor() {
                     >
                         Cerrar Pestaña
                     </button>
-                    <button 
-                        onClick={handleSave} 
-                        disabled={saving}
-                        style={{padding: '0.75rem 1.5rem', fontSize: '0.95rem', fontWeight: 'bold', backgroundColor: 'var(--primary)', border: '1px solid var(--primary)', color: '#ffffff', borderRadius: '4px', cursor: saving ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', transition: 'all 0.2s'}}
-                        onMouseOver={e => !saving && (e.currentTarget.style.opacity = '0.9')}
-                        onMouseOut={e => !saving && (e.currentTarget.style.opacity = '1')}
-                    >
-                        {saving ? 'Guardando...' : <><Save size={18} /> Guardar Reporte PIE</>}
-                    </button>
+                    <button onClick={handleSave} disabled={saving} className="btn btn-primary" style={{marginTop: '1rem'}}>
+                  {saving ? <span>Guardando...</span> : <span><Save size={18} style={{display:'inline', marginBottom:'-4px'}} /> Guardar Planilla PIE</span>}
+                </button>
                 </div>
 
             </div>

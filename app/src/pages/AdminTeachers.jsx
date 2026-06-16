@@ -283,7 +283,7 @@ export default function AdminTeachers() {
                         </td>
                         <td style={{textAlign: 'center'}}>
                            <button onClick={() => saveAssignment(t.id)} disabled={saving} className="btn btn-primary" style={{padding: '0.2rem 0.5rem', fontSize: '11px'}}>
-                             {saving ? 'Guardando...' : 'Guardar'}
+                             {saving ? <span>Guardando...</span> : <span>Guardar</span>}
                            </button>
                            <button onClick={() => setEditingId(null)} disabled={saving} className="btn btn-secondary" style={{padding: '0.2rem 0.5rem', fontSize: '11px', marginLeft: '0.5rem'}}>X</button>
                         </td>

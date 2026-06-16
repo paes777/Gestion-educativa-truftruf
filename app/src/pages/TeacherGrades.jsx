@@ -224,7 +224,7 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
        const batch = writeBatch(db);
        
        for (const st of students) {
-          const arr = gradesData[st.id];
+          const arr = gradesData[st.id] || Array(10).fill('');
           let avg = calculateAverage(arr);
           if (pendingStatus[st.id]) avg = 'P';
           
@@ -326,9 +326,9 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
                  {tabDirection === 'horizontal' ? 'Tab: →' : 'Tab: ↓'}
               </button>
 
-              <button onClick={handleSave} disabled={saving || loading} className="btn btn-primary" style={{whiteSpace: 'nowrap'}}>
-                 {saving ? 'Guardando...' : <><Save size={18} /> Guardar Cambios</>}
-              </button>
+                    <button onClick={handleSave} disabled={saving || !subject} className="btn btn-primary" style={{marginTop: '1rem', whiteSpace: 'nowrap'}}>
+                       {saving ? <span>Guardando...</span> : <span><Save size={18} style={{display:'inline', marginBottom:'-4px'}} /> Guardar Planilla</span>}
+                    </button>
            </div>
         </div>
 

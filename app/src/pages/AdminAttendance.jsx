@@ -105,11 +105,21 @@ export default function AdminAttendance({ allowedCourses }) {
   const calculateTotalPercentage = (studentId) => {
     const record = attendanceData[studentId];
     if (!record) return 100;
+    
+    // Solo contar S1 (Marzo a Junio) por solicitud
+    const s1Months = ['mar', 'abr', 'may', 'jun'];
     let totalPresent = 0;
+    let totalDays = 0;
+    
     MONTHS.forEach(m => {
-      totalPresent += parseInt(record[m.id]?.present || 0);
+      if (s1Months.includes(m.id)) {
+        totalPresent += parseInt(record[m.id]?.present || 0);
+        totalDays += m.defaultDays;
+      }
     });
-    const perc = (totalPresent / TOTAL_YEAR_DAYS) * 100;
+    
+    if (totalDays === 0) return 100;
+    const perc = (totalPresent / totalDays) * 100;
     return perc > 100 ? 100 : perc;
   };
 
@@ -158,7 +168,7 @@ export default function AdminAttendance({ allowedCourses }) {
               {availableCourses.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
             <button onClick={handleSave} disabled={saving || loading} className="btn btn-primary" style={{whiteSpace: 'nowrap'}}>
-              {saving ? 'Guardando...' : <><Save size={18} /> Guardar Asistencia</>}
+              {saving ? <span>Guardando...</span> : <span><Save size={18} style={{display:'inline', marginBottom:'-4px'}} /> Guardar Asistencia</span>}
             </button>
           </div>
         </div>
