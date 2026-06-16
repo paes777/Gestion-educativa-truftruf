@@ -22,6 +22,8 @@ export default function AdminReports({ allowedCourses }) {
   const [students, setStudents] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState('');
   const [loading, setLoading] = useState(false);
+  const [matrixSemester, setMatrixSemester] = useState('final');
+  const [loadingMatrix, setLoadingMatrix] = useState(false);
 
   useEffect(() => {
     if (allowedCourses && allowedCourses.length > 0) {
@@ -541,10 +543,133 @@ export default function AdminReports({ allowedCourses }) {
       setLoading(false);
   };
 
+  const generateCourseMatrixReport = async () => {
+     setLoadingMatrix(true);
+     try {
+       const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'letter' });
+       
+       const logo = await getImageFromUrl('/logo.png');
+       if (logo) {
+          const aspectRatio = logo.width / logo.height;
+          const displayHeight = 15;
+          const displayWidth = displayHeight * aspectRatio;
+          doc.addImage(logo, 'JPEG', 14, 10, displayWidth, displayHeight, undefined, 'FAST');
+       }
+       
+       doc.setFontSize(14);
+       doc.setFont('helvetica', 'bold');
+       doc.text(`Plantilla de Promedios - ${selectedCourse}`, 14, 30);
+       doc.setFontSize(10);
+       doc.setFont('helvetica', 'normal');
+       const semStr = matrixSemester === 'final' ? 'Anuales' : `del Semestre ${matrixSemester}`;
+       doc.text(`Promedios ${semStr}`, 14, 36);
+
+       const qGrades = query(collection(db, 'notas'), where('course', '==', selectedCourse));
+       const snap = await getDocs(qGrades);
+       const allGrades = [];
+       snap.forEach(d => allGrades.push(d.data()));
+
+       const toConcept = (val) => {
+           if (!val || val === '-') return val;
+           const n = Number(val);
+           if (isNaN(n)) return val;
+           if (n >= 6.0) return 'MB';
+           if (n >= 5.0) return 'B';
+           if (n >= 4.0) return 'S';
+           return 'I';
+       };
+
+       const shortHeaders = SUBJECTS.map(s => {
+          if(s.includes('Historia')) return 'Hist.';
+          if(s.includes('Física')) return 'Ed.Fís';
+          if(s.includes('Lengua')) return s.includes('Indí') ? 'L.Indíg' : 'Lenguaje';
+          if(s.includes('Comuni')) return 'Lenguaje';
+          return s.substring(0, 5) + '.';
+       });
+
+       const rows = students.map((st, i) => {
+          const row = [i + 1, st.nombreCompleto];
+          
+          SUBJECTS.forEach(sub => {
+             const stGrades = allGrades.filter(g => g.studentId === st.id && (g.subject||'').normalize('NFC') === sub.normalize('NFC'));
+             const s1Doc = stGrades.find(g => g.semester === 1);
+             const s2Doc = stGrades.find(g => g.semester === 2);
+             
+             let val = '-';
+             if (matrixSemester === '1') {
+                val = s1Doc?.average || '-';
+             } else if (matrixSemester === '2') {
+                val = s2Doc?.average || '-';
+             } else {
+                let s1 = s1Doc?.average || '-';
+                let s2 = s2Doc?.average || '-';
+                if(s1 !== '-' && s2 !== '-') {
+                    val = ((Number(s1) + Number(s2)) / 2).toFixed(1);
+                } else if (s1 !== '-') {
+                    val = Number(s1).toFixed(1);
+                } else if (s2 !== '-') {
+                    val = Number(s2).toFixed(1);
+                }
+             }
+             
+             const isConcept = sub.includes('Religi') || sub.includes('Orientaci');
+             if (isConcept && val !== '-') {
+                 val = toConcept(val);
+             }
+             
+             row.push(val);
+          });
+          return row;
+       });
+
+       autoTable(doc, {
+         head: [['N°', 'Estudiante', ...shortHeaders]],
+         body: rows,
+         startY: 40,
+         theme: 'grid',
+         styles: { fontSize: 7, cellPadding: 1 },
+         headStyles: { fillColor: [46, 125, 50], textColor: 255, halign: 'center', fontSize: 7 },
+         columnStyles: {
+            0: { halign: 'center', cellWidth: 8 },
+            1: { cellWidth: 45 }
+         },
+         margin: { top: 40, left: 10, right: 10 }
+       });
+
+       doc.save(`Plantilla_Promedios_${selectedCourse.replace(' ', '_')}.pdf`);
+     } catch (err) {
+       console.error(err);
+       alert("Error generando plantilla: " + err.message);
+     }
+     setLoadingMatrix(false);
+  };
+
   return (
-    <div className="grid" style={{gridTemplateColumns: '1fr 1fr', gap: '2rem'}}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+      
       <div className="card">
-        <h3>Selección de Estudiante</h3>
+        <h3>Plantilla de Curso (Matriz)</h3>
+        <p className="text-muted mt-2 mb-4">Descarga una matriz con los promedios de todos los estudiantes del curso y todas sus asignaturas, en una sola hoja apaisada (ideal para consejo de profesores).</p>
+        <div className="flex gap-4 items-center">
+           <select value={matrixSemester} onChange={e => setMatrixSemester(e.target.value)} className="status-select" style={{width: '250px'}}>
+             <option value="1">Promedios 1° Semestre</option>
+             <option value="2">Promedios 2° Semestre</option>
+             <option value="final">Promedios Finales (Anual)</option>
+           </select>
+           <button 
+              className="btn btn-primary"
+              onClick={generateCourseMatrixReport}
+              disabled={loadingMatrix || students.length === 0}
+           >
+              <FileLineChart size={18} />
+              {loadingMatrix ? 'Generando...' : 'Descargar Plantilla del Curso'}
+           </button>
+        </div>
+      </div>
+
+      <div className="grid" style={{gridTemplateColumns: '1fr 1fr', gap: '2rem'}}>
+        <div className="card">
+          <h3>Selección para Informes Individuales</h3>
         <p className="text-muted mt-2 mb-4">Seleccione un curso y luego un estudiante para habilitar las opciones de descarga.</p>
         
         <div className="grid gap-4">
