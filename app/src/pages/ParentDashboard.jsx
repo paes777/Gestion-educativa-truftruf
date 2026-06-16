@@ -41,7 +41,7 @@ export default function ParentDashboard({ rut, onLogout }) {
            if (d.asignaciones) {
               d.asignaciones.forEach(a => {
                  if (a.curso === st.curso) {
-                    teacherMap[a.asignatura] = d.nombre;
+                    teacherMap[(a.asignatura || '').normalize('NFC')] = d.nombre;
                  }
               });
            }
@@ -88,19 +88,20 @@ export default function ParentDashboard({ rut, onLogout }) {
   };
 
   grades.forEach(g => {
-     if (!subjectsMap[g.subject]) {
-         subjectsMap[g.subject] = { s1: null, s2: null, n1: [], n2: [] };
+     const normSubj = (g.subject || '').normalize('NFC');
+     if (!subjectsMap[normSubj]) {
+         subjectsMap[normSubj] = { s1: null, s2: null, n1: [], n2: [] };
      }
      
      const validGradesExist = g.grades && g.grades.some(gr => gr !== '');
      const currentAvg = validGradesExist ? calculateTruncatedAverage(g.grades) : g.average;
 
      if (g.semester === 1) {
-         subjectsMap[g.subject].s1 = currentAvg;
-         subjectsMap[g.subject].n1 = g.grades || [];
+         subjectsMap[normSubj].s1 = currentAvg;
+         subjectsMap[normSubj].n1 = g.grades || [];
      } else if (g.semester === 2) {
-         subjectsMap[g.subject].s2 = currentAvg;
-         subjectsMap[g.subject].n2 = g.grades || [];
+         subjectsMap[normSubj].s2 = currentAvg;
+         subjectsMap[normSubj].n2 = g.grades || [];
      }
   });
 
