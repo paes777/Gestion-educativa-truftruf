@@ -6,7 +6,7 @@ import { Save } from 'lucide-react';
 
 const SUBJECTS = [
   "Lenguaje y Comunicación", "Matemática", "Historia, Geografía y Cs. Sociales",
-  "Ciencias Naturales", "Inglés", "Artes Visuales", "Música", "Educación Física y Salud", "Orientación", "Lengua Indígena", "Religión", "Tecnología"
+  "Ciencias Naturales", "Inglés", "Artes Visuales", "Música", "Educación Física y Salud", "Orientación", "Lengua Indígena", "Religión", "Tecnología"
 ];
 
 const COURSES = [
@@ -130,7 +130,7 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
        gradesSnap.forEach(d => {
          const data = d.data();
          const stId = data.studentId;
-         if (gradesMap[stId] && data.subject === subject) {
+         if (gradesMap[stId] && (data.subject || '').normalize('NFC') === (subject || '').normalize('NFC')) {
            if (data.semester === semester) gradesMap[stId] = data.grades || Array(10).fill('');
            if (data.semester === 1) crossAvgMap[stId].s1 = data.average || '-';
            if (data.semester === 2) crossAvgMap[stId].s2 = data.average || '-';
