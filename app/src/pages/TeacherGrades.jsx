@@ -245,8 +245,22 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
    const handleKeyDown = (e, stIndex, colIndex) => {
       if (e.key === 'Tab' && tabDirection === 'vertical') {
           e.preventDefault();
-          const nextRow = stIndex + (e.shiftKey ? -1 : 1);
-          const nextInput = document.querySelector(`input[data-row="${nextRow}"][data-col="${colIndex}"]`);
+          let nextRow = stIndex + (e.shiftKey ? -1 : 1);
+          let nextCol = colIndex;
+          
+          let nextInput = document.querySelector(`input[data-row="${nextRow}"][data-col="${nextCol}"]`);
+          
+          if (!nextInput) {
+              if (e.shiftKey) {
+                  nextCol = colIndex - 1;
+                  nextRow = students.length - 1;
+              } else {
+                  nextCol = colIndex + 1;
+                  nextRow = 0;
+              }
+              nextInput = document.querySelector(`input[data-row="${nextRow}"][data-col="${nextCol}"]`);
+          }
+
           if (nextInput) {
               nextInput.focus();
               nextInput.select();
