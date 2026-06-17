@@ -601,7 +601,7 @@ export default function AdminReports({ allowedCourses }) {
        const qGrades = query(collection(db, 'notas'), where('course', '==', selectedCourse));
        const snap = await getDocs(qGrades);
        const allGrades = [];
-       snap.forEach(d => allGrades.push(d.data()));
+       snap.forEach(d => allGrades.push({ id: d.id, ...d.data() }));
 
        const toConcept = (val) => {
            if (!val || val === '-') return val;
