@@ -271,7 +271,7 @@ export default function AdminReports({ allowedCourses }) {
          }
          
          const validGradesExist = n.grades && n.grades.some(g => g !== '');
-         const currentAvg = validGradesExist ? calculateTruncatedAverage(n.grades) : (n.average || '-');
+         const currentAvg = n.average === 'P' ? 'P' : (validGradesExist ? calculateTruncatedAverage(n.grades) : (n.average || '-'));
          
          if(n.semester === 1) {
              subjectsMap[n.subject].s1 = currentAvg;
@@ -292,7 +292,9 @@ export default function AdminReports({ allowedCourses }) {
           let s2 = subjectsMap[sub].s2; // Ya viene con .toFixed(1) de Firestore o '-'
           let final = '-';
           
-          if(s1 !== '-' && s2 !== '-') {
+          if (s1 === 'P' || s2 === 'P') {
+              final = '-';
+          } else if(s1 !== '-' && s2 !== '-') {
               // Promedio de promedios redondeados, redondeado a 1 decimal
               final = ((Number(s1) + Number(s2)) / 2).toFixed(1);
           } else if (s1 !== '-') {
@@ -304,13 +306,13 @@ export default function AdminReports({ allowedCourses }) {
           const isConcept = sub.includes('Religi') || sub.includes('Orientaci');
           
           if (!isConcept) {
-              if (final !== '-') { 
+              if (final !== '-' && final !== 'P') { 
                   totals.totalFinal += Number(final); 
                   counts.countFinal++; 
               }
               // Semestral Totals for general averages
-              if(s1 !== '-') { totals.totalS1 += Number(s1); counts.countS1++; }
-              if(s2 !== '-') { totals.totalS2 += Number(s2); counts.countS2++; }
+              if(s1 !== '-' && s1 !== 'P') { totals.totalS1 += Number(s1); counts.countS1++; }
+              if(s2 !== '-' && s2 !== 'P') { totals.totalS2 += Number(s2); counts.countS2++; }
           }
           
           subjectsMap[sub].final = final;
