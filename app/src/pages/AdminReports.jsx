@@ -140,6 +140,14 @@ export default function AdminReports({ allowedCourses }) {
       });
   };
 
+  const calculateTruncatedAverage = (gradesArray) => {
+     if (!gradesArray || gradesArray.length === 0) return '-';
+     const validGrades = gradesArray.map(g => Number(g)).filter(g => !isNaN(g) && g > 0 && g <= 7);
+     if (validGrades.length === 0) return '-';
+     const sumInt = validGrades.reduce((a,b) => a + Math.round(b * 10), 0);
+     return (Math.floor(sumInt / validGrades.length) / 10).toFixed(1);
+  };
+
   const buildDocumentHeader = async (doc, headerText, logoImg = null) => {
       const logo = logoImg || await getImageFromUrl('/logo.png');
       if (logo) {
@@ -255,14 +263,6 @@ export default function AdminReports({ allowedCourses }) {
       SUBJECTS.forEach(sub => {
          subjectsMap[sub] = { s1: '-', s2: '-', final: '-', grades1: Array(10).fill(''), grades2: Array(10).fill('') };
       });
-
-      const calculateTruncatedAverage = (gradesArray) => {
-         if (!gradesArray || gradesArray.length === 0) return '-';
-         const validGrades = gradesArray.map(g => Number(g)).filter(g => !isNaN(g) && g > 0 && g <= 7);
-         if (validGrades.length === 0) return '-';
-         const sumInt = validGrades.reduce((a,b) => a + Math.round(b * 10), 0);
-         return (Math.floor(sumInt / validGrades.length) / 10).toFixed(1);
-      };
 
       data.notas.forEach(n => {
          if(!subjectsMap[n.subject]) {
@@ -639,13 +639,21 @@ export default function AdminReports({ allowedCourses }) {
               if (!s2Doc) s2Doc = allGrades.find(g => g.studentId === st.id && (g.subject||'').normalize('NFC') === sub.normalize('NFC') && g.semester === 2);
               
               let val = '-';
+              
+              const getDynamicAvg = (doc) => {
+                  if (!doc) return '-';
+                  if (doc.average === 'P') return 'P';
+                  const validGradesExist = doc.grades && doc.grades.some(g => g !== '');
+                  return validGradesExist ? calculateTruncatedAverage(doc.grades) : (doc.average || '-');
+              };
+
               if (matrixSemester === '1') {
-                 val = s1Doc?.average || '-';
+                 val = getDynamicAvg(s1Doc);
               } else if (matrixSemester === '2') {
-                 val = s2Doc?.average || '-';
+                 val = getDynamicAvg(s2Doc);
               } else {
-                 let s1 = s1Doc?.average || '-';
-                 let s2 = s2Doc?.average || '-';
+                 let s1 = getDynamicAvg(s1Doc);
+                 let s2 = getDynamicAvg(s2Doc);
                  
                  if (s1 === 'P' || s2 === 'P') {
                      val = '-';
