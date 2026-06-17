@@ -629,26 +629,34 @@ export default function AdminReports({ allowedCourses }) {
           let countNum = 0;
           
           SUBJECTS.forEach(sub => {
-             const stGrades = allGrades.filter(g => g.studentId === st.id && (g.subject||'').normalize('NFC') === sub.normalize('NFC'));
-             const s1Doc = stGrades.find(g => g.semester === 1);
-             const s2Doc = stGrades.find(g => g.semester === 2);
-             
-             let val = '-';
-             if (matrixSemester === '1') {
-                val = s1Doc?.average || '-';
-             } else if (matrixSemester === '2') {
-                val = s2Doc?.average || '-';
-             } else {
-                let s1 = s1Doc?.average || '-';
-                let s2 = s2Doc?.average || '-';
-                if(s1 !== '-' && s2 !== '-') {
-                    val = ((Number(s1) + Number(s2)) / 2).toFixed(1);
-                } else if (s1 !== '-') {
-                    val = Number(s1).toFixed(1);
-                } else if (s2 !== '-') {
-                    val = Number(s2).toFixed(1);
-                }
-             }
+              const expectedS1Id = `${st.id}_${sub.replace(/\s+/g,'')}_s1`;
+              const expectedS2Id = `${st.id}_${sub.replace(/\s+/g,'')}_s2`;
+
+              let s1Doc = allGrades.find(g => g.id === expectedS1Id);
+              let s2Doc = allGrades.find(g => g.id === expectedS2Id);
+              
+              if (!s1Doc) s1Doc = allGrades.find(g => g.studentId === st.id && (g.subject||'').normalize('NFC') === sub.normalize('NFC') && g.semester === 1);
+              if (!s2Doc) s2Doc = allGrades.find(g => g.studentId === st.id && (g.subject||'').normalize('NFC') === sub.normalize('NFC') && g.semester === 2);
+              
+              let val = '-';
+              if (matrixSemester === '1') {
+                 val = s1Doc?.average || '-';
+              } else if (matrixSemester === '2') {
+                 val = s2Doc?.average || '-';
+              } else {
+                 let s1 = s1Doc?.average || '-';
+                 let s2 = s2Doc?.average || '-';
+                 
+                 if (s1 === 'P' || s2 === 'P') {
+                     val = '-';
+                 } else if(s1 !== '-' && s2 !== '-') {
+                     val = ((Number(s1) + Number(s2)) / 2).toFixed(1);
+                 } else if (s1 !== '-') {
+                     val = Number(s1).toFixed(1);
+                 } else if (s2 !== '-') {
+                     val = Number(s2).toFixed(1);
+                 }
+              }
              
              const isConcept = sub.includes('Religi') || sub.includes('Orientaci');
              if (!isConcept && val !== '-') {
