@@ -17,7 +17,32 @@ export default function ParentDashboard({ rut, onLogout }) {
     const loadData = async () => {
       setLoading(true);
       // 1. Find student
-      const st = studentSeed.find(s => s.rut === rut);
+      let st = studentSeed.find(s => s.rut === rut);
+      
+      if (!st) {
+          // Check Firestore
+          try {
+             const stQuery = query(collection(db, 'estudiantes'), where('rut', '==', rut));
+             const stSnap = await getDocs(stQuery);
+             if (!stSnap.empty) {
+                 const docData = stSnap.docs[0].data();
+                 st = { id: stSnap.docs[0].id, ...docData };
+                 if (!st.rut) st.rut = st.id;
+             } else {
+                 // Try looking up by document ID directly just in case
+                 const docRef = await getDocs(query(collection(db, 'estudiantes')));
+                 const match = docRef.docs.find(d => d.id === rut || d.data().rut === rut);
+                 if (match) {
+                     const docData = match.data();
+                     st = { id: match.id, ...docData };
+                     if (!st.rut) st.rut = st.id;
+                 }
+             }
+          } catch(e) {
+             console.error("Error fetching dynamic student:", e);
+          }
+      }
+
       if (!st) {
         alert("RUT no encontrado en el sistema. Asegúrese de ingresarlo con puntos y con guion.");
         onLogout();

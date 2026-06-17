@@ -15,10 +15,24 @@ export default function TeacherCommunications({ user, assignedCourses, teacherNa
 
   useEffect(() => {
      if (course) {
-        const list = studentSeed.filter(s => s.curso === course).sort((a,b) => a.nombreCompleto.localeCompare(b.nombreCompleto));
-        setStudents(list);
-        setTarget('all');
-        loadHistory();
+        const fetchStudents = async () => {
+           const snap = await getDocs(collection(db, 'estudiantes'));
+           const dynamic = [];
+           snap.forEach(d => dynamic.push({ rut: d.id, ...d.data() }));
+           
+           const merged = [...studentSeed];
+           dynamic.forEach(ds => {
+               if(!merged.find(m => m.rut === ds.rut)) {
+                   merged.push(ds);
+               }
+           });
+           
+           const list = merged.filter(s => s.curso === course).sort((a,b) => a.nombreCompleto.localeCompare(b.nombreCompleto));
+           setStudents(list);
+           setTarget('all');
+           loadHistory();
+        };
+        fetchStudents();
      }
   }, [course]);
 

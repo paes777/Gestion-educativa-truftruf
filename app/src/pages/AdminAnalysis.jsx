@@ -75,12 +75,30 @@ export default function AdminAnalysis() {
   const loadStudents = async () => {
     setLoading(true);
     try {
-      // 1. Uso de Estudiantes PERMANENTES (Desde el código local)
-      const list = studentSeed
-        .filter(s => s.curso === selectedCourse)
-        .map(s => ({ id: s.rut, ...s })); // El ID ahora es el RUT para siempre
+      // Fetch dynamic students
+      const studentsSnap = await getDocs(collection(db, 'estudiantes'));
+      const dynamicStudents = [];
+      studentsSnap.forEach(doc => {
+         const d = doc.data();
+         dynamicStudents.push({ id: doc.id, ...d, rut: doc.id });
+      });
 
-      list.sort((a,b) => a.nombreCompleto.localeCompare(b.nombreCompleto));
+      // Merge
+      const merged = [...studentSeed];
+      dynamicStudents.forEach(ds => {
+         if(!merged.find(m => m.rut === ds.rut)) {
+             merged.push(ds);
+         }
+      });
+      
+      const list = merged
+        .filter(s => s.curso === selectedCourse)
+        .map(s => ({ id: s.rut, ...s }))
+        .sort((a, b) => {
+           if (a.numeroLista && b.numeroLista) return a.numeroLista - b.numeroLista;
+           return a.nombreCompleto.localeCompare(b.nombreCompleto);
+        });
+        
       setStudentsInCourse(list);
       if (list.length > 0) setSelectedStudent(list[0].id);
     } catch (err) {
