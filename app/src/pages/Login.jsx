@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../services/firebase';
 import { LogIn, ShieldAlert, User } from 'lucide-react';
+import { useSystemConfig } from '../hooks/useSystemConfig';
 
 export default function Login({ onParentLogin }) {
   const [email, setEmail] = useState('');
@@ -12,12 +13,17 @@ export default function Login({ onParentLogin }) {
   const [loading, setLoading] = useState(false);
   const [tab, setTab] = useState('docente'); // 'apoderado' | 'docente' | 'admin'
   const [isRegistering, setIsRegistering] = useState(false);
+  const { config } = useSystemConfig();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
     
     if (tab === 'apoderado') {
+       if (!config.portalApoderadosActivo) {
+          setError('El portal de apoderados se encuentra deshabilitado temporalmente.');
+          return;
+       }
        if (!rut || !rut.includes('-') || !rut.includes('.')) {
           setError('El RUT debe contener puntos y guion.');
           return;
@@ -188,18 +194,17 @@ export default function Login({ onParentLogin }) {
               </div>
             )}
 
-            <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '2rem 0 1.5rem 0' }} />
-
-            <div style={{ textAlign: 'center' }}>
-               <p style={{ fontWeight: 'bold', color: '#333', marginBottom: '1rem', fontSize: '1.1rem' }}>¿Eres Apoderado?</p>
-               <button 
-                 type="button"
-                 onClick={() => { setTab('apoderado'); setError(''); }}
-                 style={{ width: '100%', backgroundColor: '#388E3C', color: 'white', padding: '0.9rem', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '1.1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
-               >
-                  <User size={20} /> Acceso Apoderado
-               </button>
-            </div>
+            {tab !== 'apoderado' && config.portalApoderadosActivo && (
+               <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid #e0e0e0', textAlign: 'center' }}>
+                  <p style={{ color: '#666', fontSize: '0.9rem', marginBottom: '0.5rem' }}>¿Eres un apoderado y quieres revisar notas?</p>
+                  <button 
+                     onClick={() => { setTab('apoderado'); setError(''); }}
+                     style={{ width: '100%', padding: '0.6rem', border: '1px solid #2E7D32', color: '#2E7D32', background: 'transparent', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+                  >
+                     <User size={18} /> Entrar como Apoderado
+                  </button>
+               </div>
+            )}
           </>
         )}
       </div>

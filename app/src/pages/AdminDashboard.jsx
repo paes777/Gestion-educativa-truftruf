@@ -8,7 +8,8 @@ import AdminAttendance from './AdminAttendance';
 import AdminAnalysis from './AdminAnalysis';
 import AdminReports from './AdminReports';
 import TeacherGrades from './TeacherGrades';
-import { PenTool } from 'lucide-react';
+import AdminSettings from './AdminSettings';
+import { PenTool, Calendar } from 'lucide-react';
 
 export default function AdminDashboard({ user }) {
   const [activeTab, setActiveTab] = useState('docentes');
@@ -19,9 +20,10 @@ export default function AdminDashboard({ user }) {
     { id: 'docentes', label: 'Gestión Docentes', icon: <Users size={20} /> },
     { id: 'estudiantes', label: 'Estudiantes', icon: <BookOpen size={20} /> },
     { id: 'notas', label: 'Subir Notas', icon: <PenTool size={20} /> },
-    { id: 'asistencia', label: 'Asistencia', icon: <Settings size={20} /> },
+    { id: 'asistencia', label: 'Asistencia', icon: <Calendar size={20} /> },
     { id: 'analisis', label: 'Análisis de Avance', icon: <BarChart3 size={20} /> },
     { id: 'informes', label: 'Informes y Certificados', icon: <FileText size={20} /> },
+    { id: 'configuracion', label: 'Configuración', icon: <Settings size={20} /> },
   ];
 
   return (
@@ -65,6 +67,7 @@ export default function AdminDashboard({ user }) {
         {activeTab === 'asistencia' && <AdminAttendance />}
         {activeTab === 'analisis' && <AdminAnalysis />}
         {activeTab === 'informes' && <AdminReports />}
+        {activeTab === 'configuracion' && <AdminSettings />}
         </div>
       </main>
     </div>

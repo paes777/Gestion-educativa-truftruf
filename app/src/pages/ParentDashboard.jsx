@@ -3,6 +3,7 @@ import { db } from '../services/firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import studentSeed from '../services/students_seed.json';
 import { LogOut, Star, MessageCircle, ChevronRight, ChevronDown, User, Calendar, FileText, MoreHorizontal } from 'lucide-react';
+import { useSystemConfig, calculateAverageWithConfig, calculateSimpleAverageWithConfig } from '../hooks/useSystemConfig';
 
 export default function ParentDashboard({ rut, onLogout }) {
   const [activeTab, setActiveTab] = useState('notas');
@@ -12,6 +13,7 @@ export default function ParentDashboard({ rut, onLogout }) {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expandedSubject, setExpandedSubject] = useState(null);
+  const { config } = useSystemConfig();
 
   useEffect(() => {
     const loadData = async () => {
@@ -106,11 +108,7 @@ export default function ParentDashboard({ rut, onLogout }) {
   });
 
   const calculateTruncatedAverage = (gradesArray) => {
-     if (!gradesArray || gradesArray.length === 0) return '-';
-     const validGrades = gradesArray.map(g => Number(g)).filter(g => !isNaN(g) && g > 0 && g <= 7);
-     if (validGrades.length === 0) return '-';
-     const sumInt = validGrades.reduce((a,b) => a + Math.round(b * 10), 0);
-     return (Math.floor(sumInt / validGrades.length) / 10).toFixed(1);
+     return calculateAverageWithConfig(gradesArray, config.aproxAsignatura);
   };
 
   grades.forEach(g => {
@@ -147,7 +145,7 @@ export default function ParentDashboard({ rut, onLogout }) {
       if (data.s1 === 'P' || data.s2 === 'P') {
           finalAvg = '-';
       } else if (data.s1 && data.s1 !== '-' && data.s2 && data.s2 !== '-') {
-          finalAvg = ((Number(data.s1) + Number(data.s2)) / 2).toFixed(1);
+          finalAvg = calculateSimpleAverageWithConfig([data.s1, data.s2], config.aproxAnual);
       } else if (data.s1 && data.s1 !== '-') {
           finalAvg = data.s1;
       } else if (data.s2 && data.s2 !== '-') {
@@ -170,8 +168,8 @@ export default function ParentDashboard({ rut, onLogout }) {
   subjectsList.sort((a, b) => a.name.localeCompare(b.name));
 
   // Calculate overall student average
-  const validAvgs = subjectsList.filter(s => !s.isConcept).map(s => Number(s.avg)).filter(n => !isNaN(n));
-  const generalAvg = validAvgs.length > 0 ? (validAvgs.reduce((a,b) => a+b, 0) / validAvgs.length).toFixed(1) : '-';
+  const validAvgs = subjectsList.filter(s => !s.isConcept).map(s => s.avg).filter(n => n !== '-' && n !== 'P');
+  const generalAvg = validAvgs.length > 0 ? calculateSimpleAverageWithConfig(validAvgs, config.aproxSemestral) : '-';
 
   const getSubjectColor = (name) => {
      const colors = ['#8c2633', '#5c6bc0', '#4db6ac', '#4caf50', '#ff9800', '#f44336', '#9c27b0', '#03a9f4'];

@@ -3,6 +3,7 @@ import { db } from '../services/firebase';
 import { collection, query, where, getDocs, doc, writeBatch, getDoc } from 'firebase/firestore';
 import studentSeed from '../services/students_seed.json';
 import { Save } from 'lucide-react';
+import { useSystemConfig, calculateAverageWithConfig } from '../hooks/useSystemConfig';
 
 const SUBJECTS = [
   "Lenguaje y Comunicación", "Matemática", "Historia, Geografía y Cs. Sociales",
@@ -15,6 +16,7 @@ const COURSES = [
 ];
 
 export default function TeacherGrades({ user, assignedCourses, isAdmin, assignments, jefatura, isDiferencial }) {
+  const { config } = useSystemConfig();
   const defaultCourse = (assignedCourses && assignedCourses.length > 0) ? assignedCourses[0] : COURSES[0];
   const [selectedCourseForAdmin, setSelectedCourseForAdmin] = useState(COURSES[0]);
   const [selectedCourseForTeacher, setSelectedCourseForTeacher] = useState(defaultCourse);
@@ -211,11 +213,7 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
   };
 
   const calculateAverage = (gradesArray) => {
-     if(!gradesArray) return '';
-     const validGrades = gradesArray.map(g => Number(g)).filter(g => !isNaN(g) && g > 0 && g <= 7);
-     if (validGrades.length === 0) return '';
-     const sumInt = validGrades.reduce((a,b) => a + Math.round(b * 10), 0);
-     return (Math.floor(sumInt / validGrades.length) / 10).toFixed(1);
+     return calculateAverageWithConfig(gradesArray, config.aproxAsignatura);
   };
 
   const handleSave = async () => {
@@ -317,20 +315,31 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
                  <option value={2}>Segundo Semestre</option>
               </select>
 
-              <button 
-                 onClick={() => setTabDirection(prev => prev === 'horizontal' ? 'vertical' : 'horizontal')} 
-                 className="btn btn-secondary"
-                 style={{whiteSpace: 'nowrap'}}
-                 title="Cambiar dirección de navegación con Tabulador"
-              >
-                 {tabDirection === 'horizontal' ? 'Tab: →' : 'Tab: ↓'}
-              </button>
+               <button 
+                  onClick={() => setTabDirection(prev => prev === 'horizontal' ? 'vertical' : 'horizontal')} 
+                  className="btn btn-secondary"
+                  style={{whiteSpace: 'nowrap'}}
+                  title="Cambiar dirección de navegación con Tabulador"
+               >
+                  {tabDirection === 'horizontal' ? 'Tab: →' : 'Tab: ↓'}
+               </button>
 
-                    <button onClick={handleSave} disabled={saving || !subject} className="btn btn-primary" style={{marginTop: '1rem', whiteSpace: 'nowrap'}}>
-                       {saving ? <span>Guardando...</span> : <span><Save size={18} style={{display:'inline', marginBottom:'-4px'}} /> Guardar Planilla</span>}
-                    </button>
-           </div>
-        </div>
+               <button 
+                  onClick={handleSave} 
+                  disabled={saving || !subject || (!config.ingresoNotasAbierto && !isAdmin)} 
+                  className="btn btn-primary" 
+                  style={{marginTop: '1rem', whiteSpace: 'nowrap'}}
+               >
+                  {saving ? <span>Guardando...</span> : <span><Save size={18} style={{display:'inline', marginBottom:'-4px'}} /> Guardar Planilla</span>}
+               </button>
+            </div>
+         </div>
+
+         {!config.ingresoNotasAbierto && !isAdmin && (
+            <div style={{ backgroundColor: '#fff3e0', color: '#e65100', padding: '1rem', borderRadius: '8px', marginBottom: '1rem', border: '1px solid #ffe0b2' }}>
+               <strong>Aviso:</strong> El periodo de ingreso de notas se encuentra cerrado. Las notas están en modo de solo lectura.
+            </div>
+         )}
 
         {loading ? (
            <div className="flex items-center justify-center p-6"><div className="spinner"></div></div>
@@ -374,6 +383,7 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
                                     onChange={e => handleGradeChange(st.id, idx, e.target.value)}
                                     onBlur={e => handleGradeBlur(st.id, idx, e.target.value)}
                                     placeholder=""
+                                    disabled={!config.ingresoNotasAbierto && !isAdmin}
                                  />
                               </td>
                            ))}
@@ -386,6 +396,7 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
                                     value={pendingStatus[st.id] ? 'P' : (avg || '-')} 
                                     onChange={(e) => setPendingStatus({...pendingStatus, [st.id]: e.target.value === 'P'})}
                                     title="Haz clic para marcar como Pendiente"
+                                    disabled={!config.ingresoNotasAbierto && !isAdmin}
                                  >
                                     <option value={avg || '-'}>{avg || '-'}</option>
                                     <option value="P">P</option>
@@ -400,6 +411,7 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
                                     value={pendingStatus[st.id] ? 'P' : (avg || '-')} 
                                     onChange={(e) => setPendingStatus({...pendingStatus, [st.id]: e.target.value === 'P'})}
                                     title="Haz clic para marcar como Pendiente"
+                                    disabled={!config.ingresoNotasAbierto && !isAdmin}
                                  >
                                     <option value={avg || '-'}>{avg || '-'}</option>
                                     <option value="P">P</option>
@@ -426,6 +438,7 @@ export default function TeacherGrades({ user, assignedCourses, isAdmin, assignme
                                        onChange={e => handleObsChange(st.id, e.target.value)}
                                        placeholder={`Agregar observación...`}
                                        style={{minHeight: '32px', resize: 'vertical', width: '100%', fontSize: '12px'}}
+                                       disabled={!config.ingresoNotasAbierto && !isAdmin}
                                     />
                                  </td>
                            )}

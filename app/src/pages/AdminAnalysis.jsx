@@ -19,6 +19,7 @@ import { BarChart3, Users, User, Download, FileText, ChevronRight, TrendingUp, T
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { useSystemConfig, calculateAverageWithConfig, calculateSimpleAverageWithConfig } from '../hooks/useSystemConfig';
 
 ChartJS.register(
   CategoryScale,
@@ -52,6 +53,7 @@ const getLevel = (avg) => {
 };
 
 export default function AdminAnalysis() {
+  const { config } = useSystemConfig();
   const [selectedCourse, setSelectedCourse] = useState(COURSES[0]);
   const [analysisMode, setAnalysisMode] = useState('curso'); // 'curso' | 'estudiante'
   const [studentsInCourse, setStudentsInCourse] = useState([]);
@@ -140,13 +142,18 @@ export default function AdminAnalysis() {
     studentsInCourse.forEach(st => {
       const stGrades = courseGrades.filter(g => g.studentId === st.id);
       
-      // Calculate Semester Averages (excluding concept subjects)
-      const validGrades = stGrades.filter(g => !g.subject.includes('Religi') && !g.subject.includes('Orientaci'));
-      const s1Avgs = validGrades.filter(g => g.semester === 1).map(g => parseFloat(g.average)).filter(v => v > 0);
-      const s2Avgs = validGrades.filter(g => g.semester === 2).map(g => parseFloat(g.average)).filter(v => v > 0);
+      const getGradeAvg = (g) => {
+          if (!g.grades) return parseFloat(g.average) || 0;
+          const calc = calculateAverageWithConfig(g.grades, config.aproxAsignatura);
+          return parseFloat(calc) || 0;
+      };
 
-      const avg1 = s1Avgs.length > 0 ? (s1Avgs.reduce((a,b) => a+b, 0) / s1Avgs.length).toFixed(1) : 0;
-      const avg2 = s2Avgs.length > 0 ? (s2Avgs.reduce((a,b) => a+b, 0) / s2Avgs.length).toFixed(1) : 0;
+      const validGrades = stGrades.filter(g => !g.subject.includes('Religi') && !g.subject.includes('Orientaci'));
+      const s1Avgs = validGrades.filter(g => g.semester === 1).map(getGradeAvg).filter(v => v > 0);
+      const s2Avgs = validGrades.filter(g => g.semester === 2).map(getGradeAvg).filter(v => v > 0);
+
+      const avg1 = s1Avgs.length > 0 ? calculateSimpleAverageWithConfig(s1Avgs, config.aproxSemestral) : 0;
+      const avg2 = s2Avgs.length > 0 ? calculateSimpleAverageWithConfig(s2Avgs, config.aproxSemestral) : 0;
 
       const level1 = getLevel(avg1);
       const level2 = getLevel(avg2);
@@ -174,10 +181,15 @@ export default function AdminAnalysis() {
     const st = studentsInCourse.find(s => s.id === selectedStudent);
     const stGrades = allGrades.filter(g => g.studentId === selectedStudent);
 
+    const getGradeAvgString = (g) => {
+        if (!g.grades) return g.average || '-';
+        return calculateAverageWithConfig(g.grades, config.aproxAsignatura) || '-';
+    };
+
     const subjectAnalysis = stGrades.reduce((acc, g) => {
       if (!acc[g.subject]) acc[g.subject] = { s1: '-', s2: '-' };
-      if (g.semester === 1) acc[g.subject].s1 = g.average;
-      if (g.semester === 2) acc[g.subject].s2 = g.average;
+      if (g.semester === 1) acc[g.subject].s1 = getGradeAvgString(g);
+      if (g.semester === 2) acc[g.subject].s2 = getGradeAvgString(g);
       return acc;
     }, {});
 

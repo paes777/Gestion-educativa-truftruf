@@ -5,6 +5,7 @@ import studentSeed from '../services/students_seed.json';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { FileDown, GraduationCap, FileLineChart } from 'lucide-react';
+import { useSystemConfig, calculateAverageWithConfig, calculateSimpleAverageWithConfig } from '../hooks/useSystemConfig';
 
 const COURSES = [
   "1° Básico", "2° Básico", "3° Básico", "4° Básico",
@@ -26,6 +27,7 @@ export default function AdminReports({ allowedCourses }) {
   const [loadingMatrix, setLoadingMatrix] = useState(false);
   const [selectedIndividualDoc, setSelectedIndividualDoc] = useState('cert_regular');
   const [selectedMassiveDoc, setSelectedMassiveDoc] = useState('s1');
+  const { config } = useSystemConfig();
 
   useEffect(() => {
     if (allowedCourses && allowedCourses.length > 0) {
@@ -143,11 +145,7 @@ export default function AdminReports({ allowedCourses }) {
   };
 
   const calculateTruncatedAverage = (gradesArray) => {
-     if (!gradesArray || gradesArray.length === 0) return '-';
-     const validGrades = gradesArray.map(g => Number(g)).filter(g => !isNaN(g) && g > 0 && g <= 7);
-     if (validGrades.length === 0) return '-';
-     const sumInt = validGrades.reduce((a,b) => a + Math.round(b * 10), 0);
-     return (Math.floor(sumInt / validGrades.length) / 10).toFixed(1);
+     return calculateAverageWithConfig(gradesArray, config.aproxAsignatura);
   };
 
   const buildDocumentHeader = async (doc, headerText, logoImg = null) => {
@@ -286,8 +284,9 @@ export default function AdminReports({ allowedCourses }) {
       });
 
       let finalY = 48;
-      const totals = { totalS1: 0, totalS2: 0, totalFinal: 0 };
-      const counts = { countS1: 0, countS2: 0, countFinal: 0 };
+      const validAvgsS1 = [];
+      const validAvgsS2 = [];
+      const validAvgsFinal = [];
 
       Object.keys(subjectsMap).forEach(sub => {
           let s1 = subjectsMap[sub].s1; // Ya viene con .toFixed(1) de Firestore o '-'
@@ -297,8 +296,7 @@ export default function AdminReports({ allowedCourses }) {
           if (s1 === 'P' || s2 === 'P') {
               final = '-';
           } else if(s1 !== '-' && s2 !== '-') {
-              // Promedio de promedios redondeados, redondeado a 1 decimal
-              final = ((Number(s1) + Number(s2)) / 2).toFixed(1);
+              final = calculateSimpleAverageWithConfig([s1, s2], config.aproxAnual);
           } else if (s1 !== '-') {
               final = Number(s1).toFixed(1);
           } else if (s2 !== '-') {
@@ -309,12 +307,11 @@ export default function AdminReports({ allowedCourses }) {
           
           if (!isConcept) {
               if (final !== '-' && final !== 'P') { 
-                  totals.totalFinal += Number(final); 
-                  counts.countFinal++; 
+                  validAvgsFinal.push(final);
               }
               // Semestral Totals for general averages
-              if(s1 !== '-' && s1 !== 'P') { totals.totalS1 += Number(s1); counts.countS1++; }
-              if(s2 !== '-' && s2 !== 'P') { totals.totalS2 += Number(s2); counts.countS2++; }
+              if(s1 !== '-' && s1 !== 'P') { validAvgsS1.push(s1); }
+              if(s2 !== '-' && s2 !== 'P') { validAvgsS2.push(s2); }
           }
           
           subjectsMap[sub].final = final;
@@ -349,7 +346,10 @@ export default function AdminReports({ allowedCourses }) {
           });
 
           const avgRow = ["PROMEDIO GENERAL SEMESTRE"];
-          const generalAvg = counts[countKey] > 0 ? (totals[totalKey]/counts[countKey]).toFixed(1) : '-';
+          let generalAvg = '-';
+          if (promKey === 's1') generalAvg = validAvgsS1.length > 0 ? calculateSimpleAverageWithConfig(validAvgsS1, config.aproxSemestral) : '-';
+          if (promKey === 's2') generalAvg = validAvgsS2.length > 0 ? calculateSimpleAverageWithConfig(validAvgsS2, config.aproxSemestral) : '-';
+          
           for(let i=0; i<10; i++) avgRow.push(""); 
           avgRow.push(generalAvg);
           tableRows.push(avgRow);
@@ -373,17 +373,17 @@ export default function AdminReports({ allowedCourses }) {
       };
 
       if (mode === 's1' || mode === 'final_s1' || mode === 'full') {
-          renderSemesterTable("CALIFICACIONES: PRIMER SEMESTRE", "grades1", "s1", "totalS1", "countS1");
+          renderSemesterTable("CALIFICACIONES: PRIMER SEMESTRE", "grades1", "s1", null, null);
       }
       if (mode === 's2' || mode === 'final_s2' || mode === 'full') {
-          renderSemesterTable("CALIFICACIONES: SEGUNDO SEMESTRE", "grades2", "s2", "totalS2", "countS2");
+          renderSemesterTable("CALIFICACIONES: SEGUNDO SEMESTRE", "grades2", "s2", null, null);
       }
       
       // Summary Averages Table
       if (mode === 'full') {
-          const s1Gen = counts.countS1 > 0 ? (totals.totalS1 / counts.countS1).toFixed(1) : '-';
-          const s2Gen = counts.countS2 > 0 ? (totals.totalS2 / counts.countS2).toFixed(1) : '-';
-          const finalGen = counts.countFinal > 0 ? (totals.totalFinal / counts.countFinal).toFixed(1) : '-';
+          const s1Gen = validAvgsS1.length > 0 ? calculateSimpleAverageWithConfig(validAvgsS1, config.aproxSemestral) : '-';
+          const s2Gen = validAvgsS2.length > 0 ? calculateSimpleAverageWithConfig(validAvgsS2, config.aproxSemestral) : '-';
+          const finalGen = validAvgsFinal.length > 0 ? calculateSimpleAverageWithConfig(validAvgsFinal, config.aproxAnual) : '-';
 
           autoTable(doc, {
             startY: finalY,
@@ -627,6 +627,7 @@ export default function AdminReports({ allowedCourses }) {
        shortHeaders.push('PROM.');
 
        const rows = students.map((st, i) => {
+          st.validAvgs = [];
           const row = [i + 1, st.nombreCompleto];
           
           let sumNum = 0;
@@ -662,7 +663,7 @@ export default function AdminReports({ allowedCourses }) {
                  if (s1 === 'P' || s2 === 'P') {
                      val = '-';
                  } else if(s1 !== '-' && s2 !== '-') {
-                     val = ((Number(s1) + Number(s2)) / 2).toFixed(1);
+                     val = calculateSimpleAverageWithConfig([s1, s2], config.aproxAnual);
                  } else if (s1 !== '-') {
                      val = Number(s1).toFixed(1);
                  } else if (s2 !== '-') {
@@ -671,9 +672,10 @@ export default function AdminReports({ allowedCourses }) {
               }
              
              const isConcept = sub.includes('Religi') || sub.includes('Orientaci');
-             if (!isConcept && val !== '-') {
-                 sumNum += Number(val);
-                 countNum++;
+             if (!isConcept && val !== '-' && val !== 'P') {
+                 // Use an array to store valid averages for the student's general average
+                 if (!st.validAvgs) st.validAvgs = [];
+                 st.validAvgs.push(val);
              }
              if (isConcept && val !== '-') {
                  val = toConcept(val);
@@ -682,11 +684,9 @@ export default function AdminReports({ allowedCourses }) {
              row.push(val);
           });
 
-          if (countNum > 0) {
-              row.push((sumNum / countNum).toFixed(1));
-          } else {
-              row.push('-');
-          }
+          const method = matrixSemester === 'final' ? config.aproxAnual : config.aproxSemestral;
+          const generalAvg = st.validAvgs.length > 0 ? calculateSimpleAverageWithConfig(st.validAvgs, method) : '-';
+          row.push(generalAvg);
 
           return row;
        });
