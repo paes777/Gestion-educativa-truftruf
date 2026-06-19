@@ -119,7 +119,7 @@ export default function ParentDashboard({ rut, onLogout }) {
      }
      
      const validGradesExist = g.grades && g.grades.some(gr => gr !== '');
-     const currentAvg = validGradesExist ? calculateTruncatedAverage(g.grades) : g.average;
+     const currentAvg = g.average === 'P' ? 'P' : (validGradesExist ? calculateTruncatedAverage(g.grades) : (g.average || '-'));
 
      if (g.semester === 1) {
          subjectsMap[normSubj].s1 = currentAvg;
@@ -133,7 +133,9 @@ export default function ParentDashboard({ rut, onLogout }) {
   const subjectsList = Object.keys(subjectsMap).map(subj => {
       const data = subjectsMap[subj];
       let finalAvg = '-';
-      if (data.s1 && data.s1 !== '-' && data.s2 && data.s2 !== '-') {
+      if (data.s1 === 'P' || data.s2 === 'P') {
+          finalAvg = '-';
+      } else if (data.s1 && data.s1 !== '-' && data.s2 && data.s2 !== '-') {
           finalAvg = ((Number(data.s1) + Number(data.s2)) / 2).toFixed(1);
       } else if (data.s1 && data.s1 !== '-') {
           finalAvg = data.s1;
