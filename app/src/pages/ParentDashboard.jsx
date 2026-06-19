@@ -52,7 +52,8 @@ export default function ParentDashboard({ rut, onLogout }) {
 
       try {
         // 2. Fetch grades for both semesters
-        const qNotas = query(collection(db, 'notas'), where('studentId', '==', rut));
+        const searchIds = [...new Set([rut, st.id])];
+        const qNotas = query(collection(db, 'notas'), where('studentId', 'in', searchIds));
         const snapNotas = await getDocs(qNotas);
         const gradesData = [];
         snapNotas.forEach(doc => gradesData.push(doc.data()));
