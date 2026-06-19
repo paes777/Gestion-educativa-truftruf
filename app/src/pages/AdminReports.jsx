@@ -24,6 +24,8 @@ export default function AdminReports({ allowedCourses }) {
   const [loading, setLoading] = useState(false);
   const [matrixSemester, setMatrixSemester] = useState('final');
   const [loadingMatrix, setLoadingMatrix] = useState(false);
+  const [selectedIndividualDoc, setSelectedIndividualDoc] = useState('cert_regular');
+  const [selectedMassiveDoc, setSelectedMassiveDoc] = useState('s1');
 
   useEffect(() => {
     if (allowedCourses && allowedCourses.length > 0) {
@@ -766,68 +768,33 @@ export default function AdminReports({ allowedCourses }) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
         <div className="card">
           <h3>Documentos Disponibles</h3>
-          <p className="text-muted mt-2 mb-4">Haz clic para generar el documento en formato PDF.</p>
+          <p className="text-muted mt-2 mb-4">Selecciona el documento y haz clic en Generar para descargarlo en formato PDF.</p>
 
-          <div className="grid gap-4">
-            <button 
-               onClick={downloadAlumnoRegular}
-               className="btn btn-secondary justify-between" 
-               style={{textAlign: 'left'}}
-               disabled={!selectedStudent}
-            >
-               <span className="flex items-center gap-4"><GraduationCap size={20} /> Certificado Alumno Regular</span>
-               <FileDown size={18} />
-            </button>
-            
-            <button 
-               onClick={() => downloadInformeCompleto('s1')}
-               className="btn btn-secondary justify-between" 
-               style={{textAlign: 'left'}}
-               disabled={!selectedStudent}
-            >
-               <span className="flex items-center gap-4"><FileLineChart size={20} /> Informe Notas Parciales (1° Sem)</span>
-               <FileDown size={18} />
-            </button>
-
-            <button 
-               onClick={() => downloadInformeCompleto('s2')}
-               className="btn btn-secondary justify-between" 
-               style={{textAlign: 'left'}}
-               disabled={!selectedStudent}
-            >
-               <span className="flex items-center gap-4"><FileLineChart size={20} /> Informe Notas Parciales (2° Sem)</span>
-               <FileDown size={18} />
-            </button>
-            
-            <button 
-               onClick={() => downloadInformeCompleto('final_s1')}
-               className="btn btn-primary justify-between" 
-               style={{textAlign: 'left', backgroundColor: '#3949ab', color: 'white'}}
-               disabled={!selectedStudent}
-            >
-               <span className="flex items-center gap-4"><FileLineChart size={20} /> Informe Semestral Final (1° Sem)</span>
-               <FileDown size={18} />
-            </button>
-
-            <button 
-               onClick={() => downloadInformeCompleto('final_s2')}
-               className="btn btn-primary justify-between" 
-               style={{textAlign: 'left', backgroundColor: '#3949ab', color: 'white'}}
-               disabled={!selectedStudent}
-            >
-               <span className="flex items-center gap-4"><FileLineChart size={20} /> Informe Semestral Final (2° Sem)</span>
-               <FileDown size={18} />
-            </button>
-
-            <button 
-               onClick={() => downloadInformeCompleto('full')}
-               className="btn btn-primary justify-between" 
-               style={{textAlign: 'left'}}
-               disabled={!selectedStudent}
-            >
-               <span className="flex items-center gap-4"><FileLineChart size={20} /> Informe de Notas Anual (Estudiante)</span>
-               <FileDown size={18} />
-            </button>
+          <div className="flex gap-4 items-center">
+             <select 
+                value={selectedIndividualDoc} 
+                onChange={e => setSelectedIndividualDoc(e.target.value)} 
+                className="status-select" 
+                style={{width: '350px'}}
+                disabled={!selectedStudent}
+             >
+                <option value="cert_regular">Certificado Alumno Regular</option>
+                <option value="s1">Informe Notas Parciales (1° Sem)</option>
+                <option value="s2">Informe Notas Parciales (2° Sem)</option>
+                <option value="final_s1">Informe Semestral Final (1° Sem)</option>
+                <option value="final_s2">Informe Semestral Final (2° Sem)</option>
+                <option value="full">Informe de Notas Anual (Estudiante)</option>
+             </select>
+             <button 
+                className="btn btn-primary"
+                onClick={() => {
+                   if (selectedIndividualDoc === 'cert_regular') downloadAlumnoRegular();
+                   else downloadInformeCompleto(selectedIndividualDoc);
+                }}
+                disabled={!selectedStudent}
+             >
+                <FileDown size={18} /> Generar
+             </button>
           </div>
         </div>
 
@@ -835,51 +802,27 @@ export default function AdminReports({ allowedCourses }) {
           <h3>Descarga Masiva (Curso Completo)</h3>
           <p className="text-muted mt-2 mb-4">Descarga un solo archivo PDF con los informes de todos los estudiantes del curso {selectedCourse}.</p>
           
-          <div className="grid gap-4">
-            <button 
-               onClick={() => downloadInformeCurso('s1')}
-               className="btn btn-secondary justify-between" 
-               style={{textAlign: 'left'}}
-               disabled={students.length === 0}
-            >
-               <span className="flex items-center gap-4"><FileDown size={20} /> Curso: Notas Parciales (1° Sem)</span>
-            </button>
-            
-            <button 
-               onClick={() => downloadInformeCurso('s2')}
-               className="btn btn-secondary justify-between" 
-               style={{textAlign: 'left'}}
-               disabled={students.length === 0}
-            >
-               <span className="flex items-center gap-4"><FileDown size={20} /> Curso: Notas Parciales (2° Sem)</span>
-            </button>
-
-            <button 
-               onClick={() => downloadInformeCurso('final_s1')}
-               className="btn btn-primary justify-between" 
-               style={{textAlign: 'left', backgroundColor: '#3949ab', color: 'white'}}
-               disabled={students.length === 0}
-            >
-               <span className="flex items-center gap-4"><FileDown size={20} /> Curso: Semestral Final (1° Sem)</span>
-            </button>
-
-            <button 
-               onClick={() => downloadInformeCurso('final_s2')}
-               className="btn btn-primary justify-between" 
-               style={{textAlign: 'left', backgroundColor: '#3949ab', color: 'white'}}
-               disabled={students.length === 0}
-            >
-               <span className="flex items-center gap-4"><FileDown size={20} /> Curso: Semestral Final (2° Sem)</span>
-            </button>
-
-            <button 
-               onClick={() => downloadInformeCurso('full')}
-               className="btn btn-primary justify-between" 
-               style={{textAlign: 'left'}}
-               disabled={students.length === 0}
-            >
-               <span className="flex items-center gap-4"><FileDown size={20} /> Curso: Notas Anual</span>
-            </button>
+          <div className="flex gap-4 items-center">
+             <select 
+                value={selectedMassiveDoc} 
+                onChange={e => setSelectedMassiveDoc(e.target.value)} 
+                className="status-select" 
+                style={{width: '350px'}}
+                disabled={students.length === 0}
+             >
+                <option value="s1">Curso: Notas Parciales (1° Sem)</option>
+                <option value="s2">Curso: Notas Parciales (2° Sem)</option>
+                <option value="final_s1">Curso: Semestral Final (1° Sem)</option>
+                <option value="final_s2">Curso: Semestral Final (2° Sem)</option>
+                <option value="full">Curso: Notas Anual</option>
+             </select>
+             <button 
+                className="btn btn-primary"
+                onClick={() => downloadInformeCurso(selectedMassiveDoc)}
+                disabled={students.length === 0}
+             >
+                <FileDown size={18} /> Generar
+             </button>
           </div>
         </div>
       </div>
