@@ -131,6 +131,16 @@ export default function ParentDashboard({ rut, onLogout }) {
      }
   });
 
+  const toConcept = (val) => {
+      if (!val || val === '-' || val === 'P') return val;
+      const n = Number(val);
+      if (isNaN(n)) return val;
+      if (n >= 6.0) return 'MB';
+      if (n >= 5.0) return 'B';
+      if (n >= 4.0) return 'S';
+      return 'I';
+  };
+
   const subjectsList = Object.keys(subjectsMap).map(subj => {
       const data = subjectsMap[subj];
       let finalAvg = '-';
@@ -144,12 +154,15 @@ export default function ParentDashboard({ rut, onLogout }) {
           finalAvg = data.s2;
       }
 
+      const isConcept = subj.includes('Religi') || subj.includes('Orientaci');
+
       return {
           name: subj,
           teacher: subjectTeacherMap[subj] || 'Sin docente asignado',
-          avg: finalAvg,
-          gradesS1: data.n1,
-          gradesS2: data.n2
+          avg: isConcept ? toConcept(finalAvg) : finalAvg,
+          gradesS1: isConcept ? data.n1.map(toConcept) : data.n1,
+          gradesS2: isConcept ? data.n2.map(toConcept) : data.n2,
+          isConcept: isConcept
       };
   });
 
@@ -157,7 +170,7 @@ export default function ParentDashboard({ rut, onLogout }) {
   subjectsList.sort((a, b) => a.name.localeCompare(b.name));
 
   // Calculate overall student average
-  const validAvgs = subjectsList.map(s => Number(s.avg)).filter(n => !isNaN(n));
+  const validAvgs = subjectsList.filter(s => !s.isConcept).map(s => Number(s.avg)).filter(n => !isNaN(n));
   const generalAvg = validAvgs.length > 0 ? (validAvgs.reduce((a,b) => a+b, 0) / validAvgs.length).toFixed(1) : '-';
 
   const getSubjectColor = (name) => {
@@ -239,7 +252,7 @@ export default function ParentDashboard({ rut, onLogout }) {
 
                            {/* Promedio */}
                            <div style={{ textAlign: 'center', paddingLeft: '1rem' }}>
-                              <div style={{ fontSize: '1.4rem', fontWeight: 'bold', color: subj.avg === '-' ? '#333' : (subj.avg >= 4.0 ? '#333' : '#f44336') }}>{subj.avg}</div>
+                              <div style={{ fontSize: '1.4rem', fontWeight: 'bold', color: subj.avg === '-' ? '#333' : (subj.isConcept ? '#333' : (subj.avg >= 4.0 ? '#333' : '#f44336')) }}>{subj.avg}</div>
                               <div style={{ fontSize: '0.7rem', color: '#888' }}>Promedio</div>
                            </div>
 
@@ -257,7 +270,7 @@ export default function ParentDashboard({ rut, onLogout }) {
                                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '8px' }}>
                                     {subj.gradesS1 && subj.gradesS1.filter(n => n).length > 0 
                                       ? subj.gradesS1.filter(n => n).map((n, i) => (
-                                          <span key={i} style={{ backgroundColor: 'white', border: '1px solid #ddd', padding: '4px 10px', borderRadius: '6px', fontWeight: 'bold', color: Number(n) < 4 ? '#f44336' : '#333' }}>{n}</span>
+                                          <span key={i} style={{ backgroundColor: 'white', border: '1px solid #ddd', padding: '4px 10px', borderRadius: '6px', fontWeight: 'bold', color: subj.isConcept ? '#333' : (Number(n) < 4 ? '#f44336' : '#333') }}>{n}</span>
                                         ))
                                       : <span style={{ color: '#888', fontSize: '0.85rem' }}>Sin notas registradas</span>
                                     }
@@ -268,7 +281,7 @@ export default function ParentDashboard({ rut, onLogout }) {
                                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '8px' }}>
                                     {subj.gradesS2 && subj.gradesS2.filter(n => n).length > 0 
                                       ? subj.gradesS2.filter(n => n).map((n, i) => (
-                                          <span key={i} style={{ backgroundColor: 'white', border: '1px solid #ddd', padding: '4px 10px', borderRadius: '6px', fontWeight: 'bold', color: Number(n) < 4 ? '#f44336' : '#333' }}>{n}</span>
+                                          <span key={i} style={{ backgroundColor: 'white', border: '1px solid #ddd', padding: '4px 10px', borderRadius: '6px', fontWeight: 'bold', color: subj.isConcept ? '#333' : (Number(n) < 4 ? '#f44336' : '#333') }}>{n}</span>
                                         ))
                                       : <span style={{ color: '#888', fontSize: '0.85rem' }}>Sin notas registradas</span>
                                     }
